@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# This script initiates regeneration of Makefile.am and builds iulib.
+# It should only be called by developers.
+
+# If autotools exist, Makefile.am is generated and autotools are invoked.
+# All arguments to this script are forwarded as-is to configure.
+
+if [ `which python` ]
+then
+    if [ `which automake` ]
+    then
+        echo "# generating Makefile.am"
+        python genAM.py > Makefile.am
+        echo "# running automake"
+        automake
+        if [ $? != 0 ]
+        then
+            exit
+        fi
+    fi
+fi
+
+echo "# running configure $@"
+./configure "$@"
+if [ $? != 0 ]
+then
+    exit
+fi
+
+echo "# running make"
+make

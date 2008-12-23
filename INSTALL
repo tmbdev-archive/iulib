@@ -1,0 +1,46 @@
+iulib - the image understanding library
+http://code.google.com/p/iulib/
+
+Version 0.3 (2008-10-15)
+
+
+--------------------------------------------------------------------------------
+Contents
+--------------------------------------------------------------------------------
+
+    * Requirements
+    * Building and installing iulib
+    * Clean-up and uninstall
+
+
+--------------------------------------------------------------------------------
+Requirements
+--------------------------------------------------------------------------------
+
+The following software needs to be installed for compiling iulib:
+
+    * libpng-dev    (or equivalent)
+    * libjpeg-dev   (or equivalent)
+    * libtiff4-dev  (or equivalent)
+
+
+--------------------------------------------------------------------------------
+Building and installing iulib
+--------------------------------------------------------------------------------
+
+After installing the needed software (see above) go to the iulib
+directory and run:
+    ./configure    # choose --prefix=<dir> if you don't want to install
+                   # in the default location (/usr/local)
+    make
+    make install
+    
+
+--------------------------------------------------------------------------------
+Clean-up and uninstall
+--------------------------------------------------------------------------------
+In order to clean the iulib folder, i.e. remove all compiled files, run:
+    make clean
+    
+In order to remove all files installed with 'make install' run:
+    make uninstall

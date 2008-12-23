@@ -1,0 +1,7 @@
+This file briefly describes the folders in the iulib structure. There are
+READMEs in each folder that give a bit more details.
+
+colib        -- arrays and smart pointers
+imgio        -- high level, array-based interfaces to libjpeg, libpng, etc.
+imglib       -- basic image processing functionality
+commands     -- command line programs 

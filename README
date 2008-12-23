@@ -1,0 +1,15 @@
+iulib - the image understanding library
+http://code.google.com/p/iulib/
+
+Version 0.3 (2008-10-15)
+
+Please refer to the site (http://code.google.com/p/iulib/) for insructions.
+Please refer to INSTALL document for installation instructions.
+
+-----
+colib
+-----
+
+The core component of iulib that is so generic that it even does not know about
+images is called `colib'. It is a header-only library that installs into colib/
+subfolder of the include path. A single header, "colib.h", includes all others.

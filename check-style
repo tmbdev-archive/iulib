@@ -1,0 +1,205 @@
+#!/usr/bin/python
+
+# Copyright 2007 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz 
+# or its licensors, as applicable.
+# 
+# You may not use this file except under the terms of the accompanying license.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License"); you
+# may not use this file except in compliance with the License. You may
+# obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# 
+# Project: 
+# File: 
+# Purpose: simple style checker (run from top of project)
+# Responsible: tmb
+# Reviewer: 
+# Primary Repository: 
+# Web Sites: www.iupr.org, www.dfki.de
+
+# FIXME add checks for include file ordering
+# FIXME add checks for function length
+
+import os,re,getopt,sys
+from os.path import join, getsize
+
+optlist,args = getopt.getopt(sys.argv[1:],'hcsdfor:e:')
+options = {}
+for k,v in optlist: options[k] = v
+linelength = options.has_key("-l")
+deprecation = options.has_key("-d")
+fixmes = not options.has_key("-f")
+suppress = options.has_key("-s")
+copyright = options.has_key("-c")
+oldstyle = options.has_key("-o")
+want_author = options.get("-r",None)
+if want_author: want_author = want_author.lower()
+want_svnauthor = options.get("-e",None)
+if want_svnauthor: want_author = want_svnauthor.lower()
+
+help = """
+usage: %s [-c] [-s] [-f] [-o] [-r responsible] [-e last_edited_by] dir...
+    -l: line length
+    -c: missing headers/copyrights
+    -f: FIXME lines
+    -o: old style C comments
+    -d: deprecation
+    -s: report problems despite suppress warning directives (CODE-OK--username)
+    -r: name: report problems only for files with Responsible: name
+    -e: name: report problems only for files last checked in by name
+
+(Some options turn on a feature, others turn it off.)
+""" %sys.argv[0]
+
+if options.has_key("-h"):
+    sys.stderr.write(help)
+    sys.exit(0)
+
+if args==[]: 
+    args = ["."]
+
+for arg in args:
+    if not os.path.isdir(arg):
+        sys.stderr.write("%s: not a directory\n"%arg)
+        sys.stderr.write("\n")
+        sys.stderr.write(help)
+        sys.exit(1)
+
+author = None
+svnauthor = None
+
+def warn(file,line,message):
+    print "%s:%d:%s [resp: %s, edit: %s]"%(file,line,message,author,svnauthor)
+
+warned = {}
+def warnonce(file,line,message):
+    if warned.get(file,None): return
+    warned[file] = 1
+    print "%s:%d:%s [resp: %s, edit: %s]"%(file,line,message,author,svnauthor)
+
+def check(arg):
+    global author
+    global svnauthor
+
+    for root,dirs,files in os.walk(arg):
+        if re.search(r'(/.svn|/EXTERNAL|/ext|/doc|/data|/CLEAN-ME-UP|/.deps)(/|$)',root): continue
+        if root is '.':
+            for d in dirs:
+                if d.startswith('img') or d=='vidio' or d=='colib' or d=="utils":
+                    check(d)
+            break
+        #print "checking", root
+        sources = [file for file in files if re.search("\.(c|cc|cpp|pkg|h)$",file)]
+        for source in sources:
+            if re.search(r'(^|/)(test|try|#|.)-',source): continue
+            if source=="version.cc": continue
+            path = os.path.join(root,source)
+
+            author = None
+            svnauthor = None
+
+            # we do check for english output of svn info
+            # hence we need to ensure we get it
+            info = os.popen("LANG=C svn info '%s' 2>&1"%path).read(10000)
+            m = re.search(r'Last Changed Author:\s+(\S+)',info)
+            if m: svnauthor = m.group(1)
+            if os.path.isdir(".svn") and svnauthor==None: continue
+            if svnauthor: svnauthor = svnauthor.lower()
+            if want_svnauthor and want_svnauthor!=svnauthor: continue
+
+            info = open(path).read(10000)
+            m = re.search(r'Responsible:\s+([a-zA-Z0-9_-]+)',info)
+            if m: author = m.group(1).lower()
+            if want_author and want_author!=author: continue
+
+            lnumber = 0
+            stream = open(path,"r")
+            copyright = 0
+            includeguard = 0
+            includeguard_name = "###"
+            modeline = 0
+            info_responsible = 0
+            for line in stream.readlines():
+                lnumber += 1
+                if fixmes:
+                    m = re.search(r'FIXME.*',line)
+                    if m: warn(path,lnumber,m.group(0))
+                if not deprecation:
+                    m = re.search(r'#if.*DEPRECATE.*',line)
+                    if m: warn(path,lnumber,m.group(0))
+                    m = re.search(r'DEPRECATE *;',line)
+                    if m: warn(path,lnumber,m.group(0))
+                if not suppress:
+                    if re.search(r'CODE-OK--[a-z]+',line): continue
+
+                # formatting
+
+                if linelength and len(line)>132:
+                    warn(path,lnumber,"line too long")
+                if re.search(r'^\s+#',line):
+                    warn(path,lnumber,"preprocessor directive doesn't start at beginning")
+                if "\t" in line:
+                    warnonce(path,lnumber,'file contains tabs')
+
+                # C++ style
+                
+                if oldstyle:
+                    if not re.search(r'\.pkg$',source) and (re.search(r'^\s*/\*[^*]',line) or re.search(r'^( |  )\* ',line)):
+                        warn(path,lnumber,"old style comment")
+                if re.search(r'^\s*#if\s+0',line):
+                    warnonce(path,lnumber,"dead code")
+                if re.search(r'^\s*#if\s*\(\s*0\s*\)',line):
+                    warnonce(path,lnumber,"dead code")
+                if re.search(r'^( |  |   |     |      |       )({|if|for|while|void|int|float|})',line):
+                    warnonce(path,lnumber,"wrong indentation (should be multiple of 4)")
+                if re.search(r'[a-z0-9]+\s+\(.*,(?i)',line) and \
+                   re.search(r'^    ',line) and \
+                   not re.search(r'//|"|/\*|printf|\b(if|for|return|while|sizeof)\b',line):
+                    warn(path,lnumber,'space before argument list')
+                if re.search(r'template\s*[<].*\(.*\).*\{',line):
+                    warn(path,lnumber,'template on same line as function definition')
+
+                # headers
+                
+                if re.search(r'-\*- C\+\+ -\*-',line): modeline = 1
+                if re.search(r'^\s*#include.*<string>',line): warn(path,lnumber,'consider using strbuf instead of string')
+                elif re.search(r'^\s*#include.*<limits>',line): warn(path,lnumber,'consider using C99 equivalent')
+                elif re.search(r'^\s*#include.*<[a-z]*stream>',line): warn(path,lnumber,'use stdio instead of iostream')
+                elif re.search(r'^\s*#include.*<[a-z]+>',line): warn(path,lnumber,'C++ library reference')
+                if re.search(r'Copyright [0-9]+ Deutsches Forschungszentrum',line): copyright |= 1
+                if re.search(r'You may not use this file except under the terms of the accompanying license',line): copyright |= 2
+                if re.search(r'WITHOUT WARRANTIES',line): copyright |= 4
+                m = re.search(r'Responsible: (\S*)',line)
+                if m:
+                    responsible = m.group(1)
+                    if not re.match(r'[a-z][a-z](?i)',responsible):
+                        warnonce(path,lnumber,'no responsible author')
+                    info_responsible = 1
+
+                m = re.search(r'#ifndef\s+([a-zA-Z0-9_]+)',line)
+                if m:
+                    includeguard |= 1
+                    includeguard_name = m.group(1)
+                if re.search(r'#define\s+'+includeguard_name,line):
+                    includeguard |= 2
+            stream.close()
+
+            if not copyright:
+                if copyright!=7:
+                    warn(path,1,'insufficient copyright header')
+                elif not info_responsible:
+                    warn(path,1,'no Responsible: header')
+            if re.search(r'\.h$',path) and includeguard!=3: warn(path,1,'missing include guard')
+
+
+for arg in args:
+    check(arg)
+
+
+print "all checks completed"

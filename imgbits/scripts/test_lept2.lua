@@ -1,0 +1,5 @@
+pix = lepton.pixCreate(30,30,1)
+lepton.pixClearAll(pix)
+lepton.pixSetPixel(pix,10,10,1)
+out = lepton.pixDilateBrick(nil,pix,18,18)
+lepton.pixWritePng("out_l.png",out,1.0)

@@ -1,0 +1,9 @@
+iulib - the image understanding library
+
+--------------------------------------------------------------------------------
+Version 0.1 (2008-06-20)
+--------------------------------------------------------------------------------
+  * iulib has been moved from OCRopus (www.ocropus.org) into its own project
+  * the jam build tool has been replaced by SCons (www.scons.org)
+  * iulib builds as static library
+  * ./configure support 

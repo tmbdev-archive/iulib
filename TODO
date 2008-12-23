@@ -1,0 +1,12 @@
+FIXME
+
+imgio
+
+The function names below are not particularly consistent.  We are
+aiming for supporting _binary, _gray, _rgb, and _packed versions where
+appropriate.  The _rgb version should return a w x h x 3 array, while
+the _packed version should return a w x h array with 24bit packed
+color results.  We will also consistently support bytearray and
+floatarray for the binary/gray/rgb versions, and intarray for the
+packed versions.  And we need to consistently support using both file
+names and stdio streams for input/output.

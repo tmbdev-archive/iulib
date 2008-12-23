@@ -1,0 +1,2 @@
+This folder contains code for high level image io operations and
+array-based interfaces to libjpeg, libpng, etc.

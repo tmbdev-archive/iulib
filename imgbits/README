@@ -1,0 +1,70 @@
+This directory contains to binary morphology implementations, one based on
+bit blits, the other based on run length coding.
+
+imgbitptr.h -- a bit pointer class used by the bit blit
+imgbits.h -- data structures and interfaces used by the bit blit morphology
+imgrle.h -- data structures and interfaces used by the runlength morphology
+bithacks.h -- collection of various bit manipulation routines
+
+imgbits.cc -- main bit blit-based morphology code
+imgrle.cc -- main run length morphology code
+
+imgblit.cc -- 1D and 2D blit code
+imgblit_c.cc -- port of earlier C version (slightly faster than the C++ version but ugly)
+imgbsmp.cc -- 2D binary subsampling code
+imgbthin.cc -- parallel thinning (incomplete)
+
+ocroscript.cc -- scripting language interface
+
+test-simple.cc -- some test cases
+test-ops.cc -- some test cases
+
+The status of this code is that it's a hacked port of some old C++
+production code which was itself a port of even older C code.  A lot of
+the C cruft has been removed and been replaced by cleaner abstractions.
+Some of the code is ported from SML (if one can call that a port).
+A lot of functionality (markers, attributes, etc.) has been removed;
+if needed, it's probably better to re-implement it.
+
+This code has a number of interesting algorithms:
+
+ * The run-length code is very fast for layout analysis and other such
+   applications, often beating bit blit code by an order of magnitude.
+   It actually gets faster as masks get larger--its complexity is
+   largely dominated by output complexity; eventually, we're probably
+   going to move to it entirely because the situations in which bit blit
+   code is actually faster don't occur much in the real world
+ * Decomposition code for rectangles, circles, and arbitrary masks that
+   probably uses the minimum or close-to-minimum number of blits for at least
+   rectangles and circles; this code is in both the bit blit and run
+   length implementations.
+ * Decomposition code for linear elements (useful for baselines and
+   other such structures) that is based on skews.
+ * Probably other features that I'm forgetting.
+
+The main things to be done are:
+
+ * look at boundary conditions again; both rle and bits should be using
+   zero boundary conditions, but we're not quite there yet (boundary
+   conditions got broken by the new, faster decomposition code);
+   probably, we'll move to "natural" boundary conditions (infinite in
+   the runlength direction, limited by image size in the perpendicular
+   direction), with cropping steps after each iteration; to avoid
+   unnecessary inserts, the first element should probably always be
+   reserved as a "boundary run" that is (0,0) when it's not needed
+ * write many more test cases make imgbthin.cc work and write something
+   equivalent for RLE clean up imgblit.cc further: encapsulate word32
+   *, move to 64 and 128 bits port over or reimplement more marker
+   and attribute stuff to the run length code fix the various FIXME's
+   and TODO's direct binary image I/O to bit images and RLE faster
+   bitmap/RLE conversions (precompute decision tree for most frequent
+   run patters, determined on document images)
+ * convert the RLE code from using arrays of runs to arrays of
+   transitions (narray<short>); the RLERun abstraction is hurting more
+   than it's helping, and we can still have an RLERun getRun(i) method
+ * replace the rle_transpose_runs function with one using
+   TransitionSink, or make it less ugly in some other way
+
+There are lots of other algorithmic ideas and possibilities (including
+some fast grayscale work), but they'll probably not make it into the
+production library.
