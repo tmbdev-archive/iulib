@@ -254,10 +254,8 @@ namespace iulib {
     void canny(bytearray &gradm,floatarray &image,float sx,float sy,
                float frac,float tlow,float thigh) {
 	floatarray temp;
-	temp.makelike(gradm);
-	for(int i=0;i<gradm.length();i++)
-	    temp.at1d(i) = gradm.at1d(i);
-		
+        canny(temp, image, sx, sy, frac, tlow, thigh);
+        copy(gradm, temp);
     }
 
 }

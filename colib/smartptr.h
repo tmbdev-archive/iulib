@@ -129,6 +129,12 @@ namespace colib {
             if(pointer) delete pointer;
         }
 
+        /// Copy constructor (always throws)
+        autodel(const autodel &other) {
+            throw "autodel's copy constructor should not be used.\n\
+                   Return pointers from methods and use assignment operator.";
+        }
+
         /// Initialization with a pointer transfers ownership to the class.
 
         explicit autodel(T *other) {
@@ -139,7 +145,8 @@ namespace colib {
         /// transfers ownership of the pointer to the class.
 
         void operator=(T *other) {
-            if(pointer) delete pointer;
+            if(pointer && pointer != other)
+                delete pointer;
             pointer = other;
         }
 
@@ -187,8 +194,10 @@ namespace colib {
         /// and set the other smart pointer to null.
 
         void operator=(autodel<T> &other) {
-            if(pointer) delete pointer;
-            pointer = other.move();
+            T *new_pointer = other.move();
+            if(pointer && pointer != new_pointer)
+                delete pointer;
+            pointer = new_pointer;
         }
 
         /// Take ownership away from this smart pointer and set the smart pointer to null.
@@ -276,7 +285,7 @@ namespace colib {
         /// Testing whether the pointer is null.
 
         operator bool() const {
-            return !pointer;
+            return !!pointer;
         }
 
         /// Linear assignment: get the pointer from the other smart pointer,
@@ -366,7 +375,7 @@ namespace colib {
         /// Set to new pointer value, deleting any old object, and transfering ownership to the class.
 
         void operator=(T *other) {
-            if(pointer)
+            if(pointer && pointer != other)
                 delete pointer;
             pointer = other;
         }
@@ -375,9 +384,10 @@ namespace colib {
         /// and set the other smart pointer to null.
 
         void operator=(autoref<T> &other) {
-            if(pointer)
+            T *new_pointer = other.move();
+            if(pointer && pointer != new_pointer)
                 delete pointer;
-            pointer = other.move();
+            pointer = new_pointer;
         }
 
         /// Take ownership away from this smart pointer and set the smart pointer to null.
@@ -468,10 +478,10 @@ namespace colib {
             return !stream;
         }
 
-        /// Testing whether the stream is null.
+        /// Testing whether the stream is not null.
 
         operator bool() const {
-            return !stream;
+            return !!stream;
         }
 
         /// Linear assignment: get the stream from the other smart stream,

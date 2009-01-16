@@ -58,11 +58,16 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-check_PROGRAMS = test-hash$(EXEEXT) test-quicksort$(EXEEXT) \
+check_PROGRAMS = test-quicksort$(EXEEXT) test-nbest$(EXEEXT) \
+	test-misc$(EXEEXT) test-hash$(EXEEXT) test-coords$(EXEEXT) \
 	test-rowarrays$(EXEEXT) test-narray$(EXEEXT) \
-	test-pbmpng$(EXEEXT) test-imglabels$(EXEEXT) \
-	test-imgbrushfire$(EXEEXT) test-imgmisc$(EXEEXT) \
-	test-imgmap$(EXEEXT) test-simple$(EXEEXT)
+	test-smartptr$(EXEEXT) test-heap$(EXEEXT) test-strbuf$(EXEEXT) \
+	test-pbmpng$(EXEEXT) test-io_png$(EXEEXT) \
+	test-read_write_png$(EXEEXT) test-io-jpeg$(EXEEXT) \
+	test-imglabels$(EXEEXT) test-imgmap$(EXEEXT) \
+	test-imgedges$(EXEEXT) test-imgmisc$(EXEEXT) \
+	test-imgbrushfire$(EXEEXT) test-imggauss$(EXEEXT) \
+	test-imgthin$(EXEEXT) test-simple$(EXEEXT)
 
 # conditionals
 @have_sdl_TRUE@am__append_1 = $(srcdir)/utils/dgraphics.cc \
@@ -99,18 +104,19 @@ ARFLAGS = cru
 libiulib_a_AR = $(AR) $(ARFLAGS)
 libiulib_a_LIBADD =
 am__libiulib_a_SOURCES_DIST = $(srcdir)/imgio/autoinvert.cc \
-	$(srcdir)/imgio/imgio.cc $(srcdir)/imgio/io_jpeg.cc \
-	$(srcdir)/imgio/io_pbm.cc $(srcdir)/imgio/io_png.cc \
-	$(srcdir)/imglib/imgbrushfire.cc $(srcdir)/imglib/imgedges.cc \
-	$(srcdir)/imglib/imgfilters.cc $(srcdir)/imglib/imggauss.cc \
-	$(srcdir)/imglib/imglabels.cc $(srcdir)/imglib/imgmap.cc \
-	$(srcdir)/imglib/imgmisc.cc $(srcdir)/imglib/imgmorph.cc \
-	$(srcdir)/imglib/imgops.cc $(srcdir)/imglib/imgrescale.cc \
-	$(srcdir)/imglib/imgthin.cc $(srcdir)/imglib/imgtrace.cc \
-	$(srcdir)/imglib/imggraymorph.cc $(srcdir)/imgbits/imgbits.cc \
-	$(srcdir)/imgbits/imgbsmp.cc $(srcdir)/imgbits/imgbthin.cc \
-	$(srcdir)/imgbits/imgrle.cc $(srcdir)/imgbits/imgblit_c.cc \
-	$(srcdir)/imgbits/imgblit.cc $(srcdir)/utils/dgraphics.cc \
+	$(srcdir)/imgio/io_pbm.cc $(srcdir)/imgio/io_jpeg.cc \
+	$(srcdir)/imgio/imgio.cc $(srcdir)/imgio/io_png.cc \
+	$(srcdir)/imglib/imgtrace.cc $(srcdir)/imglib/imggauss.cc \
+	$(srcdir)/imglib/imglabels.cc $(srcdir)/imglib/imgrescale.cc \
+	$(srcdir)/imglib/imgthin.cc $(srcdir)/imglib/imgmisc.cc \
+	$(srcdir)/imglib/imgops.cc $(srcdir)/imglib/imgmap.cc \
+	$(srcdir)/imglib/imgmorph.cc $(srcdir)/imglib/imgedges.cc \
+	$(srcdir)/imglib/imggraymorph.cc \
+	$(srcdir)/imglib/imgfilters.cc \
+	$(srcdir)/imglib/imgbrushfire.cc $(srcdir)/imgbits/imgblit.cc \
+	$(srcdir)/imgbits/imgrle.cc $(srcdir)/imgbits/imgbsmp.cc \
+	$(srcdir)/imgbits/imgbits.cc $(srcdir)/imgbits/imgbthin.cc \
+	$(srcdir)/imgbits/imgblit_c.cc $(srcdir)/utils/dgraphics.cc \
 	$(srcdir)/utils/SDL_lines.cc \
 	$(srcdir)/utils/dgraphics_nosdl.cc $(srcdir)/vidio/vidio.cc \
 	$(srcdir)/vidio/v4l2cap.cc
@@ -118,24 +124,36 @@ am__libiulib_a_SOURCES_DIST = $(srcdir)/imgio/autoinvert.cc \
 @have_sdl_FALSE@am__objects_2 = dgraphics_nosdl.$(OBJEXT)
 @have_vidio_TRUE@am__objects_3 = vidio.$(OBJEXT)
 @have_v4l2_TRUE@am__objects_4 = v4l2cap.$(OBJEXT)
-am_libiulib_a_OBJECTS = autoinvert.$(OBJEXT) imgio.$(OBJEXT) \
-	io_jpeg.$(OBJEXT) io_pbm.$(OBJEXT) io_png.$(OBJEXT) \
-	imgbrushfire.$(OBJEXT) imgedges.$(OBJEXT) imgfilters.$(OBJEXT) \
-	imggauss.$(OBJEXT) imglabels.$(OBJEXT) imgmap.$(OBJEXT) \
-	imgmisc.$(OBJEXT) imgmorph.$(OBJEXT) imgops.$(OBJEXT) \
-	imgrescale.$(OBJEXT) imgthin.$(OBJEXT) imgtrace.$(OBJEXT) \
-	imggraymorph.$(OBJEXT) imgbits.$(OBJEXT) imgbsmp.$(OBJEXT) \
-	imgbthin.$(OBJEXT) imgrle.$(OBJEXT) imgblit_c.$(OBJEXT) \
-	imgblit.$(OBJEXT) $(am__objects_1) $(am__objects_2) \
+am_libiulib_a_OBJECTS = autoinvert.$(OBJEXT) io_pbm.$(OBJEXT) \
+	io_jpeg.$(OBJEXT) imgio.$(OBJEXT) io_png.$(OBJEXT) \
+	imgtrace.$(OBJEXT) imggauss.$(OBJEXT) imglabels.$(OBJEXT) \
+	imgrescale.$(OBJEXT) imgthin.$(OBJEXT) imgmisc.$(OBJEXT) \
+	imgops.$(OBJEXT) imgmap.$(OBJEXT) imgmorph.$(OBJEXT) \
+	imgedges.$(OBJEXT) imggraymorph.$(OBJEXT) imgfilters.$(OBJEXT) \
+	imgbrushfire.$(OBJEXT) imgblit.$(OBJEXT) imgrle.$(OBJEXT) \
+	imgbsmp.$(OBJEXT) imgbits.$(OBJEXT) imgbthin.$(OBJEXT) \
+	imgblit_c.$(OBJEXT) $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3) $(am__objects_4)
 libiulib_a_OBJECTS = $(am_libiulib_a_OBJECTS)
+am_test_coords_OBJECTS = test_coords-test-coords.$(OBJEXT)
+test_coords_OBJECTS = $(am_test_coords_OBJECTS)
+test_coords_DEPENDENCIES = libiulib.a
 am_test_hash_OBJECTS = test_hash-test-hash.$(OBJEXT)
 test_hash_OBJECTS = $(am_test_hash_OBJECTS)
 test_hash_DEPENDENCIES = libiulib.a
+am_test_heap_OBJECTS = test_heap-test-heap.$(OBJEXT)
+test_heap_OBJECTS = $(am_test_heap_OBJECTS)
+test_heap_DEPENDENCIES = libiulib.a
 am_test_imgbrushfire_OBJECTS =  \
 	test_imgbrushfire-test-imgbrushfire.$(OBJEXT)
 test_imgbrushfire_OBJECTS = $(am_test_imgbrushfire_OBJECTS)
 test_imgbrushfire_DEPENDENCIES = libiulib.a
+am_test_imgedges_OBJECTS = test_imgedges-test-imgedges.$(OBJEXT)
+test_imgedges_OBJECTS = $(am_test_imgedges_OBJECTS)
+test_imgedges_DEPENDENCIES = libiulib.a
+am_test_imggauss_OBJECTS = test_imggauss-test-imggauss.$(OBJEXT)
+test_imggauss_OBJECTS = $(am_test_imggauss_OBJECTS)
+test_imggauss_DEPENDENCIES = libiulib.a
 am_test_imglabels_OBJECTS = test_imglabels-test-imglabels.$(OBJEXT)
 test_imglabels_OBJECTS = $(am_test_imglabels_OBJECTS)
 test_imglabels_DEPENDENCIES = libiulib.a
@@ -145,21 +163,46 @@ test_imgmap_DEPENDENCIES = libiulib.a
 am_test_imgmisc_OBJECTS = test_imgmisc-test-imgmisc.$(OBJEXT)
 test_imgmisc_OBJECTS = $(am_test_imgmisc_OBJECTS)
 test_imgmisc_DEPENDENCIES = libiulib.a
+am_test_imgthin_OBJECTS = test_imgthin-test-imgthin.$(OBJEXT)
+test_imgthin_OBJECTS = $(am_test_imgthin_OBJECTS)
+test_imgthin_DEPENDENCIES = libiulib.a
+am_test_io_jpeg_OBJECTS = test_io_jpeg-test-io-jpeg.$(OBJEXT)
+test_io_jpeg_OBJECTS = $(am_test_io_jpeg_OBJECTS)
+test_io_jpeg_DEPENDENCIES = libiulib.a
+am_test_io_png_OBJECTS = test_io_png-test-io_png.$(OBJEXT)
+test_io_png_OBJECTS = $(am_test_io_png_OBJECTS)
+test_io_png_DEPENDENCIES = libiulib.a
+am_test_misc_OBJECTS = test_misc-test-misc.$(OBJEXT)
+test_misc_OBJECTS = $(am_test_misc_OBJECTS)
+test_misc_DEPENDENCIES = libiulib.a
 am_test_narray_OBJECTS = test_narray-test-narray.$(OBJEXT)
 test_narray_OBJECTS = $(am_test_narray_OBJECTS)
 test_narray_DEPENDENCIES = libiulib.a
+am_test_nbest_OBJECTS = test_nbest-test-nbest.$(OBJEXT)
+test_nbest_OBJECTS = $(am_test_nbest_OBJECTS)
+test_nbest_DEPENDENCIES = libiulib.a
 am_test_pbmpng_OBJECTS = test_pbmpng-test-pbmpng.$(OBJEXT)
 test_pbmpng_OBJECTS = $(am_test_pbmpng_OBJECTS)
 test_pbmpng_DEPENDENCIES = libiulib.a
 am_test_quicksort_OBJECTS = test_quicksort-test-quicksort.$(OBJEXT)
 test_quicksort_OBJECTS = $(am_test_quicksort_OBJECTS)
 test_quicksort_DEPENDENCIES = libiulib.a
+am_test_read_write_png_OBJECTS =  \
+	test_read_write_png-test-read_write_png.$(OBJEXT)
+test_read_write_png_OBJECTS = $(am_test_read_write_png_OBJECTS)
+test_read_write_png_DEPENDENCIES = libiulib.a
 am_test_rowarrays_OBJECTS = test_rowarrays-test-rowarrays.$(OBJEXT)
 test_rowarrays_OBJECTS = $(am_test_rowarrays_OBJECTS)
 test_rowarrays_DEPENDENCIES = libiulib.a
 am_test_simple_OBJECTS = test_simple-test-simple.$(OBJEXT)
 test_simple_OBJECTS = $(am_test_simple_OBJECTS)
 test_simple_DEPENDENCIES = libiulib.a
+am_test_smartptr_OBJECTS = test_smartptr-test-smartptr.$(OBJEXT)
+test_smartptr_OBJECTS = $(am_test_smartptr_OBJECTS)
+test_smartptr_DEPENDENCIES = libiulib.a
+am_test_strbuf_OBJECTS = test_strbuf-test-strbuf.$(OBJEXT)
+test_strbuf_OBJECTS = $(am_test_strbuf_OBJECTS)
+test_strbuf_DEPENDENCIES = libiulib.a
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -168,31 +211,43 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(libiulib_a_SOURCES) $(test_hash_SOURCES) \
-	$(test_imgbrushfire_SOURCES) $(test_imglabels_SOURCES) \
+SOURCES = $(libiulib_a_SOURCES) $(test_coords_SOURCES) \
+	$(test_hash_SOURCES) $(test_heap_SOURCES) \
+	$(test_imgbrushfire_SOURCES) $(test_imgedges_SOURCES) \
+	$(test_imggauss_SOURCES) $(test_imglabels_SOURCES) \
 	$(test_imgmap_SOURCES) $(test_imgmisc_SOURCES) \
-	$(test_narray_SOURCES) $(test_pbmpng_SOURCES) \
-	$(test_quicksort_SOURCES) $(test_rowarrays_SOURCES) \
-	$(test_simple_SOURCES)
-DIST_SOURCES = $(am__libiulib_a_SOURCES_DIST) $(test_hash_SOURCES) \
-	$(test_imgbrushfire_SOURCES) $(test_imglabels_SOURCES) \
+	$(test_imgthin_SOURCES) $(test_io_jpeg_SOURCES) \
+	$(test_io_png_SOURCES) $(test_misc_SOURCES) \
+	$(test_narray_SOURCES) $(test_nbest_SOURCES) \
+	$(test_pbmpng_SOURCES) $(test_quicksort_SOURCES) \
+	$(test_read_write_png_SOURCES) $(test_rowarrays_SOURCES) \
+	$(test_simple_SOURCES) $(test_smartptr_SOURCES) \
+	$(test_strbuf_SOURCES)
+DIST_SOURCES = $(am__libiulib_a_SOURCES_DIST) $(test_coords_SOURCES) \
+	$(test_hash_SOURCES) $(test_heap_SOURCES) \
+	$(test_imgbrushfire_SOURCES) $(test_imgedges_SOURCES) \
+	$(test_imggauss_SOURCES) $(test_imglabels_SOURCES) \
 	$(test_imgmap_SOURCES) $(test_imgmisc_SOURCES) \
-	$(test_narray_SOURCES) $(test_pbmpng_SOURCES) \
-	$(test_quicksort_SOURCES) $(test_rowarrays_SOURCES) \
-	$(test_simple_SOURCES)
+	$(test_imgthin_SOURCES) $(test_io_jpeg_SOURCES) \
+	$(test_io_png_SOURCES) $(test_misc_SOURCES) \
+	$(test_narray_SOURCES) $(test_nbest_SOURCES) \
+	$(test_pbmpng_SOURCES) $(test_quicksort_SOURCES) \
+	$(test_read_write_png_SOURCES) $(test_rowarrays_SOURCES) \
+	$(test_simple_SOURCES) $(test_smartptr_SOURCES) \
+	$(test_strbuf_SOURCES)
 colibHEADERS_INSTALL = $(INSTALL_HEADER)
-am__include_HEADERS_DIST = $(srcdir)/imgio/autoinvert.h \
-	$(srcdir)/imgio/imgio.h $(srcdir)/imgio/io_pbm.h \
-	$(srcdir)/imgio/io_png.h $(srcdir)/imgio/io_jpeg.h \
-	$(srcdir)/imglib/imgtrace.h $(srcdir)/imglib/imgthin.h \
-	$(srcdir)/imglib/imgmorph.h $(srcdir)/imglib/imgmisc.h \
-	$(srcdir)/imglib/imgops.h $(srcdir)/imglib/imglabels.h \
-	$(srcdir)/imglib/imglib.h $(srcdir)/imglib/imgfilters.h \
-	$(srcdir)/imglib/imgmap.h $(srcdir)/imglib/iulib.h \
-	$(srcdir)/imglib/imgrescale.h $(srcdir)/imglib/imggauss.h \
-	$(srcdir)/imglib/imgedges.h $(srcdir)/imglib/imggraymorph.h \
-	$(srcdir)/imglib/imgbrushfire.h $(srcdir)/imgbits/imgbits.h \
-	$(srcdir)/imgbits/bithacks.h $(srcdir)/imgbits/imgbitptr.h \
+am__include_HEADERS_DIST = $(srcdir)/imgio/io_png.h \
+	$(srcdir)/imgio/autoinvert.h $(srcdir)/imgio/io_jpeg.h \
+	$(srcdir)/imgio/io_pbm.h $(srcdir)/imgio/imgio.h \
+	$(srcdir)/imglib/imgfilters.h $(srcdir)/imglib/imgops.h \
+	$(srcdir)/imglib/imgtrace.h $(srcdir)/imglib/imgmap.h \
+	$(srcdir)/imglib/imgmorph.h $(srcdir)/imglib/imglabels.h \
+	$(srcdir)/imglib/imgrescale.h $(srcdir)/imglib/imgbrushfire.h \
+	$(srcdir)/imglib/imggauss.h $(srcdir)/imglib/imgmisc.h \
+	$(srcdir)/imglib/imggraymorph.h $(srcdir)/imglib/imglib.h \
+	$(srcdir)/imglib/imgedges.h $(srcdir)/imglib/iulib.h \
+	$(srcdir)/imglib/imgthin.h $(srcdir)/imgbits/imgbitptr.h \
+	$(srcdir)/imgbits/bithacks.h $(srcdir)/imgbits/imgbits.h \
 	$(srcdir)/imgbits/imgrle.h $(srcdir)/utils/dgraphics.h \
 	$(srcdir)/utils/SDL_lines.h $(srcdir)/vidio/vidio.h
 includeHEADERS_INSTALL = $(INSTALL_HEADER)
@@ -310,65 +365,102 @@ AM_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 colibdir = ${prefix}/include/colib
 lib_LIBRARIES = libiulib.a
 libiulib_a_SOURCES = $(srcdir)/imgio/autoinvert.cc \
-	$(srcdir)/imgio/imgio.cc $(srcdir)/imgio/io_jpeg.cc \
-	$(srcdir)/imgio/io_pbm.cc $(srcdir)/imgio/io_png.cc \
-	$(srcdir)/imglib/imgbrushfire.cc $(srcdir)/imglib/imgedges.cc \
-	$(srcdir)/imglib/imgfilters.cc $(srcdir)/imglib/imggauss.cc \
-	$(srcdir)/imglib/imglabels.cc $(srcdir)/imglib/imgmap.cc \
-	$(srcdir)/imglib/imgmisc.cc $(srcdir)/imglib/imgmorph.cc \
-	$(srcdir)/imglib/imgops.cc $(srcdir)/imglib/imgrescale.cc \
-	$(srcdir)/imglib/imgthin.cc $(srcdir)/imglib/imgtrace.cc \
-	$(srcdir)/imglib/imggraymorph.cc $(srcdir)/imgbits/imgbits.cc \
-	$(srcdir)/imgbits/imgbsmp.cc $(srcdir)/imgbits/imgbthin.cc \
-	$(srcdir)/imgbits/imgrle.cc $(srcdir)/imgbits/imgblit_c.cc \
-	$(srcdir)/imgbits/imgblit.cc $(am__append_1) $(am__append_3) \
+	$(srcdir)/imgio/io_pbm.cc $(srcdir)/imgio/io_jpeg.cc \
+	$(srcdir)/imgio/imgio.cc $(srcdir)/imgio/io_png.cc \
+	$(srcdir)/imglib/imgtrace.cc $(srcdir)/imglib/imggauss.cc \
+	$(srcdir)/imglib/imglabels.cc $(srcdir)/imglib/imgrescale.cc \
+	$(srcdir)/imglib/imgthin.cc $(srcdir)/imglib/imgmisc.cc \
+	$(srcdir)/imglib/imgops.cc $(srcdir)/imglib/imgmap.cc \
+	$(srcdir)/imglib/imgmorph.cc $(srcdir)/imglib/imgedges.cc \
+	$(srcdir)/imglib/imggraymorph.cc \
+	$(srcdir)/imglib/imgfilters.cc \
+	$(srcdir)/imglib/imgbrushfire.cc $(srcdir)/imgbits/imgblit.cc \
+	$(srcdir)/imgbits/imgrle.cc $(srcdir)/imgbits/imgbsmp.cc \
+	$(srcdir)/imgbits/imgbits.cc $(srcdir)/imgbits/imgbthin.cc \
+	$(srcdir)/imgbits/imgblit_c.cc $(am__append_1) $(am__append_3) \
 	$(am__append_4) $(am__append_5)
 
 # We install it always because iulib.h always includes it.
-include_HEADERS = $(srcdir)/imgio/autoinvert.h $(srcdir)/imgio/imgio.h \
-	$(srcdir)/imgio/io_pbm.h $(srcdir)/imgio/io_png.h \
-	$(srcdir)/imgio/io_jpeg.h $(srcdir)/imglib/imgtrace.h \
-	$(srcdir)/imglib/imgthin.h $(srcdir)/imglib/imgmorph.h \
-	$(srcdir)/imglib/imgmisc.h $(srcdir)/imglib/imgops.h \
-	$(srcdir)/imglib/imglabels.h $(srcdir)/imglib/imglib.h \
-	$(srcdir)/imglib/imgfilters.h $(srcdir)/imglib/imgmap.h \
-	$(srcdir)/imglib/iulib.h $(srcdir)/imglib/imgrescale.h \
-	$(srcdir)/imglib/imggauss.h $(srcdir)/imglib/imgedges.h \
-	$(srcdir)/imglib/imggraymorph.h \
-	$(srcdir)/imglib/imgbrushfire.h $(srcdir)/imgbits/imgbits.h \
-	$(srcdir)/imgbits/bithacks.h $(srcdir)/imgbits/imgbitptr.h \
+include_HEADERS = $(srcdir)/imgio/io_png.h \
+	$(srcdir)/imgio/autoinvert.h $(srcdir)/imgio/io_jpeg.h \
+	$(srcdir)/imgio/io_pbm.h $(srcdir)/imgio/imgio.h \
+	$(srcdir)/imglib/imgfilters.h $(srcdir)/imglib/imgops.h \
+	$(srcdir)/imglib/imgtrace.h $(srcdir)/imglib/imgmap.h \
+	$(srcdir)/imglib/imgmorph.h $(srcdir)/imglib/imglabels.h \
+	$(srcdir)/imglib/imgrescale.h $(srcdir)/imglib/imgbrushfire.h \
+	$(srcdir)/imglib/imggauss.h $(srcdir)/imglib/imgmisc.h \
+	$(srcdir)/imglib/imggraymorph.h $(srcdir)/imglib/imglib.h \
+	$(srcdir)/imglib/imgedges.h $(srcdir)/imglib/iulib.h \
+	$(srcdir)/imglib/imgthin.h $(srcdir)/imgbits/imgbitptr.h \
+	$(srcdir)/imgbits/bithacks.h $(srcdir)/imgbits/imgbits.h \
 	$(srcdir)/imgbits/imgrle.h $(srcdir)/utils/dgraphics.h \
 	$(am__append_2) $(srcdir)/vidio/vidio.h
 colib_HEADERS = \
-$(srcdir)/colib/rowarrays.h $(srcdir)/colib/coords.h $(srcdir)/colib/misc.h $(srcdir)/colib/narray-ops.h $(srcdir)/colib/narray.h $(srcdir)/colib/vec2.h $(srcdir)/colib/checks.h $(srcdir)/colib/unionfind.h $(srcdir)/colib/strbuf.h $(srcdir)/colib/objlist.h $(srcdir)/colib/narray-util.h $(srcdir)/colib/nustring.h $(srcdir)/colib/clib.h $(srcdir)/colib/nbest.h $(srcdir)/colib/smartptr.h $(srcdir)/colib/iarith.h $(srcdir)/colib/hash.h $(srcdir)/colib/compat.h $(srcdir)/colib/classifier.h $(srcdir)/colib/quicksort.h $(srcdir)/colib/ocrinterfaces.h $(srcdir)/colib/env.h $(srcdir)/colib/colib.h $(srcdir)/colib/heap.h $(srcdir)/colib/deprecation.h
+$(srcdir)/colib/heap.h $(srcdir)/colib/quicksort.h $(srcdir)/colib/nbest.h $(srcdir)/colib/misc.h $(srcdir)/colib/ocrinterfaces.h $(srcdir)/colib/objlist.h $(srcdir)/colib/iarith.h $(srcdir)/colib/strbuf.h $(srcdir)/colib/colib.h $(srcdir)/colib/compat.h $(srcdir)/colib/coords.h $(srcdir)/colib/nustring.h $(srcdir)/colib/rowarrays.h $(srcdir)/colib/classifier.h $(srcdir)/colib/clib.h $(srcdir)/colib/unionfind.h $(srcdir)/colib/smartptr.h $(srcdir)/colib/vec2.h $(srcdir)/colib/narray.h $(srcdir)/colib/env.h $(srcdir)/colib/hash.h $(srcdir)/colib/narray-ops.h $(srcdir)/colib/deprecation.h $(srcdir)/colib/checks.h $(srcdir)/colib/narray-util.h
 
-test_hash_SOURCES = $(srcdir)/colib/tests/test-hash.cc
-test_hash_LDADD = libiulib.a
-test_hash_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_quicksort_SOURCES = $(srcdir)/colib/tests/test-quicksort.cc
 test_quicksort_LDADD = libiulib.a
 test_quicksort_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_nbest_SOURCES = $(srcdir)/colib/tests/test-nbest.cc
+test_nbest_LDADD = libiulib.a
+test_nbest_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_misc_SOURCES = $(srcdir)/colib/tests/test-misc.cc
+test_misc_LDADD = libiulib.a
+test_misc_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_hash_SOURCES = $(srcdir)/colib/tests/test-hash.cc
+test_hash_LDADD = libiulib.a
+test_hash_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_coords_SOURCES = $(srcdir)/colib/tests/test-coords.cc
+test_coords_LDADD = libiulib.a
+test_coords_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_rowarrays_SOURCES = $(srcdir)/colib/tests/test-rowarrays.cc
 test_rowarrays_LDADD = libiulib.a
 test_rowarrays_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_narray_SOURCES = $(srcdir)/colib/tests/test-narray.cc
 test_narray_LDADD = libiulib.a
 test_narray_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_smartptr_SOURCES = $(srcdir)/colib/tests/test-smartptr.cc
+test_smartptr_LDADD = libiulib.a
+test_smartptr_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_heap_SOURCES = $(srcdir)/colib/tests/test-heap.cc
+test_heap_LDADD = libiulib.a
+test_heap_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_strbuf_SOURCES = $(srcdir)/colib/tests/test-strbuf.cc
+test_strbuf_LDADD = libiulib.a
+test_strbuf_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_pbmpng_SOURCES = $(srcdir)/imgio/tests/test-pbmpng.cc
 test_pbmpng_LDADD = libiulib.a
 test_pbmpng_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_io_png_SOURCES = $(srcdir)/imgio/tests/test-io_png.cc
+test_io_png_LDADD = libiulib.a
+test_io_png_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_read_write_png_SOURCES = $(srcdir)/imgio/tests/test-read_write_png.cc
+test_read_write_png_LDADD = libiulib.a
+test_read_write_png_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_io_jpeg_SOURCES = $(srcdir)/imgio/tests/test-io-jpeg.cc
+test_io_jpeg_LDADD = libiulib.a
+test_io_jpeg_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_imglabels_SOURCES = $(srcdir)/imglib/tests/test-imglabels.cc
 test_imglabels_LDADD = libiulib.a
 test_imglabels_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
-test_imgbrushfire_SOURCES = $(srcdir)/imglib/tests/test-imgbrushfire.cc
-test_imgbrushfire_LDADD = libiulib.a
-test_imgbrushfire_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
-test_imgmisc_SOURCES = $(srcdir)/imglib/tests/test-imgmisc.cc
-test_imgmisc_LDADD = libiulib.a
-test_imgmisc_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_imgmap_SOURCES = $(srcdir)/imglib/tests/test-imgmap.cc
 test_imgmap_LDADD = libiulib.a
 test_imgmap_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_imgedges_SOURCES = $(srcdir)/imglib/tests/test-imgedges.cc
+test_imgedges_LDADD = libiulib.a
+test_imgedges_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_imgmisc_SOURCES = $(srcdir)/imglib/tests/test-imgmisc.cc
+test_imgmisc_LDADD = libiulib.a
+test_imgmisc_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_imgbrushfire_SOURCES = $(srcdir)/imglib/tests/test-imgbrushfire.cc
+test_imgbrushfire_LDADD = libiulib.a
+test_imgbrushfire_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_imggauss_SOURCES = $(srcdir)/imglib/tests/test-imggauss.cc
+test_imggauss_LDADD = libiulib.a
+test_imggauss_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+test_imgthin_SOURCES = $(srcdir)/imglib/tests/test-imgthin.cc
+test_imgthin_LDADD = libiulib.a
+test_imgthin_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_simple_SOURCES = $(srcdir)/imgbits/test-simple.cc
 test_simple_LDADD = libiulib.a
 test_simple_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
@@ -445,12 +537,24 @@ libiulib.a: $(libiulib_a_OBJECTS) $(libiulib_a_DEPENDENCIES)
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+test-coords$(EXEEXT): $(test_coords_OBJECTS) $(test_coords_DEPENDENCIES) 
+	@rm -f test-coords$(EXEEXT)
+	$(CXXLINK) $(test_coords_LDFLAGS) $(test_coords_OBJECTS) $(test_coords_LDADD) $(LIBS)
 test-hash$(EXEEXT): $(test_hash_OBJECTS) $(test_hash_DEPENDENCIES) 
 	@rm -f test-hash$(EXEEXT)
 	$(CXXLINK) $(test_hash_LDFLAGS) $(test_hash_OBJECTS) $(test_hash_LDADD) $(LIBS)
+test-heap$(EXEEXT): $(test_heap_OBJECTS) $(test_heap_DEPENDENCIES) 
+	@rm -f test-heap$(EXEEXT)
+	$(CXXLINK) $(test_heap_LDFLAGS) $(test_heap_OBJECTS) $(test_heap_LDADD) $(LIBS)
 test-imgbrushfire$(EXEEXT): $(test_imgbrushfire_OBJECTS) $(test_imgbrushfire_DEPENDENCIES) 
 	@rm -f test-imgbrushfire$(EXEEXT)
 	$(CXXLINK) $(test_imgbrushfire_LDFLAGS) $(test_imgbrushfire_OBJECTS) $(test_imgbrushfire_LDADD) $(LIBS)
+test-imgedges$(EXEEXT): $(test_imgedges_OBJECTS) $(test_imgedges_DEPENDENCIES) 
+	@rm -f test-imgedges$(EXEEXT)
+	$(CXXLINK) $(test_imgedges_LDFLAGS) $(test_imgedges_OBJECTS) $(test_imgedges_LDADD) $(LIBS)
+test-imggauss$(EXEEXT): $(test_imggauss_OBJECTS) $(test_imggauss_DEPENDENCIES) 
+	@rm -f test-imggauss$(EXEEXT)
+	$(CXXLINK) $(test_imggauss_LDFLAGS) $(test_imggauss_OBJECTS) $(test_imggauss_LDADD) $(LIBS)
 test-imglabels$(EXEEXT): $(test_imglabels_OBJECTS) $(test_imglabels_DEPENDENCIES) 
 	@rm -f test-imglabels$(EXEEXT)
 	$(CXXLINK) $(test_imglabels_LDFLAGS) $(test_imglabels_OBJECTS) $(test_imglabels_LDADD) $(LIBS)
@@ -460,21 +564,45 @@ test-imgmap$(EXEEXT): $(test_imgmap_OBJECTS) $(test_imgmap_DEPENDENCIES)
 test-imgmisc$(EXEEXT): $(test_imgmisc_OBJECTS) $(test_imgmisc_DEPENDENCIES) 
 	@rm -f test-imgmisc$(EXEEXT)
 	$(CXXLINK) $(test_imgmisc_LDFLAGS) $(test_imgmisc_OBJECTS) $(test_imgmisc_LDADD) $(LIBS)
+test-imgthin$(EXEEXT): $(test_imgthin_OBJECTS) $(test_imgthin_DEPENDENCIES) 
+	@rm -f test-imgthin$(EXEEXT)
+	$(CXXLINK) $(test_imgthin_LDFLAGS) $(test_imgthin_OBJECTS) $(test_imgthin_LDADD) $(LIBS)
+test-io-jpeg$(EXEEXT): $(test_io_jpeg_OBJECTS) $(test_io_jpeg_DEPENDENCIES) 
+	@rm -f test-io-jpeg$(EXEEXT)
+	$(CXXLINK) $(test_io_jpeg_LDFLAGS) $(test_io_jpeg_OBJECTS) $(test_io_jpeg_LDADD) $(LIBS)
+test-io_png$(EXEEXT): $(test_io_png_OBJECTS) $(test_io_png_DEPENDENCIES) 
+	@rm -f test-io_png$(EXEEXT)
+	$(CXXLINK) $(test_io_png_LDFLAGS) $(test_io_png_OBJECTS) $(test_io_png_LDADD) $(LIBS)
+test-misc$(EXEEXT): $(test_misc_OBJECTS) $(test_misc_DEPENDENCIES) 
+	@rm -f test-misc$(EXEEXT)
+	$(CXXLINK) $(test_misc_LDFLAGS) $(test_misc_OBJECTS) $(test_misc_LDADD) $(LIBS)
 test-narray$(EXEEXT): $(test_narray_OBJECTS) $(test_narray_DEPENDENCIES) 
 	@rm -f test-narray$(EXEEXT)
 	$(CXXLINK) $(test_narray_LDFLAGS) $(test_narray_OBJECTS) $(test_narray_LDADD) $(LIBS)
+test-nbest$(EXEEXT): $(test_nbest_OBJECTS) $(test_nbest_DEPENDENCIES) 
+	@rm -f test-nbest$(EXEEXT)
+	$(CXXLINK) $(test_nbest_LDFLAGS) $(test_nbest_OBJECTS) $(test_nbest_LDADD) $(LIBS)
 test-pbmpng$(EXEEXT): $(test_pbmpng_OBJECTS) $(test_pbmpng_DEPENDENCIES) 
 	@rm -f test-pbmpng$(EXEEXT)
 	$(CXXLINK) $(test_pbmpng_LDFLAGS) $(test_pbmpng_OBJECTS) $(test_pbmpng_LDADD) $(LIBS)
 test-quicksort$(EXEEXT): $(test_quicksort_OBJECTS) $(test_quicksort_DEPENDENCIES) 
 	@rm -f test-quicksort$(EXEEXT)
 	$(CXXLINK) $(test_quicksort_LDFLAGS) $(test_quicksort_OBJECTS) $(test_quicksort_LDADD) $(LIBS)
+test-read_write_png$(EXEEXT): $(test_read_write_png_OBJECTS) $(test_read_write_png_DEPENDENCIES) 
+	@rm -f test-read_write_png$(EXEEXT)
+	$(CXXLINK) $(test_read_write_png_LDFLAGS) $(test_read_write_png_OBJECTS) $(test_read_write_png_LDADD) $(LIBS)
 test-rowarrays$(EXEEXT): $(test_rowarrays_OBJECTS) $(test_rowarrays_DEPENDENCIES) 
 	@rm -f test-rowarrays$(EXEEXT)
 	$(CXXLINK) $(test_rowarrays_LDFLAGS) $(test_rowarrays_OBJECTS) $(test_rowarrays_LDADD) $(LIBS)
 test-simple$(EXEEXT): $(test_simple_OBJECTS) $(test_simple_DEPENDENCIES) 
 	@rm -f test-simple$(EXEEXT)
 	$(CXXLINK) $(test_simple_LDFLAGS) $(test_simple_OBJECTS) $(test_simple_LDADD) $(LIBS)
+test-smartptr$(EXEEXT): $(test_smartptr_OBJECTS) $(test_smartptr_DEPENDENCIES) 
+	@rm -f test-smartptr$(EXEEXT)
+	$(CXXLINK) $(test_smartptr_LDFLAGS) $(test_smartptr_OBJECTS) $(test_smartptr_LDADD) $(LIBS)
+test-strbuf$(EXEEXT): $(test_strbuf_OBJECTS) $(test_strbuf_DEPENDENCIES) 
+	@rm -f test-strbuf$(EXEEXT)
+	$(CXXLINK) $(test_strbuf_LDFLAGS) $(test_strbuf_OBJECTS) $(test_strbuf_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -509,16 +637,28 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/io_jpeg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/io_pbm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/io_png.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_coords-test-coords.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_hash-test-hash.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_heap-test-heap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_imgbrushfire-test-imgbrushfire.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_imgedges-test-imgedges.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_imggauss-test-imggauss.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_imglabels-test-imglabels.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_imgmap-test-imgmap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_imgmisc-test-imgmisc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_imgthin-test-imgthin.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_io_jpeg-test-io-jpeg.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_io_png-test-io_png.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_misc-test-misc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_narray-test-narray.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_nbest-test-nbest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_pbmpng-test-pbmpng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_quicksort-test-quicksort.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_read_write_png-test-read_write_png.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_rowarrays-test-rowarrays.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_simple-test-simple.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_smartptr-test-smartptr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_strbuf-test-strbuf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v4l2cap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vidio.Po@am__quote@
 
@@ -550,19 +690,19 @@ autoinvert.obj: $(srcdir)/imgio/autoinvert.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o autoinvert.obj `if test -f '$(srcdir)/imgio/autoinvert.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/autoinvert.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/autoinvert.cc'; fi`
 
-imgio.o: $(srcdir)/imgio/imgio.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgio.o -MD -MP -MF "$(DEPDIR)/imgio.Tpo" -c -o imgio.o `test -f '$(srcdir)/imgio/imgio.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/imgio.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgio.Tpo" "$(DEPDIR)/imgio.Po"; else rm -f "$(DEPDIR)/imgio.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/imgio.cc' object='imgio.o' libtool=no @AMDEPBACKSLASH@
+io_pbm.o: $(srcdir)/imgio/io_pbm.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT io_pbm.o -MD -MP -MF "$(DEPDIR)/io_pbm.Tpo" -c -o io_pbm.o `test -f '$(srcdir)/imgio/io_pbm.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/io_pbm.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/io_pbm.Tpo" "$(DEPDIR)/io_pbm.Po"; else rm -f "$(DEPDIR)/io_pbm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/io_pbm.cc' object='io_pbm.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgio.o `test -f '$(srcdir)/imgio/imgio.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/imgio.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o io_pbm.o `test -f '$(srcdir)/imgio/io_pbm.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/io_pbm.cc
 
-imgio.obj: $(srcdir)/imgio/imgio.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgio.obj -MD -MP -MF "$(DEPDIR)/imgio.Tpo" -c -o imgio.obj `if test -f '$(srcdir)/imgio/imgio.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/imgio.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/imgio.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgio.Tpo" "$(DEPDIR)/imgio.Po"; else rm -f "$(DEPDIR)/imgio.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/imgio.cc' object='imgio.obj' libtool=no @AMDEPBACKSLASH@
+io_pbm.obj: $(srcdir)/imgio/io_pbm.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT io_pbm.obj -MD -MP -MF "$(DEPDIR)/io_pbm.Tpo" -c -o io_pbm.obj `if test -f '$(srcdir)/imgio/io_pbm.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/io_pbm.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/io_pbm.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/io_pbm.Tpo" "$(DEPDIR)/io_pbm.Po"; else rm -f "$(DEPDIR)/io_pbm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/io_pbm.cc' object='io_pbm.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgio.obj `if test -f '$(srcdir)/imgio/imgio.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/imgio.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/imgio.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o io_pbm.obj `if test -f '$(srcdir)/imgio/io_pbm.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/io_pbm.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/io_pbm.cc'; fi`
 
 io_jpeg.o: $(srcdir)/imgio/io_jpeg.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT io_jpeg.o -MD -MP -MF "$(DEPDIR)/io_jpeg.Tpo" -c -o io_jpeg.o `test -f '$(srcdir)/imgio/io_jpeg.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/io_jpeg.cc; \
@@ -578,19 +718,19 @@ io_jpeg.obj: $(srcdir)/imgio/io_jpeg.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o io_jpeg.obj `if test -f '$(srcdir)/imgio/io_jpeg.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/io_jpeg.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/io_jpeg.cc'; fi`
 
-io_pbm.o: $(srcdir)/imgio/io_pbm.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT io_pbm.o -MD -MP -MF "$(DEPDIR)/io_pbm.Tpo" -c -o io_pbm.o `test -f '$(srcdir)/imgio/io_pbm.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/io_pbm.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/io_pbm.Tpo" "$(DEPDIR)/io_pbm.Po"; else rm -f "$(DEPDIR)/io_pbm.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/io_pbm.cc' object='io_pbm.o' libtool=no @AMDEPBACKSLASH@
+imgio.o: $(srcdir)/imgio/imgio.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgio.o -MD -MP -MF "$(DEPDIR)/imgio.Tpo" -c -o imgio.o `test -f '$(srcdir)/imgio/imgio.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/imgio.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgio.Tpo" "$(DEPDIR)/imgio.Po"; else rm -f "$(DEPDIR)/imgio.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/imgio.cc' object='imgio.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o io_pbm.o `test -f '$(srcdir)/imgio/io_pbm.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/io_pbm.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgio.o `test -f '$(srcdir)/imgio/imgio.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/imgio.cc
 
-io_pbm.obj: $(srcdir)/imgio/io_pbm.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT io_pbm.obj -MD -MP -MF "$(DEPDIR)/io_pbm.Tpo" -c -o io_pbm.obj `if test -f '$(srcdir)/imgio/io_pbm.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/io_pbm.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/io_pbm.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/io_pbm.Tpo" "$(DEPDIR)/io_pbm.Po"; else rm -f "$(DEPDIR)/io_pbm.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/io_pbm.cc' object='io_pbm.obj' libtool=no @AMDEPBACKSLASH@
+imgio.obj: $(srcdir)/imgio/imgio.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgio.obj -MD -MP -MF "$(DEPDIR)/imgio.Tpo" -c -o imgio.obj `if test -f '$(srcdir)/imgio/imgio.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/imgio.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/imgio.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgio.Tpo" "$(DEPDIR)/imgio.Po"; else rm -f "$(DEPDIR)/imgio.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/imgio.cc' object='imgio.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o io_pbm.obj `if test -f '$(srcdir)/imgio/io_pbm.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/io_pbm.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/io_pbm.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgio.obj `if test -f '$(srcdir)/imgio/imgio.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/imgio.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/imgio.cc'; fi`
 
 io_png.o: $(srcdir)/imgio/io_png.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT io_png.o -MD -MP -MF "$(DEPDIR)/io_png.Tpo" -c -o io_png.o `test -f '$(srcdir)/imgio/io_png.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/io_png.cc; \
@@ -606,47 +746,19 @@ io_png.obj: $(srcdir)/imgio/io_png.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o io_png.obj `if test -f '$(srcdir)/imgio/io_png.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/io_png.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/io_png.cc'; fi`
 
-imgbrushfire.o: $(srcdir)/imglib/imgbrushfire.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbrushfire.o -MD -MP -MF "$(DEPDIR)/imgbrushfire.Tpo" -c -o imgbrushfire.o `test -f '$(srcdir)/imglib/imgbrushfire.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgbrushfire.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbrushfire.Tpo" "$(DEPDIR)/imgbrushfire.Po"; else rm -f "$(DEPDIR)/imgbrushfire.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgbrushfire.cc' object='imgbrushfire.o' libtool=no @AMDEPBACKSLASH@
+imgtrace.o: $(srcdir)/imglib/imgtrace.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgtrace.o -MD -MP -MF "$(DEPDIR)/imgtrace.Tpo" -c -o imgtrace.o `test -f '$(srcdir)/imglib/imgtrace.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgtrace.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgtrace.Tpo" "$(DEPDIR)/imgtrace.Po"; else rm -f "$(DEPDIR)/imgtrace.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgtrace.cc' object='imgtrace.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbrushfire.o `test -f '$(srcdir)/imglib/imgbrushfire.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgbrushfire.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgtrace.o `test -f '$(srcdir)/imglib/imgtrace.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgtrace.cc
 
-imgbrushfire.obj: $(srcdir)/imglib/imgbrushfire.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbrushfire.obj -MD -MP -MF "$(DEPDIR)/imgbrushfire.Tpo" -c -o imgbrushfire.obj `if test -f '$(srcdir)/imglib/imgbrushfire.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgbrushfire.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgbrushfire.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbrushfire.Tpo" "$(DEPDIR)/imgbrushfire.Po"; else rm -f "$(DEPDIR)/imgbrushfire.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgbrushfire.cc' object='imgbrushfire.obj' libtool=no @AMDEPBACKSLASH@
+imgtrace.obj: $(srcdir)/imglib/imgtrace.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgtrace.obj -MD -MP -MF "$(DEPDIR)/imgtrace.Tpo" -c -o imgtrace.obj `if test -f '$(srcdir)/imglib/imgtrace.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgtrace.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgtrace.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgtrace.Tpo" "$(DEPDIR)/imgtrace.Po"; else rm -f "$(DEPDIR)/imgtrace.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgtrace.cc' object='imgtrace.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbrushfire.obj `if test -f '$(srcdir)/imglib/imgbrushfire.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgbrushfire.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgbrushfire.cc'; fi`
-
-imgedges.o: $(srcdir)/imglib/imgedges.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgedges.o -MD -MP -MF "$(DEPDIR)/imgedges.Tpo" -c -o imgedges.o `test -f '$(srcdir)/imglib/imgedges.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgedges.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgedges.Tpo" "$(DEPDIR)/imgedges.Po"; else rm -f "$(DEPDIR)/imgedges.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgedges.cc' object='imgedges.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgedges.o `test -f '$(srcdir)/imglib/imgedges.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgedges.cc
-
-imgedges.obj: $(srcdir)/imglib/imgedges.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgedges.obj -MD -MP -MF "$(DEPDIR)/imgedges.Tpo" -c -o imgedges.obj `if test -f '$(srcdir)/imglib/imgedges.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgedges.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgedges.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgedges.Tpo" "$(DEPDIR)/imgedges.Po"; else rm -f "$(DEPDIR)/imgedges.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgedges.cc' object='imgedges.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgedges.obj `if test -f '$(srcdir)/imglib/imgedges.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgedges.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgedges.cc'; fi`
-
-imgfilters.o: $(srcdir)/imglib/imgfilters.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgfilters.o -MD -MP -MF "$(DEPDIR)/imgfilters.Tpo" -c -o imgfilters.o `test -f '$(srcdir)/imglib/imgfilters.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgfilters.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgfilters.Tpo" "$(DEPDIR)/imgfilters.Po"; else rm -f "$(DEPDIR)/imgfilters.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgfilters.cc' object='imgfilters.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgfilters.o `test -f '$(srcdir)/imglib/imgfilters.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgfilters.cc
-
-imgfilters.obj: $(srcdir)/imglib/imgfilters.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgfilters.obj -MD -MP -MF "$(DEPDIR)/imgfilters.Tpo" -c -o imgfilters.obj `if test -f '$(srcdir)/imglib/imgfilters.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgfilters.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgfilters.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgfilters.Tpo" "$(DEPDIR)/imgfilters.Po"; else rm -f "$(DEPDIR)/imgfilters.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgfilters.cc' object='imgfilters.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgfilters.obj `if test -f '$(srcdir)/imglib/imgfilters.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgfilters.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgfilters.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgtrace.obj `if test -f '$(srcdir)/imglib/imgtrace.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgtrace.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgtrace.cc'; fi`
 
 imggauss.o: $(srcdir)/imglib/imggauss.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imggauss.o -MD -MP -MF "$(DEPDIR)/imggauss.Tpo" -c -o imggauss.o `test -f '$(srcdir)/imglib/imggauss.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imggauss.cc; \
@@ -676,62 +788,6 @@ imglabels.obj: $(srcdir)/imglib/imglabels.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imglabels.obj `if test -f '$(srcdir)/imglib/imglabels.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imglabels.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imglabels.cc'; fi`
 
-imgmap.o: $(srcdir)/imglib/imgmap.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmap.o -MD -MP -MF "$(DEPDIR)/imgmap.Tpo" -c -o imgmap.o `test -f '$(srcdir)/imglib/imgmap.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmap.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmap.Tpo" "$(DEPDIR)/imgmap.Po"; else rm -f "$(DEPDIR)/imgmap.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmap.cc' object='imgmap.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmap.o `test -f '$(srcdir)/imglib/imgmap.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmap.cc
-
-imgmap.obj: $(srcdir)/imglib/imgmap.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmap.obj -MD -MP -MF "$(DEPDIR)/imgmap.Tpo" -c -o imgmap.obj `if test -f '$(srcdir)/imglib/imgmap.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmap.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmap.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmap.Tpo" "$(DEPDIR)/imgmap.Po"; else rm -f "$(DEPDIR)/imgmap.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmap.cc' object='imgmap.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmap.obj `if test -f '$(srcdir)/imglib/imgmap.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmap.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmap.cc'; fi`
-
-imgmisc.o: $(srcdir)/imglib/imgmisc.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmisc.o -MD -MP -MF "$(DEPDIR)/imgmisc.Tpo" -c -o imgmisc.o `test -f '$(srcdir)/imglib/imgmisc.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmisc.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmisc.Tpo" "$(DEPDIR)/imgmisc.Po"; else rm -f "$(DEPDIR)/imgmisc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmisc.cc' object='imgmisc.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmisc.o `test -f '$(srcdir)/imglib/imgmisc.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmisc.cc
-
-imgmisc.obj: $(srcdir)/imglib/imgmisc.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmisc.obj -MD -MP -MF "$(DEPDIR)/imgmisc.Tpo" -c -o imgmisc.obj `if test -f '$(srcdir)/imglib/imgmisc.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmisc.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmisc.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmisc.Tpo" "$(DEPDIR)/imgmisc.Po"; else rm -f "$(DEPDIR)/imgmisc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmisc.cc' object='imgmisc.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmisc.obj `if test -f '$(srcdir)/imglib/imgmisc.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmisc.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmisc.cc'; fi`
-
-imgmorph.o: $(srcdir)/imglib/imgmorph.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmorph.o -MD -MP -MF "$(DEPDIR)/imgmorph.Tpo" -c -o imgmorph.o `test -f '$(srcdir)/imglib/imgmorph.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmorph.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmorph.Tpo" "$(DEPDIR)/imgmorph.Po"; else rm -f "$(DEPDIR)/imgmorph.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmorph.cc' object='imgmorph.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmorph.o `test -f '$(srcdir)/imglib/imgmorph.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmorph.cc
-
-imgmorph.obj: $(srcdir)/imglib/imgmorph.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmorph.obj -MD -MP -MF "$(DEPDIR)/imgmorph.Tpo" -c -o imgmorph.obj `if test -f '$(srcdir)/imglib/imgmorph.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmorph.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmorph.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmorph.Tpo" "$(DEPDIR)/imgmorph.Po"; else rm -f "$(DEPDIR)/imgmorph.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmorph.cc' object='imgmorph.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmorph.obj `if test -f '$(srcdir)/imglib/imgmorph.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmorph.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmorph.cc'; fi`
-
-imgops.o: $(srcdir)/imglib/imgops.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgops.o -MD -MP -MF "$(DEPDIR)/imgops.Tpo" -c -o imgops.o `test -f '$(srcdir)/imglib/imgops.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgops.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgops.Tpo" "$(DEPDIR)/imgops.Po"; else rm -f "$(DEPDIR)/imgops.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgops.cc' object='imgops.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgops.o `test -f '$(srcdir)/imglib/imgops.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgops.cc
-
-imgops.obj: $(srcdir)/imglib/imgops.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgops.obj -MD -MP -MF "$(DEPDIR)/imgops.Tpo" -c -o imgops.obj `if test -f '$(srcdir)/imglib/imgops.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgops.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgops.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgops.Tpo" "$(DEPDIR)/imgops.Po"; else rm -f "$(DEPDIR)/imgops.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgops.cc' object='imgops.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgops.obj `if test -f '$(srcdir)/imglib/imgops.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgops.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgops.cc'; fi`
-
 imgrescale.o: $(srcdir)/imglib/imgrescale.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgrescale.o -MD -MP -MF "$(DEPDIR)/imgrescale.Tpo" -c -o imgrescale.o `test -f '$(srcdir)/imglib/imgrescale.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgrescale.cc; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgrescale.Tpo" "$(DEPDIR)/imgrescale.Po"; else rm -f "$(DEPDIR)/imgrescale.Tpo"; exit 1; fi
@@ -760,19 +816,75 @@ imgthin.obj: $(srcdir)/imglib/imgthin.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgthin.obj `if test -f '$(srcdir)/imglib/imgthin.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgthin.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgthin.cc'; fi`
 
-imgtrace.o: $(srcdir)/imglib/imgtrace.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgtrace.o -MD -MP -MF "$(DEPDIR)/imgtrace.Tpo" -c -o imgtrace.o `test -f '$(srcdir)/imglib/imgtrace.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgtrace.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgtrace.Tpo" "$(DEPDIR)/imgtrace.Po"; else rm -f "$(DEPDIR)/imgtrace.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgtrace.cc' object='imgtrace.o' libtool=no @AMDEPBACKSLASH@
+imgmisc.o: $(srcdir)/imglib/imgmisc.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmisc.o -MD -MP -MF "$(DEPDIR)/imgmisc.Tpo" -c -o imgmisc.o `test -f '$(srcdir)/imglib/imgmisc.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmisc.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmisc.Tpo" "$(DEPDIR)/imgmisc.Po"; else rm -f "$(DEPDIR)/imgmisc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmisc.cc' object='imgmisc.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgtrace.o `test -f '$(srcdir)/imglib/imgtrace.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgtrace.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmisc.o `test -f '$(srcdir)/imglib/imgmisc.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmisc.cc
 
-imgtrace.obj: $(srcdir)/imglib/imgtrace.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgtrace.obj -MD -MP -MF "$(DEPDIR)/imgtrace.Tpo" -c -o imgtrace.obj `if test -f '$(srcdir)/imglib/imgtrace.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgtrace.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgtrace.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgtrace.Tpo" "$(DEPDIR)/imgtrace.Po"; else rm -f "$(DEPDIR)/imgtrace.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgtrace.cc' object='imgtrace.obj' libtool=no @AMDEPBACKSLASH@
+imgmisc.obj: $(srcdir)/imglib/imgmisc.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmisc.obj -MD -MP -MF "$(DEPDIR)/imgmisc.Tpo" -c -o imgmisc.obj `if test -f '$(srcdir)/imglib/imgmisc.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmisc.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmisc.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmisc.Tpo" "$(DEPDIR)/imgmisc.Po"; else rm -f "$(DEPDIR)/imgmisc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmisc.cc' object='imgmisc.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgtrace.obj `if test -f '$(srcdir)/imglib/imgtrace.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgtrace.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgtrace.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmisc.obj `if test -f '$(srcdir)/imglib/imgmisc.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmisc.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmisc.cc'; fi`
+
+imgops.o: $(srcdir)/imglib/imgops.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgops.o -MD -MP -MF "$(DEPDIR)/imgops.Tpo" -c -o imgops.o `test -f '$(srcdir)/imglib/imgops.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgops.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgops.Tpo" "$(DEPDIR)/imgops.Po"; else rm -f "$(DEPDIR)/imgops.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgops.cc' object='imgops.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgops.o `test -f '$(srcdir)/imglib/imgops.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgops.cc
+
+imgops.obj: $(srcdir)/imglib/imgops.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgops.obj -MD -MP -MF "$(DEPDIR)/imgops.Tpo" -c -o imgops.obj `if test -f '$(srcdir)/imglib/imgops.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgops.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgops.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgops.Tpo" "$(DEPDIR)/imgops.Po"; else rm -f "$(DEPDIR)/imgops.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgops.cc' object='imgops.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgops.obj `if test -f '$(srcdir)/imglib/imgops.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgops.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgops.cc'; fi`
+
+imgmap.o: $(srcdir)/imglib/imgmap.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmap.o -MD -MP -MF "$(DEPDIR)/imgmap.Tpo" -c -o imgmap.o `test -f '$(srcdir)/imglib/imgmap.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmap.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmap.Tpo" "$(DEPDIR)/imgmap.Po"; else rm -f "$(DEPDIR)/imgmap.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmap.cc' object='imgmap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmap.o `test -f '$(srcdir)/imglib/imgmap.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmap.cc
+
+imgmap.obj: $(srcdir)/imglib/imgmap.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmap.obj -MD -MP -MF "$(DEPDIR)/imgmap.Tpo" -c -o imgmap.obj `if test -f '$(srcdir)/imglib/imgmap.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmap.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmap.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmap.Tpo" "$(DEPDIR)/imgmap.Po"; else rm -f "$(DEPDIR)/imgmap.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmap.cc' object='imgmap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmap.obj `if test -f '$(srcdir)/imglib/imgmap.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmap.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmap.cc'; fi`
+
+imgmorph.o: $(srcdir)/imglib/imgmorph.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmorph.o -MD -MP -MF "$(DEPDIR)/imgmorph.Tpo" -c -o imgmorph.o `test -f '$(srcdir)/imglib/imgmorph.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmorph.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmorph.Tpo" "$(DEPDIR)/imgmorph.Po"; else rm -f "$(DEPDIR)/imgmorph.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmorph.cc' object='imgmorph.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmorph.o `test -f '$(srcdir)/imglib/imgmorph.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgmorph.cc
+
+imgmorph.obj: $(srcdir)/imglib/imgmorph.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgmorph.obj -MD -MP -MF "$(DEPDIR)/imgmorph.Tpo" -c -o imgmorph.obj `if test -f '$(srcdir)/imglib/imgmorph.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmorph.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmorph.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgmorph.Tpo" "$(DEPDIR)/imgmorph.Po"; else rm -f "$(DEPDIR)/imgmorph.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgmorph.cc' object='imgmorph.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgmorph.obj `if test -f '$(srcdir)/imglib/imgmorph.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgmorph.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgmorph.cc'; fi`
+
+imgedges.o: $(srcdir)/imglib/imgedges.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgedges.o -MD -MP -MF "$(DEPDIR)/imgedges.Tpo" -c -o imgedges.o `test -f '$(srcdir)/imglib/imgedges.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgedges.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgedges.Tpo" "$(DEPDIR)/imgedges.Po"; else rm -f "$(DEPDIR)/imgedges.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgedges.cc' object='imgedges.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgedges.o `test -f '$(srcdir)/imglib/imgedges.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgedges.cc
+
+imgedges.obj: $(srcdir)/imglib/imgedges.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgedges.obj -MD -MP -MF "$(DEPDIR)/imgedges.Tpo" -c -o imgedges.obj `if test -f '$(srcdir)/imglib/imgedges.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgedges.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgedges.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgedges.Tpo" "$(DEPDIR)/imgedges.Po"; else rm -f "$(DEPDIR)/imgedges.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgedges.cc' object='imgedges.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgedges.obj `if test -f '$(srcdir)/imglib/imgedges.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgedges.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgedges.cc'; fi`
 
 imggraymorph.o: $(srcdir)/imglib/imggraymorph.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imggraymorph.o -MD -MP -MF "$(DEPDIR)/imggraymorph.Tpo" -c -o imggraymorph.o `test -f '$(srcdir)/imglib/imggraymorph.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imggraymorph.cc; \
@@ -788,47 +900,47 @@ imggraymorph.obj: $(srcdir)/imglib/imggraymorph.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imggraymorph.obj `if test -f '$(srcdir)/imglib/imggraymorph.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imggraymorph.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imggraymorph.cc'; fi`
 
-imgbits.o: $(srcdir)/imgbits/imgbits.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbits.o -MD -MP -MF "$(DEPDIR)/imgbits.Tpo" -c -o imgbits.o `test -f '$(srcdir)/imgbits/imgbits.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbits.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbits.Tpo" "$(DEPDIR)/imgbits.Po"; else rm -f "$(DEPDIR)/imgbits.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbits.cc' object='imgbits.o' libtool=no @AMDEPBACKSLASH@
+imgfilters.o: $(srcdir)/imglib/imgfilters.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgfilters.o -MD -MP -MF "$(DEPDIR)/imgfilters.Tpo" -c -o imgfilters.o `test -f '$(srcdir)/imglib/imgfilters.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgfilters.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgfilters.Tpo" "$(DEPDIR)/imgfilters.Po"; else rm -f "$(DEPDIR)/imgfilters.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgfilters.cc' object='imgfilters.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbits.o `test -f '$(srcdir)/imgbits/imgbits.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbits.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgfilters.o `test -f '$(srcdir)/imglib/imgfilters.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgfilters.cc
 
-imgbits.obj: $(srcdir)/imgbits/imgbits.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbits.obj -MD -MP -MF "$(DEPDIR)/imgbits.Tpo" -c -o imgbits.obj `if test -f '$(srcdir)/imgbits/imgbits.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbits.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbits.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbits.Tpo" "$(DEPDIR)/imgbits.Po"; else rm -f "$(DEPDIR)/imgbits.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbits.cc' object='imgbits.obj' libtool=no @AMDEPBACKSLASH@
+imgfilters.obj: $(srcdir)/imglib/imgfilters.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgfilters.obj -MD -MP -MF "$(DEPDIR)/imgfilters.Tpo" -c -o imgfilters.obj `if test -f '$(srcdir)/imglib/imgfilters.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgfilters.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgfilters.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgfilters.Tpo" "$(DEPDIR)/imgfilters.Po"; else rm -f "$(DEPDIR)/imgfilters.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgfilters.cc' object='imgfilters.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbits.obj `if test -f '$(srcdir)/imgbits/imgbits.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbits.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbits.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgfilters.obj `if test -f '$(srcdir)/imglib/imgfilters.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgfilters.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgfilters.cc'; fi`
 
-imgbsmp.o: $(srcdir)/imgbits/imgbsmp.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbsmp.o -MD -MP -MF "$(DEPDIR)/imgbsmp.Tpo" -c -o imgbsmp.o `test -f '$(srcdir)/imgbits/imgbsmp.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbsmp.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbsmp.Tpo" "$(DEPDIR)/imgbsmp.Po"; else rm -f "$(DEPDIR)/imgbsmp.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbsmp.cc' object='imgbsmp.o' libtool=no @AMDEPBACKSLASH@
+imgbrushfire.o: $(srcdir)/imglib/imgbrushfire.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbrushfire.o -MD -MP -MF "$(DEPDIR)/imgbrushfire.Tpo" -c -o imgbrushfire.o `test -f '$(srcdir)/imglib/imgbrushfire.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgbrushfire.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbrushfire.Tpo" "$(DEPDIR)/imgbrushfire.Po"; else rm -f "$(DEPDIR)/imgbrushfire.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgbrushfire.cc' object='imgbrushfire.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbsmp.o `test -f '$(srcdir)/imgbits/imgbsmp.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbsmp.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbrushfire.o `test -f '$(srcdir)/imglib/imgbrushfire.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/imgbrushfire.cc
 
-imgbsmp.obj: $(srcdir)/imgbits/imgbsmp.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbsmp.obj -MD -MP -MF "$(DEPDIR)/imgbsmp.Tpo" -c -o imgbsmp.obj `if test -f '$(srcdir)/imgbits/imgbsmp.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbsmp.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbsmp.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbsmp.Tpo" "$(DEPDIR)/imgbsmp.Po"; else rm -f "$(DEPDIR)/imgbsmp.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbsmp.cc' object='imgbsmp.obj' libtool=no @AMDEPBACKSLASH@
+imgbrushfire.obj: $(srcdir)/imglib/imgbrushfire.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbrushfire.obj -MD -MP -MF "$(DEPDIR)/imgbrushfire.Tpo" -c -o imgbrushfire.obj `if test -f '$(srcdir)/imglib/imgbrushfire.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgbrushfire.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgbrushfire.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbrushfire.Tpo" "$(DEPDIR)/imgbrushfire.Po"; else rm -f "$(DEPDIR)/imgbrushfire.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/imgbrushfire.cc' object='imgbrushfire.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbsmp.obj `if test -f '$(srcdir)/imgbits/imgbsmp.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbsmp.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbsmp.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbrushfire.obj `if test -f '$(srcdir)/imglib/imgbrushfire.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/imgbrushfire.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/imgbrushfire.cc'; fi`
 
-imgbthin.o: $(srcdir)/imgbits/imgbthin.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbthin.o -MD -MP -MF "$(DEPDIR)/imgbthin.Tpo" -c -o imgbthin.o `test -f '$(srcdir)/imgbits/imgbthin.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbthin.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbthin.Tpo" "$(DEPDIR)/imgbthin.Po"; else rm -f "$(DEPDIR)/imgbthin.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbthin.cc' object='imgbthin.o' libtool=no @AMDEPBACKSLASH@
+imgblit.o: $(srcdir)/imgbits/imgblit.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgblit.o -MD -MP -MF "$(DEPDIR)/imgblit.Tpo" -c -o imgblit.o `test -f '$(srcdir)/imgbits/imgblit.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgblit.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgblit.Tpo" "$(DEPDIR)/imgblit.Po"; else rm -f "$(DEPDIR)/imgblit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgblit.cc' object='imgblit.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbthin.o `test -f '$(srcdir)/imgbits/imgbthin.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbthin.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgblit.o `test -f '$(srcdir)/imgbits/imgblit.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgblit.cc
 
-imgbthin.obj: $(srcdir)/imgbits/imgbthin.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbthin.obj -MD -MP -MF "$(DEPDIR)/imgbthin.Tpo" -c -o imgbthin.obj `if test -f '$(srcdir)/imgbits/imgbthin.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbthin.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbthin.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbthin.Tpo" "$(DEPDIR)/imgbthin.Po"; else rm -f "$(DEPDIR)/imgbthin.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbthin.cc' object='imgbthin.obj' libtool=no @AMDEPBACKSLASH@
+imgblit.obj: $(srcdir)/imgbits/imgblit.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgblit.obj -MD -MP -MF "$(DEPDIR)/imgblit.Tpo" -c -o imgblit.obj `if test -f '$(srcdir)/imgbits/imgblit.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgblit.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgblit.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgblit.Tpo" "$(DEPDIR)/imgblit.Po"; else rm -f "$(DEPDIR)/imgblit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgblit.cc' object='imgblit.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbthin.obj `if test -f '$(srcdir)/imgbits/imgbthin.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbthin.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbthin.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgblit.obj `if test -f '$(srcdir)/imgbits/imgblit.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgblit.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgblit.cc'; fi`
 
 imgrle.o: $(srcdir)/imgbits/imgrle.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgrle.o -MD -MP -MF "$(DEPDIR)/imgrle.Tpo" -c -o imgrle.o `test -f '$(srcdir)/imgbits/imgrle.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgrle.cc; \
@@ -844,6 +956,48 @@ imgrle.obj: $(srcdir)/imgbits/imgrle.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgrle.obj `if test -f '$(srcdir)/imgbits/imgrle.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgrle.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgrle.cc'; fi`
 
+imgbsmp.o: $(srcdir)/imgbits/imgbsmp.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbsmp.o -MD -MP -MF "$(DEPDIR)/imgbsmp.Tpo" -c -o imgbsmp.o `test -f '$(srcdir)/imgbits/imgbsmp.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbsmp.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbsmp.Tpo" "$(DEPDIR)/imgbsmp.Po"; else rm -f "$(DEPDIR)/imgbsmp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbsmp.cc' object='imgbsmp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbsmp.o `test -f '$(srcdir)/imgbits/imgbsmp.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbsmp.cc
+
+imgbsmp.obj: $(srcdir)/imgbits/imgbsmp.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbsmp.obj -MD -MP -MF "$(DEPDIR)/imgbsmp.Tpo" -c -o imgbsmp.obj `if test -f '$(srcdir)/imgbits/imgbsmp.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbsmp.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbsmp.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbsmp.Tpo" "$(DEPDIR)/imgbsmp.Po"; else rm -f "$(DEPDIR)/imgbsmp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbsmp.cc' object='imgbsmp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbsmp.obj `if test -f '$(srcdir)/imgbits/imgbsmp.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbsmp.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbsmp.cc'; fi`
+
+imgbits.o: $(srcdir)/imgbits/imgbits.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbits.o -MD -MP -MF "$(DEPDIR)/imgbits.Tpo" -c -o imgbits.o `test -f '$(srcdir)/imgbits/imgbits.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbits.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbits.Tpo" "$(DEPDIR)/imgbits.Po"; else rm -f "$(DEPDIR)/imgbits.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbits.cc' object='imgbits.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbits.o `test -f '$(srcdir)/imgbits/imgbits.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbits.cc
+
+imgbits.obj: $(srcdir)/imgbits/imgbits.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbits.obj -MD -MP -MF "$(DEPDIR)/imgbits.Tpo" -c -o imgbits.obj `if test -f '$(srcdir)/imgbits/imgbits.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbits.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbits.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbits.Tpo" "$(DEPDIR)/imgbits.Po"; else rm -f "$(DEPDIR)/imgbits.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbits.cc' object='imgbits.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbits.obj `if test -f '$(srcdir)/imgbits/imgbits.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbits.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbits.cc'; fi`
+
+imgbthin.o: $(srcdir)/imgbits/imgbthin.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbthin.o -MD -MP -MF "$(DEPDIR)/imgbthin.Tpo" -c -o imgbthin.o `test -f '$(srcdir)/imgbits/imgbthin.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbthin.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbthin.Tpo" "$(DEPDIR)/imgbthin.Po"; else rm -f "$(DEPDIR)/imgbthin.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbthin.cc' object='imgbthin.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbthin.o `test -f '$(srcdir)/imgbits/imgbthin.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgbthin.cc
+
+imgbthin.obj: $(srcdir)/imgbits/imgbthin.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgbthin.obj -MD -MP -MF "$(DEPDIR)/imgbthin.Tpo" -c -o imgbthin.obj `if test -f '$(srcdir)/imgbits/imgbthin.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbthin.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbthin.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgbthin.Tpo" "$(DEPDIR)/imgbthin.Po"; else rm -f "$(DEPDIR)/imgbthin.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgbthin.cc' object='imgbthin.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgbthin.obj `if test -f '$(srcdir)/imgbits/imgbthin.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgbthin.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgbthin.cc'; fi`
+
 imgblit_c.o: $(srcdir)/imgbits/imgblit_c.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgblit_c.o -MD -MP -MF "$(DEPDIR)/imgblit_c.Tpo" -c -o imgblit_c.o `test -f '$(srcdir)/imgbits/imgblit_c.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgblit_c.cc; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgblit_c.Tpo" "$(DEPDIR)/imgblit_c.Po"; else rm -f "$(DEPDIR)/imgblit_c.Tpo"; exit 1; fi
@@ -857,20 +1011,6 @@ imgblit_c.obj: $(srcdir)/imgbits/imgblit_c.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgblit_c.cc' object='imgblit_c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgblit_c.obj `if test -f '$(srcdir)/imgbits/imgblit_c.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgblit_c.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgblit_c.cc'; fi`
-
-imgblit.o: $(srcdir)/imgbits/imgblit.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgblit.o -MD -MP -MF "$(DEPDIR)/imgblit.Tpo" -c -o imgblit.o `test -f '$(srcdir)/imgbits/imgblit.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgblit.cc; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgblit.Tpo" "$(DEPDIR)/imgblit.Po"; else rm -f "$(DEPDIR)/imgblit.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgblit.cc' object='imgblit.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgblit.o `test -f '$(srcdir)/imgbits/imgblit.cc' || echo '$(srcdir)/'`$(srcdir)/imgbits/imgblit.cc
-
-imgblit.obj: $(srcdir)/imgbits/imgblit.cc
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT imgblit.obj -MD -MP -MF "$(DEPDIR)/imgblit.Tpo" -c -o imgblit.obj `if test -f '$(srcdir)/imgbits/imgblit.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgblit.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgblit.cc'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/imgblit.Tpo" "$(DEPDIR)/imgblit.Po"; else rm -f "$(DEPDIR)/imgblit.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/imgblit.cc' object='imgblit.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imgblit.obj `if test -f '$(srcdir)/imgbits/imgblit.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/imgblit.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/imgblit.cc'; fi`
 
 dgraphics.o: $(srcdir)/utils/dgraphics.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dgraphics.o -MD -MP -MF "$(DEPDIR)/dgraphics.Tpo" -c -o dgraphics.o `test -f '$(srcdir)/utils/dgraphics.cc' || echo '$(srcdir)/'`$(srcdir)/utils/dgraphics.cc; \
@@ -942,6 +1082,20 @@ v4l2cap.obj: $(srcdir)/vidio/v4l2cap.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o v4l2cap.obj `if test -f '$(srcdir)/vidio/v4l2cap.cc'; then $(CYGPATH_W) '$(srcdir)/vidio/v4l2cap.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/vidio/v4l2cap.cc'; fi`
 
+test_coords-test-coords.o: $(srcdir)/colib/tests/test-coords.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_coords_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_coords-test-coords.o -MD -MP -MF "$(DEPDIR)/test_coords-test-coords.Tpo" -c -o test_coords-test-coords.o `test -f '$(srcdir)/colib/tests/test-coords.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-coords.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_coords-test-coords.Tpo" "$(DEPDIR)/test_coords-test-coords.Po"; else rm -f "$(DEPDIR)/test_coords-test-coords.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-coords.cc' object='test_coords-test-coords.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_coords_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_coords-test-coords.o `test -f '$(srcdir)/colib/tests/test-coords.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-coords.cc
+
+test_coords-test-coords.obj: $(srcdir)/colib/tests/test-coords.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_coords_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_coords-test-coords.obj -MD -MP -MF "$(DEPDIR)/test_coords-test-coords.Tpo" -c -o test_coords-test-coords.obj `if test -f '$(srcdir)/colib/tests/test-coords.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-coords.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-coords.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_coords-test-coords.Tpo" "$(DEPDIR)/test_coords-test-coords.Po"; else rm -f "$(DEPDIR)/test_coords-test-coords.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-coords.cc' object='test_coords-test-coords.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_coords_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_coords-test-coords.obj `if test -f '$(srcdir)/colib/tests/test-coords.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-coords.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-coords.cc'; fi`
+
 test_hash-test-hash.o: $(srcdir)/colib/tests/test-hash.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_hash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_hash-test-hash.o -MD -MP -MF "$(DEPDIR)/test_hash-test-hash.Tpo" -c -o test_hash-test-hash.o `test -f '$(srcdir)/colib/tests/test-hash.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-hash.cc; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_hash-test-hash.Tpo" "$(DEPDIR)/test_hash-test-hash.Po"; else rm -f "$(DEPDIR)/test_hash-test-hash.Tpo"; exit 1; fi
@@ -956,6 +1110,20 @@ test_hash-test-hash.obj: $(srcdir)/colib/tests/test-hash.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_hash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_hash-test-hash.obj `if test -f '$(srcdir)/colib/tests/test-hash.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-hash.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-hash.cc'; fi`
 
+test_heap-test-heap.o: $(srcdir)/colib/tests/test-heap.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_heap_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_heap-test-heap.o -MD -MP -MF "$(DEPDIR)/test_heap-test-heap.Tpo" -c -o test_heap-test-heap.o `test -f '$(srcdir)/colib/tests/test-heap.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-heap.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_heap-test-heap.Tpo" "$(DEPDIR)/test_heap-test-heap.Po"; else rm -f "$(DEPDIR)/test_heap-test-heap.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-heap.cc' object='test_heap-test-heap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_heap_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_heap-test-heap.o `test -f '$(srcdir)/colib/tests/test-heap.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-heap.cc
+
+test_heap-test-heap.obj: $(srcdir)/colib/tests/test-heap.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_heap_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_heap-test-heap.obj -MD -MP -MF "$(DEPDIR)/test_heap-test-heap.Tpo" -c -o test_heap-test-heap.obj `if test -f '$(srcdir)/colib/tests/test-heap.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-heap.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-heap.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_heap-test-heap.Tpo" "$(DEPDIR)/test_heap-test-heap.Po"; else rm -f "$(DEPDIR)/test_heap-test-heap.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-heap.cc' object='test_heap-test-heap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_heap_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_heap-test-heap.obj `if test -f '$(srcdir)/colib/tests/test-heap.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-heap.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-heap.cc'; fi`
+
 test_imgbrushfire-test-imgbrushfire.o: $(srcdir)/imglib/tests/test-imgbrushfire.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imgbrushfire_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_imgbrushfire-test-imgbrushfire.o -MD -MP -MF "$(DEPDIR)/test_imgbrushfire-test-imgbrushfire.Tpo" -c -o test_imgbrushfire-test-imgbrushfire.o `test -f '$(srcdir)/imglib/tests/test-imgbrushfire.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/tests/test-imgbrushfire.cc; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_imgbrushfire-test-imgbrushfire.Tpo" "$(DEPDIR)/test_imgbrushfire-test-imgbrushfire.Po"; else rm -f "$(DEPDIR)/test_imgbrushfire-test-imgbrushfire.Tpo"; exit 1; fi
@@ -969,6 +1137,34 @@ test_imgbrushfire-test-imgbrushfire.obj: $(srcdir)/imglib/tests/test-imgbrushfir
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/tests/test-imgbrushfire.cc' object='test_imgbrushfire-test-imgbrushfire.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imgbrushfire_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_imgbrushfire-test-imgbrushfire.obj `if test -f '$(srcdir)/imglib/tests/test-imgbrushfire.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/tests/test-imgbrushfire.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/tests/test-imgbrushfire.cc'; fi`
+
+test_imgedges-test-imgedges.o: $(srcdir)/imglib/tests/test-imgedges.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imgedges_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_imgedges-test-imgedges.o -MD -MP -MF "$(DEPDIR)/test_imgedges-test-imgedges.Tpo" -c -o test_imgedges-test-imgedges.o `test -f '$(srcdir)/imglib/tests/test-imgedges.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/tests/test-imgedges.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_imgedges-test-imgedges.Tpo" "$(DEPDIR)/test_imgedges-test-imgedges.Po"; else rm -f "$(DEPDIR)/test_imgedges-test-imgedges.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/tests/test-imgedges.cc' object='test_imgedges-test-imgedges.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imgedges_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_imgedges-test-imgedges.o `test -f '$(srcdir)/imglib/tests/test-imgedges.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/tests/test-imgedges.cc
+
+test_imgedges-test-imgedges.obj: $(srcdir)/imglib/tests/test-imgedges.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imgedges_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_imgedges-test-imgedges.obj -MD -MP -MF "$(DEPDIR)/test_imgedges-test-imgedges.Tpo" -c -o test_imgedges-test-imgedges.obj `if test -f '$(srcdir)/imglib/tests/test-imgedges.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/tests/test-imgedges.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/tests/test-imgedges.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_imgedges-test-imgedges.Tpo" "$(DEPDIR)/test_imgedges-test-imgedges.Po"; else rm -f "$(DEPDIR)/test_imgedges-test-imgedges.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/tests/test-imgedges.cc' object='test_imgedges-test-imgedges.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imgedges_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_imgedges-test-imgedges.obj `if test -f '$(srcdir)/imglib/tests/test-imgedges.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/tests/test-imgedges.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/tests/test-imgedges.cc'; fi`
+
+test_imggauss-test-imggauss.o: $(srcdir)/imglib/tests/test-imggauss.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imggauss_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_imggauss-test-imggauss.o -MD -MP -MF "$(DEPDIR)/test_imggauss-test-imggauss.Tpo" -c -o test_imggauss-test-imggauss.o `test -f '$(srcdir)/imglib/tests/test-imggauss.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/tests/test-imggauss.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_imggauss-test-imggauss.Tpo" "$(DEPDIR)/test_imggauss-test-imggauss.Po"; else rm -f "$(DEPDIR)/test_imggauss-test-imggauss.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/tests/test-imggauss.cc' object='test_imggauss-test-imggauss.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imggauss_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_imggauss-test-imggauss.o `test -f '$(srcdir)/imglib/tests/test-imggauss.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/tests/test-imggauss.cc
+
+test_imggauss-test-imggauss.obj: $(srcdir)/imglib/tests/test-imggauss.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imggauss_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_imggauss-test-imggauss.obj -MD -MP -MF "$(DEPDIR)/test_imggauss-test-imggauss.Tpo" -c -o test_imggauss-test-imggauss.obj `if test -f '$(srcdir)/imglib/tests/test-imggauss.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/tests/test-imggauss.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/tests/test-imggauss.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_imggauss-test-imggauss.Tpo" "$(DEPDIR)/test_imggauss-test-imggauss.Po"; else rm -f "$(DEPDIR)/test_imggauss-test-imggauss.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/tests/test-imggauss.cc' object='test_imggauss-test-imggauss.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imggauss_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_imggauss-test-imggauss.obj `if test -f '$(srcdir)/imglib/tests/test-imggauss.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/tests/test-imggauss.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/tests/test-imggauss.cc'; fi`
 
 test_imglabels-test-imglabels.o: $(srcdir)/imglib/tests/test-imglabels.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imglabels_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_imglabels-test-imglabels.o -MD -MP -MF "$(DEPDIR)/test_imglabels-test-imglabels.Tpo" -c -o test_imglabels-test-imglabels.o `test -f '$(srcdir)/imglib/tests/test-imglabels.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/tests/test-imglabels.cc; \
@@ -1012,6 +1208,62 @@ test_imgmisc-test-imgmisc.obj: $(srcdir)/imglib/tests/test-imgmisc.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imgmisc_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_imgmisc-test-imgmisc.obj `if test -f '$(srcdir)/imglib/tests/test-imgmisc.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/tests/test-imgmisc.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/tests/test-imgmisc.cc'; fi`
 
+test_imgthin-test-imgthin.o: $(srcdir)/imglib/tests/test-imgthin.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imgthin_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_imgthin-test-imgthin.o -MD -MP -MF "$(DEPDIR)/test_imgthin-test-imgthin.Tpo" -c -o test_imgthin-test-imgthin.o `test -f '$(srcdir)/imglib/tests/test-imgthin.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/tests/test-imgthin.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_imgthin-test-imgthin.Tpo" "$(DEPDIR)/test_imgthin-test-imgthin.Po"; else rm -f "$(DEPDIR)/test_imgthin-test-imgthin.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/tests/test-imgthin.cc' object='test_imgthin-test-imgthin.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imgthin_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_imgthin-test-imgthin.o `test -f '$(srcdir)/imglib/tests/test-imgthin.cc' || echo '$(srcdir)/'`$(srcdir)/imglib/tests/test-imgthin.cc
+
+test_imgthin-test-imgthin.obj: $(srcdir)/imglib/tests/test-imgthin.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imgthin_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_imgthin-test-imgthin.obj -MD -MP -MF "$(DEPDIR)/test_imgthin-test-imgthin.Tpo" -c -o test_imgthin-test-imgthin.obj `if test -f '$(srcdir)/imglib/tests/test-imgthin.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/tests/test-imgthin.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/tests/test-imgthin.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_imgthin-test-imgthin.Tpo" "$(DEPDIR)/test_imgthin-test-imgthin.Po"; else rm -f "$(DEPDIR)/test_imgthin-test-imgthin.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imglib/tests/test-imgthin.cc' object='test_imgthin-test-imgthin.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_imgthin_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_imgthin-test-imgthin.obj `if test -f '$(srcdir)/imglib/tests/test-imgthin.cc'; then $(CYGPATH_W) '$(srcdir)/imglib/tests/test-imgthin.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imglib/tests/test-imgthin.cc'; fi`
+
+test_io_jpeg-test-io-jpeg.o: $(srcdir)/imgio/tests/test-io-jpeg.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_io_jpeg_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_io_jpeg-test-io-jpeg.o -MD -MP -MF "$(DEPDIR)/test_io_jpeg-test-io-jpeg.Tpo" -c -o test_io_jpeg-test-io-jpeg.o `test -f '$(srcdir)/imgio/tests/test-io-jpeg.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/tests/test-io-jpeg.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_io_jpeg-test-io-jpeg.Tpo" "$(DEPDIR)/test_io_jpeg-test-io-jpeg.Po"; else rm -f "$(DEPDIR)/test_io_jpeg-test-io-jpeg.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/tests/test-io-jpeg.cc' object='test_io_jpeg-test-io-jpeg.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_io_jpeg_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_io_jpeg-test-io-jpeg.o `test -f '$(srcdir)/imgio/tests/test-io-jpeg.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/tests/test-io-jpeg.cc
+
+test_io_jpeg-test-io-jpeg.obj: $(srcdir)/imgio/tests/test-io-jpeg.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_io_jpeg_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_io_jpeg-test-io-jpeg.obj -MD -MP -MF "$(DEPDIR)/test_io_jpeg-test-io-jpeg.Tpo" -c -o test_io_jpeg-test-io-jpeg.obj `if test -f '$(srcdir)/imgio/tests/test-io-jpeg.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/tests/test-io-jpeg.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/tests/test-io-jpeg.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_io_jpeg-test-io-jpeg.Tpo" "$(DEPDIR)/test_io_jpeg-test-io-jpeg.Po"; else rm -f "$(DEPDIR)/test_io_jpeg-test-io-jpeg.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/tests/test-io-jpeg.cc' object='test_io_jpeg-test-io-jpeg.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_io_jpeg_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_io_jpeg-test-io-jpeg.obj `if test -f '$(srcdir)/imgio/tests/test-io-jpeg.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/tests/test-io-jpeg.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/tests/test-io-jpeg.cc'; fi`
+
+test_io_png-test-io_png.o: $(srcdir)/imgio/tests/test-io_png.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_io_png_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_io_png-test-io_png.o -MD -MP -MF "$(DEPDIR)/test_io_png-test-io_png.Tpo" -c -o test_io_png-test-io_png.o `test -f '$(srcdir)/imgio/tests/test-io_png.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/tests/test-io_png.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_io_png-test-io_png.Tpo" "$(DEPDIR)/test_io_png-test-io_png.Po"; else rm -f "$(DEPDIR)/test_io_png-test-io_png.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/tests/test-io_png.cc' object='test_io_png-test-io_png.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_io_png_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_io_png-test-io_png.o `test -f '$(srcdir)/imgio/tests/test-io_png.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/tests/test-io_png.cc
+
+test_io_png-test-io_png.obj: $(srcdir)/imgio/tests/test-io_png.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_io_png_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_io_png-test-io_png.obj -MD -MP -MF "$(DEPDIR)/test_io_png-test-io_png.Tpo" -c -o test_io_png-test-io_png.obj `if test -f '$(srcdir)/imgio/tests/test-io_png.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/tests/test-io_png.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/tests/test-io_png.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_io_png-test-io_png.Tpo" "$(DEPDIR)/test_io_png-test-io_png.Po"; else rm -f "$(DEPDIR)/test_io_png-test-io_png.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/tests/test-io_png.cc' object='test_io_png-test-io_png.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_io_png_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_io_png-test-io_png.obj `if test -f '$(srcdir)/imgio/tests/test-io_png.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/tests/test-io_png.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/tests/test-io_png.cc'; fi`
+
+test_misc-test-misc.o: $(srcdir)/colib/tests/test-misc.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_misc_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_misc-test-misc.o -MD -MP -MF "$(DEPDIR)/test_misc-test-misc.Tpo" -c -o test_misc-test-misc.o `test -f '$(srcdir)/colib/tests/test-misc.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-misc.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_misc-test-misc.Tpo" "$(DEPDIR)/test_misc-test-misc.Po"; else rm -f "$(DEPDIR)/test_misc-test-misc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-misc.cc' object='test_misc-test-misc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_misc_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_misc-test-misc.o `test -f '$(srcdir)/colib/tests/test-misc.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-misc.cc
+
+test_misc-test-misc.obj: $(srcdir)/colib/tests/test-misc.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_misc_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_misc-test-misc.obj -MD -MP -MF "$(DEPDIR)/test_misc-test-misc.Tpo" -c -o test_misc-test-misc.obj `if test -f '$(srcdir)/colib/tests/test-misc.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-misc.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-misc.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_misc-test-misc.Tpo" "$(DEPDIR)/test_misc-test-misc.Po"; else rm -f "$(DEPDIR)/test_misc-test-misc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-misc.cc' object='test_misc-test-misc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_misc_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_misc-test-misc.obj `if test -f '$(srcdir)/colib/tests/test-misc.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-misc.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-misc.cc'; fi`
+
 test_narray-test-narray.o: $(srcdir)/colib/tests/test-narray.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_narray_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_narray-test-narray.o -MD -MP -MF "$(DEPDIR)/test_narray-test-narray.Tpo" -c -o test_narray-test-narray.o `test -f '$(srcdir)/colib/tests/test-narray.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-narray.cc; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_narray-test-narray.Tpo" "$(DEPDIR)/test_narray-test-narray.Po"; else rm -f "$(DEPDIR)/test_narray-test-narray.Tpo"; exit 1; fi
@@ -1025,6 +1277,20 @@ test_narray-test-narray.obj: $(srcdir)/colib/tests/test-narray.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-narray.cc' object='test_narray-test-narray.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_narray_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_narray-test-narray.obj `if test -f '$(srcdir)/colib/tests/test-narray.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-narray.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-narray.cc'; fi`
+
+test_nbest-test-nbest.o: $(srcdir)/colib/tests/test-nbest.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_nbest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_nbest-test-nbest.o -MD -MP -MF "$(DEPDIR)/test_nbest-test-nbest.Tpo" -c -o test_nbest-test-nbest.o `test -f '$(srcdir)/colib/tests/test-nbest.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-nbest.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_nbest-test-nbest.Tpo" "$(DEPDIR)/test_nbest-test-nbest.Po"; else rm -f "$(DEPDIR)/test_nbest-test-nbest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-nbest.cc' object='test_nbest-test-nbest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_nbest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_nbest-test-nbest.o `test -f '$(srcdir)/colib/tests/test-nbest.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-nbest.cc
+
+test_nbest-test-nbest.obj: $(srcdir)/colib/tests/test-nbest.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_nbest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_nbest-test-nbest.obj -MD -MP -MF "$(DEPDIR)/test_nbest-test-nbest.Tpo" -c -o test_nbest-test-nbest.obj `if test -f '$(srcdir)/colib/tests/test-nbest.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-nbest.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-nbest.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_nbest-test-nbest.Tpo" "$(DEPDIR)/test_nbest-test-nbest.Po"; else rm -f "$(DEPDIR)/test_nbest-test-nbest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-nbest.cc' object='test_nbest-test-nbest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_nbest_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_nbest-test-nbest.obj `if test -f '$(srcdir)/colib/tests/test-nbest.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-nbest.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-nbest.cc'; fi`
 
 test_pbmpng-test-pbmpng.o: $(srcdir)/imgio/tests/test-pbmpng.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_pbmpng_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_pbmpng-test-pbmpng.o -MD -MP -MF "$(DEPDIR)/test_pbmpng-test-pbmpng.Tpo" -c -o test_pbmpng-test-pbmpng.o `test -f '$(srcdir)/imgio/tests/test-pbmpng.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/tests/test-pbmpng.cc; \
@@ -1054,6 +1320,20 @@ test_quicksort-test-quicksort.obj: $(srcdir)/colib/tests/test-quicksort.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_quicksort_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_quicksort-test-quicksort.obj `if test -f '$(srcdir)/colib/tests/test-quicksort.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-quicksort.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-quicksort.cc'; fi`
 
+test_read_write_png-test-read_write_png.o: $(srcdir)/imgio/tests/test-read_write_png.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_read_write_png_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_read_write_png-test-read_write_png.o -MD -MP -MF "$(DEPDIR)/test_read_write_png-test-read_write_png.Tpo" -c -o test_read_write_png-test-read_write_png.o `test -f '$(srcdir)/imgio/tests/test-read_write_png.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/tests/test-read_write_png.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_read_write_png-test-read_write_png.Tpo" "$(DEPDIR)/test_read_write_png-test-read_write_png.Po"; else rm -f "$(DEPDIR)/test_read_write_png-test-read_write_png.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/tests/test-read_write_png.cc' object='test_read_write_png-test-read_write_png.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_read_write_png_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_read_write_png-test-read_write_png.o `test -f '$(srcdir)/imgio/tests/test-read_write_png.cc' || echo '$(srcdir)/'`$(srcdir)/imgio/tests/test-read_write_png.cc
+
+test_read_write_png-test-read_write_png.obj: $(srcdir)/imgio/tests/test-read_write_png.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_read_write_png_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_read_write_png-test-read_write_png.obj -MD -MP -MF "$(DEPDIR)/test_read_write_png-test-read_write_png.Tpo" -c -o test_read_write_png-test-read_write_png.obj `if test -f '$(srcdir)/imgio/tests/test-read_write_png.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/tests/test-read_write_png.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/tests/test-read_write_png.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_read_write_png-test-read_write_png.Tpo" "$(DEPDIR)/test_read_write_png-test-read_write_png.Po"; else rm -f "$(DEPDIR)/test_read_write_png-test-read_write_png.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgio/tests/test-read_write_png.cc' object='test_read_write_png-test-read_write_png.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_read_write_png_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_read_write_png-test-read_write_png.obj `if test -f '$(srcdir)/imgio/tests/test-read_write_png.cc'; then $(CYGPATH_W) '$(srcdir)/imgio/tests/test-read_write_png.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgio/tests/test-read_write_png.cc'; fi`
+
 test_rowarrays-test-rowarrays.o: $(srcdir)/colib/tests/test-rowarrays.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_rowarrays_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_rowarrays-test-rowarrays.o -MD -MP -MF "$(DEPDIR)/test_rowarrays-test-rowarrays.Tpo" -c -o test_rowarrays-test-rowarrays.o `test -f '$(srcdir)/colib/tests/test-rowarrays.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-rowarrays.cc; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_rowarrays-test-rowarrays.Tpo" "$(DEPDIR)/test_rowarrays-test-rowarrays.Po"; else rm -f "$(DEPDIR)/test_rowarrays-test-rowarrays.Tpo"; exit 1; fi
@@ -1081,6 +1361,34 @@ test_simple-test-simple.obj: $(srcdir)/imgbits/test-simple.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/imgbits/test-simple.cc' object='test_simple-test-simple.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_simple_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_simple-test-simple.obj `if test -f '$(srcdir)/imgbits/test-simple.cc'; then $(CYGPATH_W) '$(srcdir)/imgbits/test-simple.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/imgbits/test-simple.cc'; fi`
+
+test_smartptr-test-smartptr.o: $(srcdir)/colib/tests/test-smartptr.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_smartptr_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_smartptr-test-smartptr.o -MD -MP -MF "$(DEPDIR)/test_smartptr-test-smartptr.Tpo" -c -o test_smartptr-test-smartptr.o `test -f '$(srcdir)/colib/tests/test-smartptr.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-smartptr.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_smartptr-test-smartptr.Tpo" "$(DEPDIR)/test_smartptr-test-smartptr.Po"; else rm -f "$(DEPDIR)/test_smartptr-test-smartptr.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-smartptr.cc' object='test_smartptr-test-smartptr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_smartptr_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_smartptr-test-smartptr.o `test -f '$(srcdir)/colib/tests/test-smartptr.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-smartptr.cc
+
+test_smartptr-test-smartptr.obj: $(srcdir)/colib/tests/test-smartptr.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_smartptr_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_smartptr-test-smartptr.obj -MD -MP -MF "$(DEPDIR)/test_smartptr-test-smartptr.Tpo" -c -o test_smartptr-test-smartptr.obj `if test -f '$(srcdir)/colib/tests/test-smartptr.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-smartptr.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-smartptr.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_smartptr-test-smartptr.Tpo" "$(DEPDIR)/test_smartptr-test-smartptr.Po"; else rm -f "$(DEPDIR)/test_smartptr-test-smartptr.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-smartptr.cc' object='test_smartptr-test-smartptr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_smartptr_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_smartptr-test-smartptr.obj `if test -f '$(srcdir)/colib/tests/test-smartptr.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-smartptr.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-smartptr.cc'; fi`
+
+test_strbuf-test-strbuf.o: $(srcdir)/colib/tests/test-strbuf.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_strbuf_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_strbuf-test-strbuf.o -MD -MP -MF "$(DEPDIR)/test_strbuf-test-strbuf.Tpo" -c -o test_strbuf-test-strbuf.o `test -f '$(srcdir)/colib/tests/test-strbuf.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-strbuf.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_strbuf-test-strbuf.Tpo" "$(DEPDIR)/test_strbuf-test-strbuf.Po"; else rm -f "$(DEPDIR)/test_strbuf-test-strbuf.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-strbuf.cc' object='test_strbuf-test-strbuf.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_strbuf_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_strbuf-test-strbuf.o `test -f '$(srcdir)/colib/tests/test-strbuf.cc' || echo '$(srcdir)/'`$(srcdir)/colib/tests/test-strbuf.cc
+
+test_strbuf-test-strbuf.obj: $(srcdir)/colib/tests/test-strbuf.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_strbuf_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_strbuf-test-strbuf.obj -MD -MP -MF "$(DEPDIR)/test_strbuf-test-strbuf.Tpo" -c -o test_strbuf-test-strbuf.obj `if test -f '$(srcdir)/colib/tests/test-strbuf.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-strbuf.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-strbuf.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/test_strbuf-test-strbuf.Tpo" "$(DEPDIR)/test_strbuf-test-strbuf.Po"; else rm -f "$(DEPDIR)/test_strbuf-test-strbuf.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/colib/tests/test-strbuf.cc' object='test_strbuf-test-strbuf.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_strbuf_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_strbuf-test-strbuf.obj `if test -f '$(srcdir)/colib/tests/test-strbuf.cc'; then $(CYGPATH_W) '$(srcdir)/colib/tests/test-strbuf.cc'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/colib/tests/test-strbuf.cc'; fi`
 uninstall-info-am:
 install-colibHEADERS: $(colib_HEADERS)
 	@$(NORMAL_INSTALL)
@@ -1408,15 +1716,27 @@ install: all install-colib
 
 check:
 	@echo "# running tests"
-	$(srcdir)/test-hash
 	$(srcdir)/test-quicksort
+	$(srcdir)/test-nbest
+	$(srcdir)/test-misc
+	$(srcdir)/test-hash
+	$(srcdir)/test-coords
 	$(srcdir)/test-rowarrays
 	$(srcdir)/test-narray
+	$(srcdir)/test-smartptr
+	$(srcdir)/test-heap
+	$(srcdir)/test-strbuf
 	$(srcdir)/test-pbmpng
+	$(srcdir)/test-io_png
+	$(srcdir)/test-read_write_png
+	$(srcdir)/test-io-jpeg
 	$(srcdir)/test-imglabels
-	$(srcdir)/test-imgbrushfire
-	$(srcdir)/test-imgmisc
 	$(srcdir)/test-imgmap
+	$(srcdir)/test-imgedges
+	$(srcdir)/test-imgmisc
+	$(srcdir)/test-imgbrushfire
+	$(srcdir)/test-imggauss
+	$(srcdir)/test-imgthin
 	$(srcdir)/test-simple
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -117,6 +117,7 @@ namespace colib {
                 max(x1,other.x1),
                 max(y1,other.y1));
         }
+        // FIXME see what that should do if empty()
         rectangle grow(int offset) {
             return rectangle(x0-offset,y0-offset,x1+offset,y1+offset);
         }

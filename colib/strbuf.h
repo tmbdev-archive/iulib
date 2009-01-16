@@ -63,7 +63,7 @@ namespace colib {
             ensure(strlen(src));
             strcpy(buf,src);
         }
-        void operator=(strbuf &other) {
+        void operator=(const strbuf &other) {
             *this = other.buf;
         }
         void operator+=(const char *other) {
@@ -71,7 +71,7 @@ namespace colib {
             ensure(length()+strlen(other));
             strcat(buf,other);
         }
-        void operator+=(strbuf &other) {
+        void operator+=(const strbuf &other) {
             if(!other.buf) return;
             ensure(length()+strlen(other.buf));
             strcat(buf,other.buf);

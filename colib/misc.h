@@ -117,7 +117,7 @@ namespace colib {
 
     /// Floating point values initialized to the given value; useful with hashtable implementations.
 
-    template <int INITIAL>
+    template <int INITIAL> // cannot be float due to C++ restrictions
     struct floating {
         float value;
         floating() {
