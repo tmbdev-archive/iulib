@@ -360,7 +360,7 @@ namespace colib {
         /// Conversion to pointer.  Does not allocate an object.
 
         T *ptr() {
-            return *pointer;
+            return pointer;
         }
 
         /// Pointer dereference allocates object if none is held, then returns a pointer.

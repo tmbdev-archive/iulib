@@ -331,12 +331,18 @@ namespace colib {
 
 
         /// Align a lattice with a transcription.
-        /// \param[out] chars Non-space characters along the best path.
-        /// \param[out] result Aligned segmentation, colors correspond to chars
+        /// \param[out] chars Characters along the best path.
+        //                    Currently, every character in chars must have a corresponding
+        //                    region in seg and the characters must be in reading order.  
+        //                    Eventually, chars may contain characters (e.g., spaces) that
+        //                    do not correspond to any region.  Note that chars may not
+        //                    correspond to any string allowed/suggested by the transcription.
+        /// \param[out] seg Aligned segmentation, colors correspond to chars (starting at 1)
         /// \param[out] costs Costs corresponding to chars
         /// \param[in] image Input grayscale image
         /// \param[in] transcription The "ground truth" lattice to align
-        virtual void align(nustring &chars,intarray &result,floatarray &costs,bytearray &image,IGenericFst &transcription) { throw "unimplemented"; }
+        virtual void align(nustring &chars,intarray &seg,floatarray &costs,
+                           bytearray &image,IGenericFst &transcription) { throw "unimplemented"; }
 
         // eventually?
         // virtual void addTrainingLine(bytearray &image,IGenericFst &transcription) { throw "unimplemented"; }
@@ -363,14 +369,17 @@ namespace colib {
         /// the transducer of the form * --- 1/eps --> * --- 2/a --> *
         /// means that pixels with color 1 and 2 together form the
         /// letter "a"
-        virtual void recognizeLine(intarray &segmentation,IGenericFst &result,bytearray &image) { throw "unimplemented"; }
+        virtual void recognizeLine(intarray &segmentation,IGenericFst &result,bytearray &image) 
+            WARN_DEPRECATED { throw "unimplemented"; }
         
         // recognize a line with or without a given segmentation
         // if useit is set to true, the given segmentation is just displayed in loggers, but not used,
         // the segmenter computes the segmentation and the recognition uses its output
         // if useit is set to false, the segmenter is still launched for the loggers, but the given
         // segmentation is really used for the recognition
-        virtual void recognizeLineSeg(intarray &segmentation,IGenericFst &result,bytearray &image, bool useit) { throw "unimplemented"; }
+        virtual void recognizeLineSeg(intarray &segmentation,IGenericFst &result,
+                                      bytearray &image, bool useit) 
+            WARN_DEPRECATED { throw "unimplemented"; }
     };
 }
 
