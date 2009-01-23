@@ -193,12 +193,20 @@ namespace colib {
         /// Get the accept cost of a given vertex (a cost to finish the line and quit).
         virtual float getAcceptCost(int node) { throw "unimplemented"; }
 
+        /// Determine whether the given node is an accepting state.
+        virtual bool isAccepting(int node) { return getAcceptCost(node)<1e30; }
+
         /// Return an array of arcs leading from the given node.
         virtual void arcs(colib::intarray &ids,
                           colib::intarray &targets,
                           colib::intarray &outputs,
                           colib::floatarray &costs, 
-                          int from) { throw "unimplemented"; }
+                          int from) WARN_DEPRECATED { throw "unimplemented"; }
+
+        /// A variant of addTransition() with equal input and output.
+        virtual void getTransitions(intarray &tos,intarray &symbols,floatarray &costs,intarray &inputs,int from) {
+            arcs(inputs,tos,symbols,costs,from);
+        }
 
         /// Change a transition score between the given states
         virtual void rescore(int from,int to,int output,float new_cost,int input) { throw "unimplemented"; }

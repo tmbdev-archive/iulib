@@ -152,8 +152,8 @@ namespace colib {
             a(k) = b(i,k);
     }
 
-    template <class T>
-    void rowpush(narray<T> &table,narray<T> &data) {
+    template <class S,class T>
+    void rowpush(narray<S> &table,narray<T> &data) {
         if(table.length1d()==0) {
             copy(table,data);
             table.reshape(1,table.length());
@@ -327,18 +327,32 @@ namespace colib {
         return matching.length();
     }
 
-    template <class T>
-    inline void rowget(narray<T> &v,narray<T> &data,int row) {
+    template <class S,class T>
+    inline void rowget(narray<S> &v,narray<T> &data,int row) {
         v.resize(data.dim(1));
         for(int i=0;i<v.length();i++)
             v(i) = data(row,i);
     }
 
-    template <class T>
-    inline void rowput(narray<T> &data,int row,narray<T> &v) {
+    template <class S,class T>
+    inline void rowput(narray<S> &data,int row,narray<T> &v) {
         CHECK(v.length()==data.dim(1));
         for(int i=0;i<v.length();i++)
             data(row,i) = v(i);
+    }
+
+    template <class T>
+    inline double rowsum(narray<T> &a,int i) {
+        double total = 0;
+        for(int j=0;j<a.dim(1);j++) total += a(i,j);
+        return total;
+    }
+
+    template <class T>
+    inline double colsum(narray<T> &a,int j) {
+        double total = 0;
+        for(int i=0;j<a.dim(0);i++) total += a(i,j);
+        return total;
     }
 }
 
