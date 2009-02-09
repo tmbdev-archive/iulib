@@ -1,27 +1,27 @@
 // -*- C++ -*-
 
-// Copyright 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz 
+// Copyright 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz
 // or its licensors, as applicable.
 // Copyright 1995-2005 Thomas M. Breuel.
-// 
+//
 // You may not use this file except under the terms of the accompanying license.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License"); you
 // may not use this file except in compliance with the License. You may
 // obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// 
+//
 // Project: iulib -- image understanding library
 // File: strbuf.h
 // Purpose: string buffer
 // Responsible: tmb
-// Reviewer: 
-// Primary Repository: 
+// Reviewer:
+// Primary Repository:
 // Web Sites: www.iupr.org, www.dfki.de
 
 #ifndef strbuf_h__
@@ -29,6 +29,9 @@
 
 /// \file strbuf.h
 /// \brief String buffer
+
+#include <cstdio>
+#include <cstdarg>
 
 namespace colib {
 
@@ -75,6 +78,19 @@ namespace colib {
             if(!other.buf) return;
             ensure(length()+strlen(other.buf));
             strcat(buf,other.buf);
+        }
+        void format(const char *fmt,...) {
+            va_list args;
+            const int n = 10000;
+            ensure(n+1);
+            vsnprintf(buf,n,fmt,args);
+        }
+        void appendFormat(const char *fmt,...) {
+            va_list args;
+            int l = length();
+            const int n = 10000;
+            ensure(l+n+1);
+            vsnprintf(buf+l,n,fmt,args);
         }
         operator char*() {
             return buf;
