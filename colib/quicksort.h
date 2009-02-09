@@ -103,6 +103,15 @@ namespace colib {
     }
 
     template <class T>
+    inline void quickrank(narray<int> &rank,narray<T> &values) {
+        intarray index;
+        quicksort(index,values);
+        rank.resize(index.length());
+        for(int i=0;i<rank.length();i++)
+            rank(index(i)) = i;
+    }
+
+    template <class T>
     inline void shuffle(narray<T> &values) {
         floatarray temp(values.length());
         intarray index;
