@@ -1,27 +1,27 @@
 #ifndef h_ocrinterfaces__
 #define h_ocrinterfaces__
 
-// Copyright 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz 
+// Copyright 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz
 // or its licensors, as applicable.
-// 
+//
 // You may not use this file except under the terms of the accompanying license.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License"); you
 // may not use this file except in compliance with the License. You may
 // obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// 
+//
 // Project: iulib -- image understanding library
 // File: ocrinterfaces.h
 // Purpose: interfaces to OCR system components
 // Responsible: tmb
-// Reviewer: 
-// Primary Repository: 
+// Reviewer:
+// Primary Repository:
 // Web Sites: www.iupr.org, www.dfki.de
 
 /// \file ocrinterfaces.h
@@ -39,7 +39,7 @@
 namespace colib {
 
     /// Base class for OCR interfaces.
-    
+
     /// Contains some minimal information
     /// and ways of interacting with an OCR component.
 
@@ -48,11 +48,11 @@ namespace colib {
         // virtual methods for getting and setting parameters
 
         /// Set a string property or throw an exception if not implemented.
-        virtual void set(const char *key,const char *value) { 
+        virtual void set(const char *key,const char *value) {
             throw "IComponent::set(char*,char*) unimplemented by subclass";
         }
         /// Set a number property or throw an exception if not implemented.
-        virtual void set(const char *key,double value) { 
+        virtual void set(const char *key,double value) {
             throw "IComponent::set(char*,double) unimplemented by subclass";
         }
         /// Get a string property or throw an exception if not implemented.
@@ -86,8 +86,8 @@ namespace colib {
     };
 
     /// Compute text/image probabilities
-    
-    /// The output is in the standard RGB format 
+
+    /// The output is in the standard RGB format
     /// for text/image segmentation (see ocropus.org)
 
     struct ITextImageClassification : IComponent {
@@ -111,7 +111,7 @@ namespace colib {
     };
 
     /// Compute page segmentation into columns, lines, etc.
-    
+
     /// The output is in the standard RGB format
     /// for page segmentation (see ocropus.org)
 
@@ -147,7 +147,7 @@ namespace colib {
 
         /// Add a transition between the given states
         virtual void addTransition(int from,int to,int output,float cost,int input) = 0;
-        
+
         /// A variant of addTransition() with equal input and output.
         virtual void addTransition(int from,int to,int symbol,float cost) {
             addTransition(from, to, symbol, cost, symbol);
@@ -186,10 +186,10 @@ namespace colib {
 
         /// Get the number of states.
         virtual int nStates() { throw "unimplemented"; }
-        
+
         /// Get the starting state.
         virtual int getStart() { throw "unimplemented"; }
-        
+
         /// Get the accept cost of a given vertex (a cost to finish the line and quit).
         virtual float getAcceptCost(int node) { throw "unimplemented"; }
 
@@ -200,8 +200,8 @@ namespace colib {
         virtual void arcs(colib::intarray &ids,
                           colib::intarray &targets,
                           colib::intarray &outputs,
-                          colib::floatarray &costs, 
-                          int from) WARN_DEPRECATED { throw "unimplemented"; }
+                          colib::floatarray &costs,
+                          int from) { throw "unimplemented"; } // WARN_DEPRECATED
 
         /// A variant of addTransition() with equal input and output.
         virtual void getTransitions(intarray &tos,intarray &symbols,floatarray &costs,intarray &inputs,int from) {
@@ -210,7 +210,7 @@ namespace colib {
 
         /// Change a transition score between the given states
         virtual void rescore(int from,int to,int output,float new_cost,int input) { throw "unimplemented"; }
-        
+
         /// A variant of rescore() with equal input and output.
         virtual void rescore(int from, int to, int symbol, float new_cost) {
             rescore(from, to, symbol, new_cost, symbol);
@@ -242,7 +242,7 @@ namespace colib {
         virtual int length() = 0;
 
         /// Unicode character or character string.
-        // 
+        //
         /// Note that some classifiers may return multiple characters per class
         virtual void cls(nustring &result, int i) = 0;
 
@@ -260,7 +260,7 @@ namespace colib {
         /// (Commonly, this only stores data in the model; training is via an external program).
         /// This may be also train on ligatures (if supported),
         /// that's why `characters' is a nustring.
-        virtual void addTrainingChar(bytearray &input_image,nustring &characters) 
+        virtual void addTrainingChar(bytearray &input_image,nustring &characters)
             { throw "unimplemented"; }
 
         /// Train a character.
@@ -283,7 +283,7 @@ namespace colib {
         virtual void load(FILE *stream) { throw "unimplemented"; }
         void load(const char *path) { load(stdio(path, "rb")); }
 
-        /// \brief Convenience function for getting the best output 
+        /// \brief Convenience function for getting the best output
         //
         /// (useful for debugging)
         virtual void best(nustring &result) {
@@ -300,7 +300,7 @@ namespace colib {
             else
                 result.clear();
         }
-        
+
         /// destructor
         virtual ~ICharacterClassifier() {}
     };
@@ -321,8 +321,8 @@ namespace colib {
         virtual void startTraining(const char *type="adaptation") { throw "unimplemented"; }
 
         /// \brief Train on a text line.
-        
-        /// Usage is: call addTrainingLine with training data, then call finishTraining 
+
+        /// Usage is: call addTrainingLine with training data, then call finishTraining
         /// The state of the object is undefined between calling addTrainingLine and finishTraining, and it is
         /// an error to call recognizeLine before finishTraining completes.  This allows both batch
         /// and incemental training.
@@ -341,7 +341,7 @@ namespace colib {
         /// Align a lattice with a transcription.
         /// \param[out] chars Characters along the best path.
         //                    Currently, every character in chars must have a corresponding
-        //                    region in seg and the characters must be in reading order.  
+        //                    region in seg and the characters must be in reading order.
         //                    Eventually, chars may contain characters (e.g., spaces) that
         //                    do not correspond to any region.  Note that chars may not
         //                    correspond to any string allowed/suggested by the transcription.
@@ -356,7 +356,7 @@ namespace colib {
         // virtual void addTrainingLine(bytearray &image,IGenericFst &transcription) { throw "unimplemented"; }
 
         /// \brief Finish training, possibly making complex calculations.
-        
+
         /// Call this when training is done and the system should switch back to recognition;
         /// this method may take a long time to complete.
         virtual void finishTraining() { throw "unimplemented"; }
@@ -377,16 +377,16 @@ namespace colib {
         /// the transducer of the form * --- 1/eps --> * --- 2/a --> *
         /// means that pixels with color 1 and 2 together form the
         /// letter "a"
-        virtual void recognizeLine(intarray &segmentation,IGenericFst &result,bytearray &image) 
+        virtual void recognizeLine(intarray &segmentation,IGenericFst &result,bytearray &image)
             WARN_DEPRECATED { throw "unimplemented"; }
-        
+
         // recognize a line with or without a given segmentation
         // if useit is set to true, the given segmentation is just displayed in loggers, but not used,
         // the segmenter computes the segmentation and the recognition uses its output
         // if useit is set to false, the segmenter is still launched for the loggers, but the given
         // segmentation is really used for the recognition
         virtual void recognizeLineSeg(intarray &segmentation,IGenericFst &result,
-                                      bytearray &image, bool useit) 
+                                      bytearray &image, bool useit)
             WARN_DEPRECATED { throw "unimplemented"; }
     };
 }

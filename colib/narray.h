@@ -37,6 +37,14 @@
 #define NARRAY_DEPRECATED
 #endif
 
+#ifndef NARRAY_THRESHOLD_INIT
+#define NARRAY_THRESHOLD_INIT 100
+#endif
+
+#ifndef NARRAY_THRESHOLD_COPY
+#define NARRAY_THRESHOLD_COPY 1000000000
+#endif
+
 namespace colib {
 
     /// \brief Multidimensional array class.
@@ -44,14 +52,12 @@ namespace colib {
     /// Arrays are 0-based and support up to four subscripts.
     /// Rank-1 arrays can also be treated as stacks or lists (using the append method).
 
+
     template <class T>
     class narray {
     private:
         template <class S>
         static inline void swap_(S &a,S &b) { S t = a; a = b; b = t; }
-
-        narray(const narray<T> &);
-        void operator=(const narray<T> &);
 
         // check that i is in [0,n-1]
 
@@ -87,6 +93,30 @@ namespace colib {
             }
             return v;
         }
+
+#ifdef NARRAY_STRICT
+    private:
+        narray(const narray<T> &);
+        void operator=(const narray<T> &);
+#else
+    public:
+        narray(const narray<T> &other) {
+            data = 0;
+            for(int i=0;i<5;i++) dims[i] = 0;
+            total = 0;
+            allocated = 0;
+            if(other.length1d()>=NARRAY_THRESHOLD_INIT) {
+                throw "narray copy larger than threshold";
+            }
+            *this = other;
+        }
+        void operator=(const narray<T> &other) {
+            if(other.length1d()>=NARRAY_THRESHOLD_COPY) {
+                throw "narray assign larger than threshold";
+            }
+            copy(other);
+        }
+#endif
 
     public:
 
@@ -291,13 +321,42 @@ namespace colib {
             return data[((i1+i0*dims[1])*dims[2]+i2)*dims[3]+i3];
         }
 
-#ifdef NARRAY_ASSIGNMENT
+#ifndef NARRAY_STRICT
         /// Initializing/setting the value.
 
         template <class S>
         void operator=(S value) {
             for(int i=0,n=length1d();i<n;i++)
                 unsafe_at1d(i) = value;
+        }
+#endif
+
+#ifdef NARRAY_STRICT
+        /// Same as operator()(int).
+
+        T &operator[](int i0) {
+            check_rank1();
+            check_range(i0,dims[0]);
+            return data[i0];
+        }
+
+        /// Equivalent to dim(0), but checks that the array has rank 1.
+
+        int length() {
+            check_rank1();
+            return dims[0];
+        }
+#else
+        /// Same as operator()(int).
+
+        T &operator[](int i0) {
+            return at1d(i0);
+        }
+
+        /// Equivalent to dim(0), but checks that the array has rank 1.
+
+        int length() {
+            return total;
         }
 #endif
 
@@ -361,19 +420,12 @@ namespace colib {
             total = dims[0] = n;
         }
 
-        /// Equivalent to dim(0), but checks that the array has rank 1.
-
-        int length() {
-            check_rank1();
-            return dims[0];
-        }
-
         /// Append an element to a rank-1 array.
 
         void push(const T &value) {
             check_rank1();
             // we can't delete the old data here because `value' might be
-            // pointing inside it. First, we need to copy the value. 
+            // pointing inside it. First, we need to copy the value.
             T *old_data = reserve_but_not_delete(1);
             data[dims[0]++] = value;
             if(old_data)
@@ -386,7 +438,7 @@ namespace colib {
         void push(T &value) {
             check_rank1();
             // we can't delete the old data here because `value' might be
-            // pointing inside it. First, we need to copy the value. 
+            // pointing inside it. First, we need to copy the value.
             T *old_data = reserve_but_not_delete(1);
             data[dims[0]++] = value;
             if(old_data)
@@ -420,14 +472,6 @@ namespace colib {
             check_rank1();
             check(dims[0]>0,"pop of empty list");
             return data[dims[0]-1];
-        }
-
-        /// Same as operator()(int).
-
-        T &operator[](int i0) {
-            check_rank1();
-            check_range(i0,dims[0]);
-            return data[i0];
         }
 
         /// Make the array empty, but don't deallocate the storage held by it.
