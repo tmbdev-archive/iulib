@@ -45,14 +45,10 @@ namespace iulib {
 
     template<class T>
     inline T &xref(colib::narray<T> &a, int x, int y) {
-        if (x<0)
-            x = 0;
-        else if (x>=a.dim(0))
-            x = a.dim(0)-1;
-        if (y<0)
-            y = 0;
-        else if (y>=a.dim(1))
-            y = a.dim(1)-1;
+        if(x<0) x = 0;
+        else if(x>=a.dim(0)) x = a.dim(0)-1;
+        if(y<0) y = 0;
+        else if(y>=a.dim(1)) y = a.dim(1)-1;
         return a.unsafe_at(x, y);
     }
 
@@ -62,12 +58,12 @@ namespace iulib {
         int j = (int)y;
         float l = x-i;
         float m = y-j;
-        float s00 = xref(a, i, j);
-        float s01 = xref(a, i, j+1);
-        float s10 = xref(a, i+1, j);
-        float s11 = xref(a, i+1, j+1);
+        float s00 = xref(a,i,j);
+        float s01 = xref(a,i,j+1);
+        float s10 = xref(a,i+1,j);
+        float s11 = xref(a,i+1,j+1);
         return (T)((1.0-l) * ((1.0-m) * s00 + m * s01) +
-                   l * ((1.0-m) * s10 + m * s11));
+                         l * ((1.0-m) * s10 + m * s11));
     }
 
     template<class T, class V>
