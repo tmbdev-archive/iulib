@@ -607,6 +607,21 @@ namespace colib {
             if(p->refcount_<0) abort();
         }
     };
+
+    // Define na_transfer to allow use in narray.
+
+    template <class T>
+    inline void na_transfer(autodel<T> &dst,autodel<T> &src) {
+        dst = src.move();
+    }
+    template <class T>
+    inline void na_transfer(autoref<T> &dst,autoref<T> &src) {
+        dst = src.move();
+    }
+    template <class T>
+    inline void na_transfer(autofree<T> &dst,autofree<T> &src) {
+        dst = src.move();
+    }
 }
 
 #endif
