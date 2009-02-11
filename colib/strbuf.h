@@ -135,6 +135,13 @@ namespace colib {
         }
     };
 
+#if 0
+    // FIXME add the necessary methods to make this work
+    template <class T>
+    inline void na_transfer(strbuf &dst,strbuf &src) {
+        dst.setPointer(src.take());
+    }
+#endif
 }
 
 #endif /* strbuf_h__ */

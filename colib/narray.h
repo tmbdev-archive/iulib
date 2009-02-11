@@ -24,6 +24,9 @@
 // Primary Repository:
 // Web Sites: www.iupr.org, www.dfki.de
 
+// FIXME use malloc/free/realloc for scalars
+// FIXME optionally overload r-value copy constructor
+
 /// \file narray.h
 /// \brief Single and multidimensional arrays
 
@@ -37,6 +40,10 @@
 #define NARRAY_DEPRECATED
 #endif
 
+// The following are for definitions notifying the user
+// of large array copies/moves in copy constructors
+// or assignments.
+
 #ifndef NARRAY_THRESHOLD_INIT
 #define NARRAY_THRESHOLD_INIT 100
 #endif
@@ -45,8 +52,10 @@
 #define NARRAY_THRESHOLD_COPY 1000000000
 #endif
 
-namespace colib {
+#include <stdio.h>
+#define NARRAY_NOTICE(x) fprintf(stderr,x "\n");
 
+namespace colib {
     // na_transfer is used to transfer objects from an old container
     // to a new one.  You can overload na_transfer if you have other
     // types that need to be transfered.  Out of the box, na_transfer
@@ -119,15 +128,30 @@ namespace colib {
             total = 0;
             allocated = 0;
             if(other.length1d()>=NARRAY_THRESHOLD_INIT) {
-                throw "narray copy larger than threshold";
+                NARRAY_NOTICE("narray copy larger than threshold");
             }
             *this = other;
         }
         void operator=(const narray<T> &other) {
             if(other.length1d()>=NARRAY_THRESHOLD_COPY) {
-                throw "narray assign larger than threshold";
+                NARRAY_NOTICE("narray assign larger than threshold");
             }
             copy(other);
+        }
+#endif
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+        // efficient r-value semantics, from C++0x
+
+        narray(narray<T> &&other) {
+            data = 0;
+            move(other);
+        }
+
+        void operator=(narray<T> &&other) {
+            move(other);
+        }
+        narray<T> &&rvalue() {
+            return *this;
         }
 #endif
 
@@ -393,6 +417,7 @@ namespace colib {
         }
 
 
+#ifdef OBSOLETE
         /// Make sure that the array has allocated room for at least
         /// n more elements.  However, these additional elements may
         /// not be accessible until the dimensions are changed
@@ -461,6 +486,44 @@ namespace colib {
                 delete [] old_data;
             total = dims[0];
         }
+#else
+        /// Make sure that the array has allocated room for at least
+        /// n more elements.  However, these additional elements may
+        /// not be accessible until the dimensions are changed
+        /// (e.g., through push).
+
+        void reserve(int n) {
+            int nallocated = total+n;
+            if(nallocated<=allocated) return;
+            nallocated = roundup_(nallocated);
+            T *ndata = new T[nallocated];
+            for(int i=0;i<total;i++) {
+                // ndata[i] = data[i];
+                na_transfer(ndata[i],data[i]);
+            }
+            delete [] data;
+            data = ndata;
+            allocated = nallocated;
+        }
+
+        /// Make sure that the array is a 1D array capable of holding at
+        /// least n elements.  This preserves existing data.
+
+        void grow_to(int n) {
+            check_rank1();
+            if(n>allocated) reserve(n-total);
+            total = dims[0] = n;
+        }
+
+        /// Append an element to a rank-1 array.
+
+        void push(T value) {
+            check_rank1();
+            reserve(1);
+            data[dims[0]++] = value;
+            total = dims[0];
+        }
+#endif
 
         /// Append an element to a rank-1 array.
 

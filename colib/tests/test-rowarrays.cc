@@ -20,8 +20,8 @@ int main(int argc,char **argv) {
     make_random(a,25,1.0);
     make_random(a,25,1.0);
     a.reshape(5,5);
-    print(a);
+    // print(a);
     rowsort(a);
-    print(a);
+    // print(a);
     check_rowsorted(a);
 }

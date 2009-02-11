@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // 
+// FIXME file header
 // Project: roughocr -- mock OCR system exercising the interfaces and useful for testing
 // File: test_io_jpeg.cc
 // Purpose: test cases for io_jpeg
@@ -30,6 +31,7 @@
 using namespace iulib;
 using namespace colib;
 
+// FIXME indentation, style
 static void random_binary_image(bytearray &b, int w, int h)
 {
 	b.resize(w, h);
@@ -57,7 +59,7 @@ int main(int argc,char **argv) {
 
         read_jpeg_rgb(b, stdio(f_r,"r"));
 
-		read_jpeg_gray(c, stdio(f_g,"r"));
+        read_jpeg_gray(c, stdio(f_g,"r"));
 
 	try
 	{

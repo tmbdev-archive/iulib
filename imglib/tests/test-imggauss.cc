@@ -80,10 +80,13 @@ void GaussianConvProperty(floatarray &in, float variance, float mean)
   for (int i=0; i<out.dim(0); i++)
     out(i) /= total;
 
+  // FIXME unit tests shouldn't print anything
+#if 0
   printf("FUNCTION CALCULATES AS \n");
   for(int i=0; i<size;i ++){
     printf("%f = %f \n",in[i], out[i]);
   }
+#endif
 }
 
 
@@ -123,10 +126,13 @@ int main(int argc,char **argv) {
   */
   GenerateGaussian_sigma(in,sigma);
   gauss1d(out, in, sigma);
+  // FIXME unit tests shouldn't print anything
+#if 0
   for (int i = 0; i <in.dim(0);i ++){
     printf("%f = %f \n",in[i], out[i]);
     //printf("%f \n",in[i]);
   }
+#endif
   GaussianConvProperty(in, variance, mean);
 }
 
