@@ -47,6 +47,19 @@
 
 namespace colib {
 
+    // na_transfer is used to transfer objects from an old container
+    // to a new one.  You can overload na_transfer if you have other
+    // types that need to be transfered.  Out of the box, na_transfer
+    // makes ragged arrays (narray< narray<float> >) work reasonably
+    // well.
+
+    template <class T>
+    struct narray;
+    template <class T>
+    inline void na_transfer(T &dst,T &src) {dst = src;}
+    template <class T>
+    inline void na_transfer(narray<T> &dst,narray<T> &src);
+
     /// \brief Multidimensional array class.
     ///
     /// Arrays are 0-based and support up to four subscripts.
@@ -392,7 +405,10 @@ namespace colib {
             if(nallocated<=allocated) return 0;
             nallocated = roundup_(nallocated);
             T *ndata = new T[nallocated];
-            for(int i=0;i<total;i++) ndata[i] = data[i];
+            for(int i=0;i<total;i++) {
+                // ndata[i] = data[i];
+                na_transfer(ndata[i],data[i]);
+            }
             T *old_data = data;
             data = ndata;
             allocated = nallocated;
@@ -624,6 +640,11 @@ namespace colib {
     typedef narray<float> floatarray;
     typedef narray<double> doublearray;
     typedef narray<long>  longarray;
+
+    template <class T>
+    inline void na_transfer(narray<T> &dest,narray<T> &src) {
+        dest.move(src);
+    }
 
     // use the methods instead (fewer name conflicts)
     template <class T> NARRAY_DEPRECATED

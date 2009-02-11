@@ -33,6 +33,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+namespace colib {
+    // Use this for methods that haven't been implemented yet.  This
+    // is for methods that are optional, and callers can catch this
+    // exception to perform some alternative action.
+    struct Unimplemented {};
+
+    // Use this for methods that haven't been tested yet and therefore
+    // can't be relied on.
+    struct Untested {};
+
+    // By convention, we throw "const char *" for exceptions
+    // that leave the program in a defined state but that don't usually
+    // have any meaningful automatic.  If you must, you can document
+    // this by using something like 'throw Exception("foo")', but
+    // it's recommended that you simply 'throw "foo"'.
+    inline const char *Exception(const char *s) {
+        return s;
+    }
+};
+
 #ifndef UNSAFE
 
 /// Check the assertion and die if it fails.
