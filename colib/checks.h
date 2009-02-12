@@ -90,7 +90,6 @@ namespace colib {
 
 #endif
 
-
 /// Check the assertion and throw an exception (const char*) if it fails.
 ///
 /// USE: for validating input data, checking internal conditions that might
