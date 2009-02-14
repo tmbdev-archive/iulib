@@ -28,9 +28,11 @@
 /// \brief Interfaces to OCR system components
 
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "colib/narray.h"
 #include "colib/narray-util.h"
+#include "strbuf.h"
 #include "smartptr.h"
 #include "misc.h"
 #include "coords.h"
@@ -44,7 +46,19 @@ namespace colib {
     /// and ways of interacting with an OCR component.
 
     struct IComponent {
+        /// misc information logged about the history of the component
+        strbuf object_history;
+
+        /// brief description
         virtual const char *description() = 0;
+
+        /// print longer info to stdout
+        virtual void info(int depth=0,FILE *stream=stdout) {
+            fprintf(stream,"%*s",depth,"");
+            fprintf(stream,"%s\n",description());
+            fprintf(stream,"%s\n",(const char *)object_history);
+        }
+
         // virtual methods for getting and setting parameters
 
         /// Set a string property or throw an exception if not implemented.
@@ -65,6 +79,7 @@ namespace colib {
             throw "IComponent::getd(char*) unimplemented by subclass";
         }
         virtual ~IComponent() {}
+
     };
 
     /// Cleanup for gray scale document images.

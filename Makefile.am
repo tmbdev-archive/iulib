@@ -42,7 +42,7 @@ include_HEADERS += $(srcdir)/utils/dgraphics.h
 colib_HEADERS = \
 $(srcdir)/colib/objlist.h $(srcdir)/colib/nustring.h $(srcdir)/colib/colib.h $(srcdir)/colib/misc.h $(srcdir)/colib/vec2.h $(srcdir)/colib/heap.h $(srcdir)/colib/coords.h $(srcdir)/colib/env.h $(srcdir)/colib/narray.h $(srcdir)/colib/rowarrays.h $(srcdir)/colib/clib.h $(srcdir)/colib/classifier.h $(srcdir)/colib/ocrinterfaces.h $(srcdir)/colib/quicksort.h $(srcdir)/colib/iarith.h $(srcdir)/colib/unionfind.h $(srcdir)/colib/strbuf.h $(srcdir)/colib/compat.h $(srcdir)/colib/deprecation.h $(srcdir)/colib/narray-ops.h $(srcdir)/colib/checks.h $(srcdir)/colib/nbest.h $(srcdir)/colib/narray-util.h $(srcdir)/colib/smartptr.h $(srcdir)/colib/hash.h
 
-check_PROGRAMS =  test-quicksort  test-coords  test-rowarrays  test-smartptr  test-heap  test-strbuf  test-misc  test-nbest  test-hash  test-narray  test-io_png  test-read_write_png  test-io-jpeg  test-pbmpng  test-imgbrushfire  test-imggauss  test-imgmap  test-imgthin  test-imgmisc  test-imglabels  test-imgedges  test-simple
+check_PROGRAMS =  test-quicksort  test-coords  test-rowarrays  test-smartptr  test-heap  test-strbuf  test-misc  test-nbest  test-hash  test-narray  test-io_png  test-read_write_png  test-pbmpng  test-imgbrushfire  test-imggauss  test-imgmap  test-imgmisc  test-imglabels  test-simple
 test_quicksort_SOURCES = $(srcdir)/colib/tests/test-quicksort.cc
 test_quicksort_LDADD = libiulib.a
 test_quicksort_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
@@ -79,9 +79,6 @@ test_io_png_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_read_write_png_SOURCES = $(srcdir)/imgio/tests/test-read_write_png.cc
 test_read_write_png_LDADD = libiulib.a
 test_read_write_png_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
-test_io_jpeg_SOURCES = $(srcdir)/imgio/tests/test-io-jpeg.cc
-test_io_jpeg_LDADD = libiulib.a
-test_io_jpeg_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_pbmpng_SOURCES = $(srcdir)/imgio/tests/test-pbmpng.cc
 test_pbmpng_LDADD = libiulib.a
 test_pbmpng_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
@@ -94,18 +91,12 @@ test_imggauss_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_imgmap_SOURCES = $(srcdir)/imglib/tests/test-imgmap.cc
 test_imgmap_LDADD = libiulib.a
 test_imgmap_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
-test_imgthin_SOURCES = $(srcdir)/imglib/tests/test-imgthin.cc
-test_imgthin_LDADD = libiulib.a
-test_imgthin_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_imgmisc_SOURCES = $(srcdir)/imglib/tests/test-imgmisc.cc
 test_imgmisc_LDADD = libiulib.a
 test_imgmisc_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_imglabels_SOURCES = $(srcdir)/imglib/tests/test-imglabels.cc
 test_imglabels_LDADD = libiulib.a
 test_imglabels_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
-test_imgedges_SOURCES = $(srcdir)/imglib/tests/test-imgedges.cc
-test_imgedges_LDADD = libiulib.a
-test_imgedges_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
 test_simple_SOURCES = $(srcdir)/imgbits/test-simple.cc
 test_simple_LDADD = libiulib.a
 test_simple_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
@@ -157,13 +148,10 @@ check:
 	$(srcdir)/test-narray
 	$(srcdir)/test-io_png
 	$(srcdir)/test-read_write_png
-	$(srcdir)/test-io-jpeg
 	$(srcdir)/test-pbmpng
 	$(srcdir)/test-imgbrushfire
 	$(srcdir)/test-imggauss
 	$(srcdir)/test-imgmap
-	$(srcdir)/test-imgthin
 	$(srcdir)/test-imgmisc
 	$(srcdir)/test-imglabels
-	$(srcdir)/test-imgedges
 	$(srcdir)/test-simple
