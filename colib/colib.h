@@ -52,6 +52,7 @@
 #include "strbuf.h"
 #include "vec2.h"
 #include "deprecation.h"
+#include "debugf.h"
 #ifdef WIN32
 #include "compat.h"
 #endif

@@ -375,7 +375,7 @@ include_HEADERS = $(srcdir)/imgio/io_jpeg.h \
 	$(srcdir)/imgbits/imgbitptr.h $(srcdir)/utils/dgraphics.h \
 	$(am__append_2) $(srcdir)/vidio/vidio.h
 colib_HEADERS = \
-$(srcdir)/colib/objlist.h $(srcdir)/colib/nustring.h $(srcdir)/colib/colib.h $(srcdir)/colib/misc.h $(srcdir)/colib/vec2.h $(srcdir)/colib/heap.h $(srcdir)/colib/coords.h $(srcdir)/colib/env.h $(srcdir)/colib/narray.h $(srcdir)/colib/rowarrays.h $(srcdir)/colib/clib.h $(srcdir)/colib/classifier.h $(srcdir)/colib/ocrinterfaces.h $(srcdir)/colib/quicksort.h $(srcdir)/colib/iarith.h $(srcdir)/colib/unionfind.h $(srcdir)/colib/strbuf.h $(srcdir)/colib/compat.h $(srcdir)/colib/deprecation.h $(srcdir)/colib/narray-ops.h $(srcdir)/colib/checks.h $(srcdir)/colib/nbest.h $(srcdir)/colib/narray-util.h $(srcdir)/colib/smartptr.h $(srcdir)/colib/hash.h
+$(srcdir)/colib/objlist.h $(srcdir)/colib/nustring.h $(srcdir)/colib/colib.h $(srcdir)/colib/misc.h $(srcdir)/colib/vec2.h $(srcdir)/colib/heap.h $(srcdir)/colib/coords.h $(srcdir)/colib/env.h $(srcdir)/colib/narray.h $(srcdir)/colib/rowarrays.h $(srcdir)/colib/clib.h $(srcdir)/colib/classifier.h $(srcdir)/colib/ocrinterfaces.h $(srcdir)/colib/quicksort.h $(srcdir)/colib/iarith.h $(srcdir)/colib/unionfind.h $(srcdir)/colib/strbuf.h $(srcdir)/colib/compat.h $(srcdir)/colib/deprecation.h $(srcdir)/colib/narray-ops.h $(srcdir)/colib/checks.h $(srcdir)/colib/nbest.h $(srcdir)/colib/narray-util.h $(srcdir)/colib/smartptr.h $(srcdir)/colib/hash.h $(srcdir)/colib/debugf.h
 
 test_quicksort_SOURCES = $(srcdir)/colib/tests/test-quicksort.cc
 test_quicksort_LDADD = libiulib.a

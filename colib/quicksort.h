@@ -254,6 +254,21 @@ namespace colib {
         quicksort(values,0,values.length());
     }
 
+    /// Find unique elements.
+
+    template <class T>
+    static void uniq(narray<T> &values) {
+        if(values.length()==0) return;
+        quicksort(values);
+        int j = 1;
+        for(int i=1;i<values.length();i++) {
+            if(values(i)==values(j-1)) continue;
+            values(j++) = values(i);
+        }
+        values.truncate(j);
+    }
+
+
     /// Compute fractiles.
 
     template <class T>
