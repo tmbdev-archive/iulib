@@ -119,6 +119,7 @@ namespace colib {
         }
         // FIXME see what that should do if empty()
         rectangle grow(int offset) {
+            if(empty()) throw "grow: rectangle is empty";
             return rectangle(x0-offset,y0-offset,x1+offset,y1+offset);
         }
         int xcenter(){

@@ -28,5 +28,4 @@ then
     exit
 fi
 
-echo "# running make"
-make
+echo "# please run make now"
