@@ -150,16 +150,14 @@ namespace colib {
             pointer = other;
         }
 
-        /// Smart pointer dereference; throws an exception if the pointer is null,
-        /// unless compiled UNSAFE.
+        /// Smart pointer dereference; throws an exception if the pointer is null
 
         T *operator->() const {
             if(!pointer) throw "autodel: attempt to dereference null smartpointer";
             return pointer;
         }
 
-        /// Explicit pointer dereference; throws an exception if the pointer is null,
-        /// unless compiled UNSAFE.
+        /// Explicit pointer dereference; throws an exception if the pointer is null
 
         T &operator*() const {
             if(!pointer) throw "autodel: attempt to dereference null smartpointer";
