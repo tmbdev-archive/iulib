@@ -83,14 +83,19 @@ namespace colib {
             va_list args;
             const int n = 10000;
             ensure(n+1);
+            buf[0] = 0;
+            va_start(args,fmt);
             vsnprintf(buf,n,fmt,args);
+            va_end(args);
         }
         void appendFormat(const char *fmt,...) {
             va_list args;
             int l = length();
             const int n = 10000;
             ensure(l+n+1);
+            va_start(args,fmt);
             vsnprintf(buf+l,n,fmt,args);
+            va_end(args);
         }
         operator char*() {
             return buf;
