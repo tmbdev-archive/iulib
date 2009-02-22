@@ -393,7 +393,7 @@ namespace colib {
         /// means that pixels with color 1 and 2 together form the
         /// letter "a"
         virtual void recognizeLine(intarray &segmentation,IGenericFst &result,bytearray &image)
-            WARN_DEPRECATED { throw "unimplemented"; }
+        { throw Unimplemented(); }
 
         // recognize a line with or without a given segmentation
         // if useit is set to true, the given segmentation is just displayed in loggers, but not used,

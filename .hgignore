@@ -1,0 +1,20 @@
+syntax: glob
+
+.scons*
+.deps*
+.sconf*
+.hg*
+autom4te*
+*.orig
+JUNK
+typescript
+core
+*.model
+*.fst
+_*
+*.dot
+*~
+*.o
+*.a
+*.passed
+*.log
