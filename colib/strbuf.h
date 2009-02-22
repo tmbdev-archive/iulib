@@ -59,9 +59,9 @@ namespace colib {
             buf[0] = 0;
         }
         void truncate(int n) {
-	    if(n<0) n = strlen(buf)+n;
+            if(n<0) n = strlen(buf)+n;
             if(n<0) return;
-            buf[min(n,strlen(buf))] = 0;
+            buf[min(n,(int)strlen(buf))] = 0;
         }
         int length() {
             if(!buf) return 0;
@@ -78,10 +78,10 @@ namespace colib {
             *this = other.buf;
         }
         void operator+=(char other) {
-	    int n = length();
+            int n = length();
             ensure(n+2);
-	    buf[n] = other;
-	    buf[n+1] = 0;
+            buf[n] = other;
+            buf[n+1] = 0;
         }
         void operator+=(const char *other) {
             if(!other) return;
