@@ -36,6 +36,7 @@
 namespace colib {
 
     struct strbuf {
+	// FIXME this class is due to be replaced
         char *buf;
         strbuf() {
             buf = 0;
@@ -52,8 +53,13 @@ namespace colib {
             buf = 0;
         }
         void ensure(int n) {
-            if(!buf) buf = (char*)malloc(n+1);
-            else buf = (char*)realloc(buf,n+1);
+            if(!buf) {
+		buf = (char*)malloc(n+1);
+		buf[0] = 0;
+	    } else {
+		n = max(n,(int)strlen(buf));
+		buf = (char*)realloc(buf,n+1);
+	    }
         }
         void clear() {
             buf[0] = 0;
@@ -61,7 +67,7 @@ namespace colib {
         void truncate(int n) {
 	    if(n<0) n = strlen(buf)+n;
             if(n<0) return;
-            buf[min(n,strlen(buf))] = 0;
+            buf[min(n,(int)strlen(buf))] = 0;
         }
         int length() {
             if(!buf) return 0;
@@ -112,12 +118,15 @@ namespace colib {
             va_end(args);
         }
         operator char*() {
+	    ensure(1);
             return buf;
         }
         char *ptr() {
+	    ensure(1);
             return buf;
         }
         char *take() {
+	    ensure(1);
             char *result = buf;
             buf = 0;
             return result;
