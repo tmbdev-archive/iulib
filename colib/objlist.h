@@ -53,7 +53,7 @@ namespace colib {
         }
         int dim(int d) {
             ASSERT(d==0);
-            return dim(d);
+            return data.dim(d);
         }
 
         T &push() {

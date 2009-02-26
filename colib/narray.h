@@ -77,13 +77,18 @@ namespace colib {
 
     template <class T>
     class narray {
+#ifdef NARRAY_LONGINDEX
+	typedef long index_t;
+#else
+	typedef int index_t;
+#endif
     private:
         template <class S>
         static inline void swap_(S &a,S &b) { S t = a; a = b; b = t; }
 
         // check that i is in [0,n-1]
 
-        inline void check_range(int i,int n) const {
+        inline void check_range(index_t i,index_t n) const {
 #ifndef UNSAFE
             if(unsigned(i)>=unsigned(n)) throw "narray: index out of range";
 #endif
@@ -108,10 +113,10 @@ namespace colib {
 
         // round up to the next size (for exponential resizing)
 
-        static inline int roundup_(int i) {
-            int v = 1;
+        static inline index_t roundup_(index_t i) {
+            index_t v = 1;
             while(v <= i) {
-                v = (int)(v*growth_factor())+1;
+                v = (index_t)(v*growth_factor())+1;
             }
             return v;
         }
@@ -160,23 +165,23 @@ namespace colib {
         // a pointer to the actual data being held
         T *data;
         // the total number of elements held by the pointer
-        int allocated;
+        index_t allocated;
         // the total number of elements that are currently
         // considered accessible / initialized
-        int total;
+        index_t total;
         // the individual dimensions of the array
-        int dims[5];
+        index_t dims[5];
 
         // compute the total number of elements in an array
         // of the given dimensions
 
-        int total_(int d0,int d1=0,int d2=0,int d3=0) {
+        index_t total_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
             return d0*(d1?d1:1)*(d2?d2:1)*(d3?d3:1);
         }
 
         // change the elements of the array
 
-        void setdims_(int d0,int d1=0,int d2=0,int d3=0) {
+        void setdims_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
             total = total_(d0,d1,d2,d3);
             dims[0] = d0; dims[1] = d1; dims[2] = d2; dims[3] = d3; dims[4] = 0;
             check(total<=allocated,"bad setdims_ (internal error)");
@@ -184,7 +189,7 @@ namespace colib {
 
         // allocate the elements of the array
 
-        void alloc_(int d0,int d1=0,int d2=0,int d3=0) {
+        void alloc_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
             total = total_(d0,d1,d2,d3);
             data = new T[total];
             allocated = total;
@@ -202,25 +207,25 @@ namespace colib {
 
         /// Creates a rank 1 array with dimensions d0.
 
-        narray(int d0) {
+        narray(index_t d0) {
             alloc_(d0);
         }
 
         /// Creates a rank 2 array with dimensions d0 and d1.
 
-        narray(int d0,int d1) {
+        narray(index_t d0,index_t d1) {
             alloc_(d0,d1);
         }
 
         /// Creates a rank 3 array with dimensions d0, d1, and d2.
 
-        narray(int d0,int d1,int d2) {
+        narray(index_t d0,index_t d1,index_t d2) {
             alloc_(d0,d1,d2);
         }
 
         /// Creates a rank 4 array with dimensions d0, d1, d2, and d3.
 
-        narray(int d0,int d1,int d2,int d3) {
+        narray(index_t d0,index_t d1,index_t d2,index_t d3) {
             alloc_(d0,d1,d2,d3);
         }
 
@@ -244,15 +249,15 @@ namespace colib {
 
         /// Truncates the array.
 
-        void truncate(int d0) {
+        void truncate(index_t d0) {
             check(d0<=dims[0] && dims[1]==0,"can only truncate 1D arrays to smaller arrays");
             setdims_(d0);
         }
 
         /// Resizes the array, possibly destroying any data previously held by it.
 
-        void resize(int d0,int d1=0,int d2=0,int d3=0) {
-            int ntotal = total_(d0,d1,d2,d3);
+        void resize(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+            index_t ntotal = total_(d0,d1,d2,d3);
             if(ntotal>total) {
                 delete [] data;
                 alloc_(d0,d1,d2,d3);
@@ -264,15 +269,15 @@ namespace colib {
         /// Resizes the array to the given size; this is guaranteed to reallocate
         /// the storage fresh.
 
-        void renew(int d0,int d1=0,int d2=0,int d3=0) {
+        void renew(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
             dealloc();
             resize(d0,d1,d2,d3);
         }
 
         /// Reshapes the array; the new shape must have the same number of elements as before.
 
-        void reshape(int d0,int d1=0,int d2=0,int d3=0) {
-            int ntotal = total_(d0,d1,d2,d3);
+        void reshape(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+            index_t ntotal = total_(d0,d1,d2,d3);
             check(ntotal==total,"narray: bad reshape");
             dims[0] = d0; dims[1] = d1; dims[2] = d2; dims[3] = d3; dims[4] = 0;
         }
@@ -287,14 +292,14 @@ namespace colib {
 
         /// Determine the range of valid index for index number i.
 
-        int dim(int i) const {
+        index_t dim(int i) const {
             check_range(i,4);
             return dims[i];
         }
 
         /// 1D subscripting.
 
-        T &operator()(int i0) const {
+        T &operator()(index_t i0) const {
             check(dims[1]==0,"narray: bad rank");
             check_range(i0,dims[0]);
             return data[i0];
@@ -302,7 +307,7 @@ namespace colib {
 
         /// 2D subscripting.
 
-        T &operator()(int i0,int i1) const {
+        T &operator()(index_t i0,index_t i1) const {
             check(dims[2]==0,"narray: bad rank");
             check_range(i0,dims[0]);
             check_range(i1,dims[1]);
@@ -311,7 +316,7 @@ namespace colib {
 
         /// 3D subscripting.
 
-        T &operator()(int i0,int i1,int i2) const {
+        T &operator()(index_t i0,index_t i1,index_t i2) const {
             check(dims[3]==0,"narray: bad rank");
             check_range(i0,dims[0]);
             check_range(i1,dims[1]);
@@ -321,7 +326,7 @@ namespace colib {
 
         /// 4D subscripting.
 
-        T &operator()(int i0,int i1,int i2,int i3) const {
+        T &operator()(index_t i0,index_t i1,index_t i2,index_t i3) const {
             check_range(i0,dims[0]);
             check_range(i1,dims[1]);
             check_range(i2,dims[2]);
@@ -329,32 +334,32 @@ namespace colib {
             return data[((i1+i0*dims[1])*dims[2]+i2)*dims[3]+i3];
         }
 
-        T &at(int i0) { return operator()(i0); }
-        T &at(int i0,int i1) { return operator()(i0,i1); }
-        T &at(int i0,int i1,int i2) { return operator()(i0,i1,i2); }
-        T &at(int i0,int i1,int i2,int i3) { return operator()(i0,i1,i2,i3); }
+        T &at(index_t i0) { return operator()(i0); }
+        T &at(index_t i0,index_t i1) { return operator()(i0,i1); }
+        T &at(index_t i0,index_t i1,index_t i2) { return operator()(i0,i1,i2); }
+        T &at(index_t i0,index_t i1,index_t i2,index_t i3) { return operator()(i0,i1,i2,i3); }
 
         /// Unsafe 1D subscripting.
 
-        T &unsafe_at(int i0) const {
+        T &unsafe_at(index_t i0) const {
             return data[i0];
         }
 
         /// Unsafe 2D subscripting.
 
-        T &unsafe_at(int i0,int i1) const {
+        T &unsafe_at(index_t i0,index_t i1) const {
             return data[i1+i0*dims[1]];
         }
 
         /// Unsafe 3D subscripting.
 
-        T &unsafe_at(int i0,int i1,int i2) const {
+        T &unsafe_at(index_t i0,index_t i1,index_t i2) const {
             return data[(i1+i0*dims[1])*dims[2]+i2];
         }
 
         /// Unsafe 4D subscripting.
 
-        T &unsafe_at(int i0,int i1,int i2,int i3) const {
+        T &unsafe_at(index_t i0,index_t i1,index_t i2,index_t i3) const {
             return data[((i1+i0*dims[1])*dims[2]+i2)*dims[3]+i3];
         }
 
@@ -363,7 +368,7 @@ namespace colib {
 
         template <class S>
         void operator=(S value) {
-            for(int i=0,n=length1d();i<n;i++)
+            for(index_t i=0,n=length1d();i<n;i++)
                 unsafe_at1d(i) = value;
         }
 #endif
@@ -371,7 +376,7 @@ namespace colib {
 #ifdef NARRAY_STRICT
         /// Same as operator()(int).
 
-        T &operator[](int i0) {
+        T &operator[](index_t i0) {
             check_rank1();
             check_range(i0,dims[0]);
             return data[i0];
@@ -379,125 +384,55 @@ namespace colib {
 
         /// Equivalent to dim(0), but checks that the array has rank 1.
 
-        int length() {
+        index_t length() {
             check_rank1();
             return dims[0];
         }
 #else
         /// Same as operator()(int).
 
-        T &operator[](int i0) {
+        T &operator[](index_t i0) {
             return at1d(i0);
         }
 
         /// Equivalent to dim(0), but checks that the array has rank 1.
 
-        int length() {
+        index_t length() {
             return total;
         }
 #endif
 
         /// Length of the array, viewed as a 1D array.
 
-        int length1d() const {
+        index_t length1d() const {
             return total;
         }
 
         /// 1D subscripting (works for arrays of any rank).
 
-        T &at1d(int i) const {
+        T &at1d(index_t i) const {
             check_range(i,total);
             return data[i];
         }
 
         /// Unsafe 1D subscripting (works for arrays of any rank).
 
-        T &unsafe_at1d(int i) const {
+        T &unsafe_at1d(index_t i) const {
             return data[i];
         }
 
 
-#ifdef OBSOLETE
-        /// Make sure that the array has allocated room for at least
-        /// n more elements.  However, these additional elements may
-        /// not be accessible until the dimensions are changed
-        /// (e.g., through push).
-        ///
-        /// This version returns the old data array, if reallocation occured.
-        ///
-        T *reserve_but_not_delete(int n) {
-            int nallocated = total+n;
-            if(nallocated<=allocated) return 0;
-            nallocated = roundup_(nallocated);
-            T *ndata = new T[nallocated];
-            for(int i=0;i<total;i++) {
-                // ndata[i] = data[i];
-                na_transfer(ndata[i],data[i]);
-            }
-            T *old_data = data;
-            data = ndata;
-            allocated = nallocated;
-            return old_data;
-        }
-
-
         /// Make sure that the array has allocated room for at least
         /// n more elements.  However, these additional elements may
         /// not be accessible until the dimensions are changed
         /// (e.g., through push).
 
-        void reserve(int n) {
-            T *p = reserve_but_not_delete(n);
-            if(p)
-                delete [] p;
-        }
-
-        /// Make sure that the array is a 1D array capable of holding at
-        /// least n elements.  This preserves existing data.
-
-        void grow_to(int n) {
-            check_rank1();
-            if(n>allocated) reserve(n-total);
-            total = dims[0] = n;
-        }
-
-        /// Append an element to a rank-1 array.
-
-        void push(const T &value) {
-            check_rank1();
-            // we can't delete the old data here because `value' might be
-            // pointing inside it. First, we need to copy the value.
-            T *old_data = reserve_but_not_delete(1);
-            data[dims[0]++] = value;
-            if(old_data)
-                delete [] old_data;
-            total = dims[0];
-        }
-
-        /// Append an element to a rank-1 array.
-
-        void push(T &value) {
-            check_rank1();
-            // we can't delete the old data here because `value' might be
-            // pointing inside it. First, we need to copy the value.
-            T *old_data = reserve_but_not_delete(1);
-            data[dims[0]++] = value;
-            if(old_data)
-                delete [] old_data;
-            total = dims[0];
-        }
-#else
-        /// Make sure that the array has allocated room for at least
-        /// n more elements.  However, these additional elements may
-        /// not be accessible until the dimensions are changed
-        /// (e.g., through push).
-
-        void reserve(int n) {
-            int nallocated = total+n;
+        void reserve(index_t n) {
+            index_t nallocated = total+n;
             if(nallocated<=allocated) return;
             nallocated = roundup_(nallocated);
             T *ndata = new T[nallocated];
-            for(int i=0;i<total;i++) {
+            for(index_t i=0;i<total;i++) {
                 // ndata[i] = data[i];
                 na_transfer(ndata[i],data[i]);
             }
@@ -509,7 +444,7 @@ namespace colib {
         /// Make sure that the array is a 1D array capable of holding at
         /// least n elements.  This preserves existing data.
 
-        void grow_to(int n) {
+        void grow_to(index_t n) {
             check_rank1();
             if(n>allocated) reserve(n-total);
             total = dims[0] = n;
@@ -523,7 +458,6 @@ namespace colib {
             data[dims[0]++] = value;
             total = dims[0];
         }
-#endif
 
         /// Append an element to a rank-1 array.
 
@@ -627,8 +561,8 @@ namespace colib {
         void copy(const narray<S> &src) {
             narray<T> &dest = *this;
             dest.resize(src.dim(0),src.dim(1),src.dim(2),src.dim(3));
-            int n = dest.length1d();
-            for(int i=0;i<n;i++) dest.unsafe_at1d(i) = (T)src.unsafe_at1d(i);
+            index_t n = dest.length1d();
+            for(index_t i=0;i<n;i++) dest.unsafe_at1d(i) = (T)src.unsafe_at1d(i);
         }
         /// Check whether two narrays have the same rank and sizes.
 
@@ -673,8 +607,8 @@ namespace colib {
             narray<T> &a = *this;
             if(a.rank()!=b.rank()) return 0;
             for(int i=0;i<a.rank();i++) if(a.dim(i)!=b.dim(i)) return 0;
-            int n = a.length1d();
-            for(int i=0;i<n;i++) if(a.unsafe_at1d(i) != b.unsafe_at1d(i)) return 0;
+            index_t n = a.length1d();
+            for(index_t i=0;i<n;i++) if(a.unsafe_at1d(i) != b.unsafe_at1d(i)) return 0;
             return 1;
         }
 
@@ -683,7 +617,7 @@ namespace colib {
         template <class S>
         void fill(S value) {
             narray<T> &a = *this;
-            for(int i=0,n=a.length1d();i<n;i++)
+            for(index_t i=0,n=a.length1d();i<n;i++)
                 a.unsafe_at1d(i) = value;
         }
 
