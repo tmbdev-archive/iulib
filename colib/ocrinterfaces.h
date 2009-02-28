@@ -76,6 +76,7 @@ namespace colib {
             fprintf(stream,"%*s",depth,"");
             fprintf(stream,"%s\n",description());
             fprintf(stream,"%s\n",(const char *)object_history);
+            pprint(stream,depth);
         }
 
         /// saving and loading (if implemented)
@@ -177,10 +178,11 @@ namespace colib {
             if(!ok) throw("paramters not properly terminated in save file");
         }
         // Print the parameters in some human-readable format.
-        void pprint(FILE *stream=stdout) {
+        void pprint(FILE *stream=stdout,int depth=0) {
             narray<const char *> keys;
             params.keys(keys);
             for(int i=0;i<keys.length();i++) {
+                fprintf(stream,"%*s",depth,"");
                 fprintf(stream,"%s=%s\n",keys(i),params(keys(i)).ptr());
             }
         }

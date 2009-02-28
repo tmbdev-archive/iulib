@@ -28,7 +28,7 @@
 
 namespace {
     void iprintf(FILE *stream,int depth,const char *fmt,...) {
-        fprintf(stream,"%*s",depth*3,"");
+        fprintf(stream,"%*s",depth,"");
         va_list args;
         va_start(args,fmt);
         vfprintf(stream,fmt,args);

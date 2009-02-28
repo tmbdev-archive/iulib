@@ -42,8 +42,6 @@ namespace colib {
 
     namespace {
 
-        const int hash_empty = 999999;
-
         inline int hash_next(int size) {
             int i = 1;
             while(i<=size) i<<=1;
@@ -82,6 +80,8 @@ namespace colib {
     template <class T>
     class inthash {
     private:
+        enum { hash_empty = ~0 };
+
         struct kvp {
             int key;
             T value;
@@ -191,6 +191,7 @@ namespace colib {
     template <class T>
     class int2hash {
     private:
+        enum { hash_empty = ~0 };
         struct kvp {
             int key1,key2;
             T value;
@@ -381,7 +382,7 @@ namespace colib {
             result.clear();
             for(int i=0;i<data.length();i++) {
                 kvp &entry = data[i];
-                if(entry.key!=hash_empty) {
+                if(entry.key.ptr()!=0) {
                     result.push() = entry.key.ptr();
                 }
             }
