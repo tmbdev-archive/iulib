@@ -102,7 +102,8 @@ namespace colib {
             if(getenv(key.ptr()))
                 params(name) = getenv(key.ptr());
             if(verbose_params)
-                fprintf(stderr,"param def %s=%s # %s\n",key.ptr(),value,doc);
+                fprintf(stderr,"param def %s=%s # %s\n",
+			key.ptr(),params(name).ptr(),doc);
         }
         // Same as pdefs, but for numeric parameters.
         void pdef(const char *name,double value,const char *doc) {
