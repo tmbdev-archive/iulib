@@ -32,6 +32,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+
+namespace {
+    void throwf(const char *format, ...) {
+        va_list v;
+        va_start(v, format);
+        static char buf[1000];
+        vsnprintf(buf, sizeof(buf), format, v);
+        va_end(v);
+        throw (const char *) buf;
+    }
+}
 
 namespace colib {
     // Use this for methods that haven't been implemented yet.  This

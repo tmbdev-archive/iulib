@@ -149,6 +149,24 @@ namespace colib {
             throw "internal error: no empty hash bucket found";
         }
 
+        /// Return a pointer to the location associated with the given key, or
+        /// null if there is no such location.
+
+        T *find(int key) {
+            if(key==hash_empty) throw "key value reserved for hash table implementation";
+            int n = data.length();
+            int base = hash_value(key,n);
+            for(int i=0;i<n;i++) {
+                int index = (base+i)%n;
+                kvp &entry = data[index];
+                if(entry.key==key)
+                    return &entry.value;
+                if(entry.key==hash_empty) {
+                    return 0;
+                }
+            }
+        }
+
         T &at(int key) {
             return this->operator()(key);
         }
@@ -166,7 +184,7 @@ namespace colib {
         }
     };
 
-/// \brief A simple pair-of-int-to-something hash class.
+    /// \brief A simple pair-of-int-to-something hash class.
     ///
     /// This is not particularly high performance, but it should be good enough for most uses.
 
@@ -241,6 +259,25 @@ namespace colib {
             }
             throw "internal error: no empty hash bucket found";
         }
+
+        /// Return a pointer to the location associated with the keys, or null
+        /// if there is no entry.
+
+        T *find(int key1,int key2) {
+            if(key1==hash_empty) throw "key value reserved for hash table implementation";
+            int n = data.length();
+            int base = hash_value(key1,key2,n);
+            for(int i=0;i<n;i++) {
+                int index = (base+i)%n;
+                kvp &entry = data[index];
+                if(entry.key1==key1 && entry.key2==key2)
+                    return &entry.value;
+                if(entry.key1==hash_empty) {
+                    return 0;
+                }
+            }
+            throw "internal error: no empty hash bucket found";
+        }
     };
 
     /// A string-to-something hash class.
@@ -295,6 +332,24 @@ namespace colib {
             fill = nhash.fill;
         }
 
+        /// Return a pointer to the location of the value, or null if
+        /// the key doesn't exist.
+
+        T *find(const char *key) {
+            if(key==0) throw "key value reserved for hash table implementation";
+            int n = data.length();
+            int base = hash_value(key,n);
+            for(int i=0;i<n;i++) {
+                int index = (base+i)%n;
+                kvp &entry = data[index];
+                if(entry.key.ptr() && !strcmp(entry.key.ptr(),key))
+                    return &entry.value;
+                if(!entry.key) {
+                    return 0;
+                }
+            }
+            throw "internal error: no empty hash bucket found";
+        }
         /// Return a reference to the location associated with the given key.
 
         T &operator()(const char *key) {
@@ -318,8 +373,20 @@ namespace colib {
             }
             throw "internal error: no empty hash bucket found";
         }
-    };
 
+        /// Return a list of keys.
+        /// FIXME change this to use the new iustring
+
+        void keys(narray<const char*> &result) {
+            result.clear();
+            for(int i=0;i<data.length();i++) {
+                kvp &entry = data[i];
+                if(entry.key!=hash_empty) {
+                    result.push() = entry.key.ptr();
+                }
+            }
+        }
+    };
 }
 
 #endif

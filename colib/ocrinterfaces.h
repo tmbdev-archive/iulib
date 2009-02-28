@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <typeinfo>
 #include "colib/narray.h"
 #include "colib/narray-util.h"
 #include "strbuf.h"
@@ -46,11 +47,29 @@ namespace colib {
     /// and ways of interacting with an OCR component.
 
     struct IComponent {
-        /// misc information logged about the history of the component
-        strbuf object_history;
+        bool verbose_params;
+
+        IComponent() {
+            verbose_params = (getenv("verbose_params") && atoi(getenv("verbose_params")));
+        }
+
+        /// object name
+        virtual const char *name() { 
+            return typeid(*this).name();
+        }
 
         /// brief description
-        virtual const char *description() = 0;
+        virtual const char *description() {
+            return typeid(*this).name();
+        }
+
+        /// print brief description
+        virtual void print() {
+            printf("<%s (%s) %p>\n",name(),typeid(*this).name(),this);
+        }
+
+        /// misc information logged about the history of the component
+        strbuf object_history;
 
         /// print longer info to stdout
         virtual void info(int depth=0,FILE *stream=stdout) {
@@ -59,27 +78,143 @@ namespace colib {
             fprintf(stream,"%s\n",(const char *)object_history);
         }
 
-        // virtual methods for getting and setting parameters
+        /// saving and loading (if implemented)
+        virtual void save(FILE *stream) {throw Unimplemented();}
+        virtual void load(FILE *stream) {throw Unimplemented();}
+        virtual void save(const char *path) {save(stdio(path,"wb"));}
+        virtual void load(const char *path) {load(stdio(path,"rb"));}
+
+        /// parameter setting and loading
+    private:
+        strhash<strbuf> params;
+    public:
+        // Define a string parameter for this component.  Parameters
+        // should be defined once in the constructor, together with
+        // a default value and a documentation string.
+        void pdef(const char *name,const char *value,const char *doc) {
+            if(params.find(name)) throwf("pdefs: %s: parameter already defined");
+            params(name) = value;
+            strbuf key;
+            key = this->name();
+            key += "_";
+            key += name;
+            if(getenv(key.ptr()))
+                params(name) = getenv(key.ptr());
+            if(verbose_params)
+                fprintf(stderr,"param def %s=%s # %s\n",key.ptr(),value,doc);
+        }
+        // Same as pdefs, but for numeric parameters.
+        void pdef(const char *name,double value,const char *doc) {
+            if(params.find(name)) throwf("pdeff: %s: parameter already defined");
+            strbuf svalue;
+            svalue.format("%g",value);
+            pdef(name,svalue.ptr(),doc);
+        }
+        void pdef(const char *name,int value,const char *doc) {
+            if(params.find(name)) throwf("pdeff: %s: parameter already defined");
+            strbuf svalue;
+            svalue.format("%d",value);
+            pdef(name,svalue.ptr(),doc);
+        }
+        void pdef(const char *name,bool value,const char *doc) {
+            if(params.find(name)) throwf("pdeff: %s: parameter already defined");
+            strbuf svalue;
+            svalue.format("%d",value);
+            pdef(name,svalue.ptr(),doc);
+        }
+        // Set a string parameter; this allows changing the parameter after it
+        // has been defined.  It should be called by other parts of the
+        // system if they want to change a parameter value.
+        void pset(const char *name,const char *value) {
+            if(!params.find(name)) throwf("psets: %s: no such parameter",name);
+            params(name) = value;
+            if(verbose_params)
+                fprintf(stderr,"set %s_%s=%s\n",this->name(),name,value);
+        }
+        // Set a numeric parameter; this allows changing the parameter after it
+        // has been defined.  It should be called by other parts of the
+        // system if they want to change a parameter value.
+        void pset(const char *name,double value) {
+            if(!params.find(name)) throwf("psetf: %s: no such parameter",name);
+            params(name) = value;
+        }
+        // Get a string paramter.  This can be called both from within the class
+        // implementation, as well as from external functions, in order to see
+        // what current parameter settings are.
+        const char *pget(const char *name) {
+            if(!params.find(name)) throwf("pgets: %s: no such parameter",name);
+            return params(name).ptr();
+        }
+        // Get a numeric paramter.  This can be called both from within the class
+        // implementation, as well as from external functions, in order to see
+        // what current parameter settings are.
+        double pgetf(const char *name) {
+            if(!params.find(name)) throwf("pgetf: %s: no such parameter",name);
+            return atof(params(name).ptr());
+        }
+        // Save the parameters to the string.  This should get called from save().
+        // The format is binary and not necessarily fit for human consumption.
+        void psave(FILE *stream) {
+            narray<const char *> keys;
+            params.keys(keys);
+            for(int i=0;i<keys.length();i++) {
+                fprintf(stream,"%s=%s\n",keys(i),params(keys(i)).ptr());
+            }
+            fprintf(stream,"END_OF_PARAMETERS=HERE\n");
+        }
+        // Load the parameters from the string.  This should get called from load().
+        // The format is binary and not necessarily fit for human consumption.
+        void pload(FILE *stream) {
+            char key[9999],value[9999];
+            bool ok = false;
+            while(fscanf(stream,"%[^=]=%[^\n]\n",key,value)==2) {
+                if(!strcmp(key,"END_OF_PARAMETERS")) {
+                    ok = true;
+                    break;
+                }
+                params(key) = value;
+            }
+            if(!ok) throw("paramters not properly terminated in save file");
+        }
+        // Print the parameters in some human-readable format.
+        void pprint(FILE *stream=stdout) {
+            narray<const char *> keys;
+            params.keys(keys);
+            for(int i=0;i<keys.length();i++) {
+                fprintf(stream,"%s=%s\n",keys(i),params(keys(i)).ptr());
+            }
+        }
+
+        virtual ~IComponent() {}
+
+        // The following methods are obsolete for setting and getting parameters.
+        // However, they cannot be converted automatically (since they might 
+        // trigger actions).
+        
+        virtual const char *command(const char *verb,
+                const char *arg1=0,
+                const char *arg2=0,
+                const char *arg3=0) {
+            return "unimplemented";
+        }
 
         /// Set a string property or throw an exception if not implemented.
-        virtual void set(const char *key,const char *value) {
-            throw "IComponent::set(char*,char*) unimplemented by subclass";
+        virtual void set(const char *key,const char *value) WARN_DEPRECATED {
+            pset(key,value);
         }
         /// Set a number property or throw an exception if not implemented.
-        virtual void set(const char *key,double value) {
-            throw "IComponent::set(char*,double) unimplemented by subclass";
+        virtual void set(const char *key,double value) WARN_DEPRECATED {
+            pset(key,value);
         }
         /// Get a string property or throw an exception if not implemented.
-        virtual const char *gets(const char *key) {
-            throw "IComponent::gets(char*) unimplemented by subclass";
+        virtual const char *gets(const char *key) WARN_DEPRECATED {
+            return pget(key);
         }
 
         /// Get a number property or throw an exception if not implemented.
-        virtual double getd(const char *key) {
-            throw "IComponent::getd(char*) unimplemented by subclass";
+        virtual double getd(const char *key) WARN_DEPRECATED {
+            return pgetf(key);
         }
-        virtual ~IComponent() {}
-
     };
 
     /// Cleanup for gray scale document images.
