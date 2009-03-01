@@ -47,10 +47,12 @@ namespace colib {
     /// and ways of interacting with an OCR component.
 
     struct IComponent {
-        bool verbose_params;
+        int verbose_params;
 
         IComponent() {
-            verbose_params = (getenv("verbose_params") && atoi(getenv("verbose_params")));
+            verbose_params = 0;
+            if(getenv("verbose_params"))
+                verbose_params = atoi(getenv("verbose_params"));
         }
 
         /// object name
@@ -88,11 +90,17 @@ namespace colib {
         /// parameter setting and loading
     private:
         strhash<strbuf> params;
+        strhash<bool> shown;
     public:
         // Define a string parameter for this component.  Parameters
         // should be defined once in the constructor, together with
         // a default value and a documentation string.
+        // Names starting with a '%' are not parameters, but rather
+        // information about the component computed while running
+        // (it's saved along with the parameters when saving the
+        // component).
         void pdef(const char *name,const char *value,const char *doc) {
+            if(name[0]=='%') throwf("pdef: %s must not start with %%",name);
             if(params.find(name)) throwf("pdefs: %s: parameter already defined");
             params(name) = value;
             strbuf key;
@@ -101,58 +109,63 @@ namespace colib {
             key += name;
             if(getenv(key.ptr()))
                 params(name) = getenv(key.ptr());
-            if(verbose_params)
+            if(verbose_params>0 && !shown.find(key.ptr())) {
                 fprintf(stderr,"param def %s=%s # %s\n",
 			key.ptr(),params(name).ptr(),doc);
+                shown(key.ptr()) = true;
+            }
         }
-        // Same as pdefs, but for numeric parameters.
         void pdef(const char *name,double value,const char *doc) {
-            if(params.find(name)) throwf("pdeff: %s: parameter already defined");
             strbuf svalue;
             svalue.format("%g",value);
             pdef(name,svalue.ptr(),doc);
         }
         void pdef(const char *name,int value,const char *doc) {
-            if(params.find(name)) throwf("pdeff: %s: parameter already defined");
             strbuf svalue;
             svalue.format("%d",value);
             pdef(name,svalue.ptr(),doc);
         }
         void pdef(const char *name,bool value,const char *doc) {
-            if(params.find(name)) throwf("pdeff: %s: parameter already defined");
             strbuf svalue;
             svalue.format("%d",value);
             pdef(name,svalue.ptr(),doc);
         }
-        // Set a string parameter; this allows changing the parameter after it
+        // Set a parameter; this allows changing the parameter after it
         // has been defined.  It should be called by other parts of the
         // system if they want to change a parameter value.
         void pset(const char *name,const char *value) {
-            if(!params.find(name)) throwf("psets: %s: no such parameter",name);
+            if(name[0]!='%' && !params.find(name)) throwf("pset: %s: no such parameter",name);
             params(name) = value;
-            if(verbose_params)
+            if(verbose_params>1)
                 fprintf(stderr,"set %s_%s=%s\n",this->name(),name,value);
         }
-        // Set a numeric parameter; this allows changing the parameter after it
-        // has been defined.  It should be called by other parts of the
-        // system if they want to change a parameter value.
         void pset(const char *name,double value) {
-            if(!params.find(name)) throwf("psetf: %s: no such parameter",name);
-            params(name) = value;
+            strbuf svalue;
+            svalue.format("%g",value);
+            pset(name,svalue.ptr());
+        }
+        void pset(const char *name,int value) {
+            strbuf svalue;
+            svalue.format("%d",value);
+            pset(name,svalue.ptr());
+        }
+        void pset(const char *name,bool value) {
+            strbuf svalue;
+            svalue.format("%d",value);
+            pset(name,svalue.ptr());
         }
         // Get a string paramter.  This can be called both from within the class
         // implementation, as well as from external functions, in order to see
         // what current parameter settings are.
         const char *pget(const char *name) {
-            if(!params.find(name)) throwf("pgets: %s: no such parameter",name);
+            if(!params.find(name)) throwf("pget: %s: no such parameter",name);
             return params(name).ptr();
         }
-        // Get a numeric paramter.  This can be called both from within the class
-        // implementation, as well as from external functions, in order to see
-        // what current parameter settings are.
         double pgetf(const char *name) {
-            if(!params.find(name)) throwf("pgetf: %s: no such parameter",name);
-            return atof(params(name).ptr());
+            double value;
+            if(sscanf(pget(name),"%lg",&value)!=1) 
+                throwf("pgetf: %s=%s: bad number format",name,params(name).ptr());
+            return value;
         }
         // Save the parameters to the string.  This should get called from save().
         // The format is binary and not necessarily fit for human consumption.
