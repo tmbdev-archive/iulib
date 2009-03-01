@@ -564,6 +564,16 @@ namespace colib {
             index_t n = dest.length1d();
             for(index_t i=0;i<n;i++) dest.unsafe_at1d(i) = (T)src.unsafe_at1d(i);
         }
+
+        /// Copy the elements of the source array into the destination array,
+        /// resizing if necessary.
+
+        template <class S>
+        void append(narray<S> &src) {
+            for(index_t i=0;i<src.length();i++)
+                push() = src.unsafe_at1d(i);
+        }
+
         /// Check whether two narrays have the same rank and sizes.
 
         template <class S>
