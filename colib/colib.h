@@ -45,7 +45,6 @@
 #include "nbest.h"
 #include "nustring.h"
 #include "objlist.h"
-#include "ocrinterfaces.h"
 #include "quicksort.h"
 #include "rowarrays.h"
 #include "smartptr.h"

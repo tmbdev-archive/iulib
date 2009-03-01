@@ -1,5 +1,3 @@
 This folder contains header files which declare central data structures, 
 such as arrays and smart pointers.
 
-Furthermore, the interfaces used for the OCRopus components  are defined
-here in ocrinterfaces.h
