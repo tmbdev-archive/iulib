@@ -39,10 +39,10 @@ int main(int argc,char **argv)
 	float f_arr[2]={FLT_MIN,FLT_MAX };
 	char c_arr[2]={'a','A'};
 	Boolean<true> b;
-	integer<INT_MAX> i;
+	Integer<INT_MAX> i;
 //	floating<FLT_MAX> f;
 
-	floating<INT_MAX> f;
+	Floating<INT_MAX> f;
 
 	swap (i_arr[0], i_arr[1]);
 	TEST_ASSERT(i_arr[0] > i_arr[1]);
