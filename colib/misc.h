@@ -82,14 +82,24 @@ namespace colib {
 
     /// Boolean values, initialized to false; useful with hashtable implementations.
 
-    template <bool INITIAL>
+    template <bool INITIAL=false>
     struct Boolean {
         bool value;
         Boolean() {
             value = INITIAL;
         }
-        operator bool() {
+        operator bool&() {
             return value;
+        }
+        void operator=(bool other) {
+            value = other;
+        }
+    };
+
+    struct Bool {
+        bool value;
+        Bool() {
+            value = false;
         }
         operator bool&() {
             return value;
@@ -102,10 +112,23 @@ namespace colib {
     /// Integer values initialized to the given value; useful with hashtable implementations.
 
     template <int INITIAL>
-    struct integer {
+    struct Integer {
         int value;
-        integer() {
+        Integer() {
             value = INITIAL;
+        }
+        operator int&() {
+            return value;
+        }
+        void operator=(int other) {
+            value = other;
+        }
+    };
+
+    struct Int {
+        int value;
+        Int() {
+            value = 0;
         }
         operator int&() {
             return value;
@@ -117,13 +140,26 @@ namespace colib {
 
     /// Floating point values initialized to the given value; useful with hashtable implementations.
 
-    template <int INITIAL> // cannot be float due to C++ restrictions
-    struct floating {
+    template <int INITIAL=0> // cannot be float due to C++ restrictions
+    struct Floating {
         float value;
-        floating() {
+        Floating() {
             value = INITIAL;
         }
-        operator floating&() {
+        operator float&() {
+            return value;
+        }
+        void operator=(int other) {
+            value = other;
+        }
+    };
+
+    struct Float {
+        float value;
+        Float() {
+            value = 0.0;
+        }
+        operator float&() {
             return value;
         }
         void operator=(int other) {
