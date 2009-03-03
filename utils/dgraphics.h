@@ -34,8 +34,18 @@
 namespace iulib {
     void dinit(int w,int h,bool force=false);
     bool dactive();
-    void dsection(const char *name);
-    void dend();
+    const char *dsection_set(const char *name);
+    struct DSection {
+	const char *last;
+	DSection(const char *name) {
+	    last = dsection_set(name);
+	}
+	~DSection() {
+	    dsection_set(last);
+	}
+    };
+#define dsection(x) DSection __dsection__(x)
+    void dend() WARN_DEPRECATED;
     void dclear(int rgb);
     template <class T>
     void dshow(colib::narray<T> &data,const char *spec="",double angle=90,int smooth=1,int rgb=0);

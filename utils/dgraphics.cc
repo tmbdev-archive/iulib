@@ -151,12 +151,17 @@ namespace iulib {
         return screen && active;
     }
 
-    void dsection(const char *section) {
+    static const char *current_section;
+
+    const char *dsection_set(const char *section) {
+	const char *last = current_section;
+	current_section = section;
         if(!dgraphics) {
             active = true;
-        } else {
-            active = strstr(dgraphics,section);
+        } else if(current_section) {
+            active = strstr(dgraphics,current_section);
         }
+	return last;
     }
 
     void dend() {
