@@ -103,6 +103,13 @@ namespace colib {
     }
 
     template <class T>
+    inline void argsort(narray<int> &index,narray<T> &values) {
+        index.resize(values.length());
+        for(int i=0;i<values.length();i++) index[i] = i;
+        quicksort(index,values,0,index.length());
+    }
+
+    template <class T>
     inline void quickrank(narray<int> &rank,narray<T> &values) {
         intarray index;
         quicksort(index,values);
