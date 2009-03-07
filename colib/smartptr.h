@@ -114,6 +114,7 @@ namespace colib {
     class autodel {
     private:
         T *pointer;
+        autodel(autodel<T> &other);
 
     public:
 
@@ -127,12 +128,6 @@ namespace colib {
 
         ~autodel() {
             if(pointer) delete pointer;
-        }
-
-        /// Copy constructor (always throws)
-        autodel(const autodel &other) {
-            throw "autodel's copy constructor should not be used.\n\
-                   Return pointers from methods and use assignment operator.";
         }
 
         /// Initialization with a pointer transfers ownership to the class.
@@ -217,6 +212,7 @@ namespace colib {
     class autofree {
     private:
         T *pointer;
+	autofree(autofree<T> &);
 
     public:
 
@@ -315,6 +311,7 @@ namespace colib {
     class autoref {
     private:
         T *pointer;
+	autoref(autoref<T> &);
 
     public:
 
@@ -435,9 +432,9 @@ namespace colib {
                 stream = fopen(file,mode);
                 if(!stream) {
                     if(mode[0]=='w' || mode[0]=='a')
-                        throw "cannot open file for writing";
+                        throwf("%s: cannot open file for writing",file);
                     else
-                        throw "cannot open file for reading";
+                        throwf("%s: cannot open file for reading",file);
                 }
             }
         }
