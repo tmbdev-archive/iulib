@@ -130,6 +130,9 @@ namespace iulib {
     static SDL_Surface *screen;
 
     void dinit(int w,int h,bool force) {
+        if(getenv("dgeometry")) {
+            sscanf(getenv("dgeometry"),"%dx%d",&w,&h);
+        }
         dgraphics = getenv("dgraphics");
         if(force || dgraphics) {
             SDL_Init(SDL_INIT_EVERYTHING|SDL_INIT_NOPARACHUTE);

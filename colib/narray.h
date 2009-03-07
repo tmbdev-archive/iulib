@@ -143,6 +143,13 @@ namespace colib {
             }
             copy(other);
         }
+        template <class S>
+        void operator=(const narray<S> &other) {
+            if(other.length1d()>=NARRAY_THRESHOLD_COPY) {
+                NARRAY_NOTICE("narray assign larger than threshold");
+            }
+            copy(other);
+        }
 #endif
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
         // efficient r-value semantics, from C++0x
