@@ -1,27 +1,27 @@
 // -*- C++ -*-
 
-// Copyright 2006-2007 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz 
+// Copyright 2006-2007 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz
 // or its licensors, as applicable.
 // Copyright 1995-2005 Thomas M. Breuel
-// 
+//
 // You may not use this file except under the terms of the accompanying license.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License"); you
 // may not use this file except in compliance with the License. You may
 // obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// 
+//
 // Project: iulib -- image understanding library
 // File: imgfilters.cc
 // Purpose: misc image filters: ridges, zero crossings, etc.
 // Responsible: tmb
-// Reviewer: 
-// Primary Repository: 
+// Reviewer:
+// Primary Repository:
 // Web Sites: www.iupr.org, www.dfki.de
 
 extern "C" {
@@ -75,15 +75,15 @@ namespace iulib {
         }
 
         RidgeDetector(floatarray &im, floatarray &zero, floatarray &strength,
-                floatarray &angle) :
-            mk2(strength) {
+                floatarray &angle) : mk2(strength) {
             makelike(mk2, im);
-            makelike(mk1, im);
-            makelike(mpx, im);
-            makelike(mpy, im);
-            makelike(mdx, im);
-            makelike(mdy, im);
-            makelike(angle, im);
+            mk2 = 0;
+            mk1 = mk2;
+            mpx = mk2;
+            mpy = mk2;
+            mdx = mk2;
+            mdy = mk2;
+            angle = mk2;
 
             int w = im.dim(0), h = im.dim(1);
 
@@ -159,7 +159,7 @@ namespace iulib {
             }
         }
     }
-    
+
     /// Compute the laplacian of an image.
     /// (This function should be renamed to laplacian() once nobody uses
     ///  old laplacian() anymore). --IM
@@ -301,13 +301,13 @@ namespace iulib {
                 image(i, j) = k2; // necessarily the smaller eigenvalue
                 //float k1=(di+dyy+dxx)/2.0;
                 //float ny2=dxy?-(di-dyy+dxx)/dxy/2.0:0.0;
-                //float x2=1.0/(t=vis_hypot(1.0,ny2)); 
+                //float x2=1.0/(t=vis_hypot(1.0,ny2));
                 //float y2=ny2/t;
             }
     }
 
     /// Kitchen Rosenfeld Corner Detector
-    /// 
+    ///
     /// Computes the curvature of the level curves.  If masked is true,
     /// then on input, non-zero elements in "corners" indicate where the
     /// curvature is to be computed.

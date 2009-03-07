@@ -133,7 +133,7 @@ namespace colib {
             total = 0;
             allocated = 0;
             if(other.length1d()>=NARRAY_THRESHOLD_INIT) {
-                NARRAY_NOTICE("narray copy larger than threshold");
+                NARRAY_NOTICE("narray copy constructor larger than threshold");
             }
             *this = other;
         }
