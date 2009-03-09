@@ -44,18 +44,20 @@ namespace colib {
      */
     template<class T> class iustring {
     public:
-        iustring() : len(0), cBuf(NULL) {
+        iustring() : len(0) {
         }
-        iustring(int n) : buf(n), len(0), cBuf(NULL) {
+        iustring(int n) : buf(n), len(0) {
             if(n > 0) {
                 buf.at(0) = '\0';
             }
         }
-        iustring(const char* src) : len(0), cBuf(NULL) {
+        iustring(const iustring<T>& src) : len(0) {
+            append(src);
+        }
+        iustring(const char* src) : len(0) {
             append(src);
         }
         ~iustring() {
-            free(cBuf);  // (if necessary)
         }
         int length() const {
             return len;
@@ -293,13 +295,10 @@ namespace colib {
         iustring<T> substr(int pos) const {
             return substr(pos, len-pos);
         }
-        const char* c_str() {
-            cBuf = (char*)realloc(cBuf, len+1);
-            copy(cBuf, len);
-            cBuf[len] = '\0';
-            return cBuf;
+        const T* c_str() {
+            return buf.data;
         }
-        operator const char*() {
+        operator const T*() {
             return c_str();
         }
         narray<T>& data() const {
@@ -383,7 +382,6 @@ namespace colib {
     private:
         narray<T> buf;    /// the actual characters
         int len;          /// length of the string
-        char* cBuf;       /// just for c_str()
     };
 
     template<class T>
@@ -432,29 +430,41 @@ namespace colib {
         return !operator==(s1, s2);
     }
     template<class T>
-    int sprintf(iustring<T>& str, const char *format, ...) {
-        char* tmp = (char*)malloc(4096);
+    inline int sprintf(iustring<T>& str, const char *format, ...) {
+        int maxLen = 64;
+        char* tmp = NULL;
+        int result = 0;
         va_list va;
-        va_start(va, format);
-        int result = vsnprintf(tmp, 4096, format, va);
-        va_end(va);
+        do {
+            maxLen *= 2;
+            tmp = (char*)realloc(tmp, maxLen+1);
+            va_start(va, format);
+            result = vsnprintf(tmp, maxLen, format, va);
+            va_end(va);
+        } while(result >= maxLen);
         str.assign(tmp);
         free(tmp);
         return result;
     }
     template<class T>
-    int sprintf_append(iustring<T>& str, const char *format, ...) {
-        char* tmp = (char*)malloc(4096);
+    inline int sprintf_append(iustring<T>& str, const char *format, ...) {
+        int maxLen = 64;
+        char* tmp = NULL;
+        int result = 0;
         va_list va;
-        va_start(va, format);
-        int result = vsnprintf(tmp, 4096, format, va);
-        va_end(va);
+        do {
+            maxLen *= 2;
+            tmp = (char*)realloc(tmp, maxLen+1);
+            va_start(va, format);
+            result = vsnprintf(tmp, maxLen, format, va);
+            va_end(va);
+        } while(result >= maxLen);
         str.append(tmp);
         free(tmp);
         return result;
     }
     template<class T>
-    int scanf(iustring<T>& str, const char *format, ...) {
+    inline int scanf(iustring<T>& str, const char *format, ...) {
         const char* buf = str.c_str();
         va_list va;
         va_start(va, format);
@@ -463,7 +473,7 @@ namespace colib {
         return result;
     }
     template<class T>
-    iustring<T>& fgets(iustring<T>& str, FILE* stream = stdin) {
+    inline iustring<T>& fgets(iustring<T>& str, FILE* stream = stdin) {
         int c;
         while(((c = fgetc(stream)) != EOF) && (c != '\n')) {
             str.push_back(c);
@@ -471,7 +481,7 @@ namespace colib {
         return str;
     }
     template<class T>
-    int fputs(const iustring<T>& str, FILE* stream = stdout) {
+    inline int fputs(const iustring<T>& str, FILE* stream = stdout) {
         for(int i=0; i<str.length(); i++) {
             if(fputc(str[i], stream) == EOF) {
                 return EOF;
@@ -483,7 +493,7 @@ namespace colib {
         return str.length() + 1;
     }
     template<class T>
-    int read(iustring<T>& str, int n, FILE* stream) {
+    inline int read(iustring<T>& str, int n, FILE* stream) {
         T c;
         int i = 0;
         while((i < n) && (fread(&c, sizeof(T), 1, stream) == 1)) {
@@ -496,11 +506,11 @@ namespace colib {
         return -i;
     }
     template<class T>
-    int fread(iustring<T>& str, FILE* stream) {
+    inline int fread(iustring<T>& str, FILE* stream) {
         return read(str, INT_MAX, stream);
     }
     template<class T>
-    int write(iustring<T>& str, int n, FILE* stream) {
+    inline int write(iustring<T>& str, int n, FILE* stream) {
         n = iustring<T>::limit(0, str.length(), n);
         int i = 0;
         while((i < n) && (fwrite(&str[i], sizeof(T), 1, stream) == 1)) {
@@ -509,10 +519,10 @@ namespace colib {
         return i;
     }
     template<class T>
-    int fwrite(iustring<T>& str, FILE* stream) {
+    inline int fwrite(iustring<T>& str, FILE* stream) {
         return write(str, str.length(), stream);
     }
-    void re_compile(regex_t* regex, const char* pattern, int cflags=0, int eflags=0) {
+    inline void re_compile(regex_t* regex, const char* pattern, int cflags=0, int eflags=0) {
         int error = regcomp(regex, pattern, cflags);
         if(error) {
             regfree(regex);
@@ -522,7 +532,7 @@ namespace colib {
         }
     }
     template<class T>
-    int re_search(const iustring<T>& str, const char* pattern, int cflags=0, int eflags=0) {
+    inline int re_search(const iustring<T>& str, const char* pattern, int cflags=0, int eflags=0) {
         regex_t regex;
         re_compile(&regex, pattern, cflags, eflags);
         char* buf = (char*)malloc(str.length()+1);
@@ -541,7 +551,7 @@ namespace colib {
         return index;
     }
     template<class T>
-    int re_gsub(iustring<T>& str, const char* pattern, const char* sub, int n = -1, int cflags=0, int eflags=0) {
+    inline int re_gsub(iustring<T>& str, const char* pattern, const char* sub, int n = -1, int cflags=0, int eflags=0) {
         regex_t regex;
         re_compile(&regex, pattern, cflags, eflags);
         const char* buf = str.c_str();
@@ -566,7 +576,7 @@ namespace colib {
         return nMatches;
     }
     template<class T>
-    int re_sub(iustring<T>& str, const char* pattern, const char* sub, int cflags=0, int eflags=0) {
+    inline int re_sub(iustring<T>& str, const char* pattern, const char* sub, int cflags=0, int eflags=0) {
         return re_gsub(str, pattern, sub, 1, cflags, eflags);
     }
 
