@@ -46,7 +46,7 @@ namespace colib {
     public:
         iustring() : len(0), cBuf(NULL) {
         }
-        iustring(int n) : len(0), buf(n), cBuf(NULL) {
+        iustring(int n) : buf(n), len(0), cBuf(NULL) {
             if(n > 0) {
                 buf.at(0) = '\0';
             }
@@ -80,13 +80,13 @@ namespace colib {
             return at(pos);
         }
         const T& at(int pos) const {
-            if(pos < 0 | pos >= len) {
+            if(pos < 0 || unsigned(pos) >= unsigned(len)) {
                 throw "out of bounds";
             }
             return buf(pos);
         }
         T& at(int pos) {
-            if(pos < 0 | pos >= len) {
+            if(pos < 0 || unsigned(pos) >= unsigned(len)) {
                 throw "out of bounds";
             }
             return buf(pos);
@@ -352,7 +352,7 @@ namespace colib {
             if(pos < 0) {
                 pos = len-1;
             } else {
-                pos = pos = limit(0, len-1, pos);
+                pos = limit(0, len-1, pos);
             }
             for(int i=pos; i>=0; i--) {
                 if(compare(i, n, s, 0, n) == 0) {
@@ -549,7 +549,7 @@ namespace colib {
         regmatch_t regmatch;
         int s = 0;
         int nMatches = 0;
-        int error;
+        int error = 0;
         while((n<0 || nMatches<n) && ((error = regexec(&regex, buf + s, 1, &regmatch, eflags)) == 0)) {
             result.append(str.substr(s, regmatch.rm_so));
             result.append(sub);
