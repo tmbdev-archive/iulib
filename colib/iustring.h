@@ -602,31 +602,32 @@ namespace colib {
     template<class T>
     void encodeUTF8(bytearray& dst, iustring<T>& src) {
         for(int i=0; i<src.length(); i++) {
-            if(src[i] < 128) {
-                dst.push(src[i]);
-            } else if(src[i] < 2048) {
-                dst.push(0xC0 | (src[i] >> 6));
-                dst.push(0x80 | (src[i] & 0x3F));
-            } else if(src[i] < 65536) {
-                dst.push(0xE0 | (src[i] >> 12));
-                dst.push(0x80 | ((src[i] >> 6) & 0x3F));
-                dst.push(0x80 | (src[i] & 0x3F));
-            } else if(src[i] < 2097152) {
-                dst.push(0xF0 | (src[i] >> 18));
-                dst.push(0x80 | ((src[i] >> 12) & 0x3F));
-                dst.push(0x80 | ((src[i] >> 6) & 0x3F));
-                dst.push(0x80 | (src[i] & 0x3F));
+            T c = src[i];
+            if(c < 128) {
+                dst.push(c);
+            } else if(c < 2048) {
+                dst.push(0xC0 | (c >> 6));
+                dst.push(0x80 | (c & 0x3F));
+            } else if(c < 65536) {
+                dst.push(0xE0 | (c >> 12));
+                dst.push(0x80 | ((c >> 6) & 0x3F));
+                dst.push(0x80 | (c & 0x3F));
+            } else if(c < 2097152) {
+                dst.push(0xF0 | (c >> 18));
+                dst.push(0x80 | ((c >> 12) & 0x3F));
+                dst.push(0x80 | ((c >> 6) & 0x3F));
+                dst.push(0x80 | (c & 0x3F));
             } else {
                 throw "UTF-8 encoding error";
             }
         }
     }
     template<class T>
-    void decodeUTF8(iustring<T>& dst, const char* src) {
+    void decodeUTF8(iustring<T>& dst, const char* src, int n) {
         dst.clear();
         unsigned int x = 0;
         int b = -1;
-        for(int i=0; src[i]!='\0'; i++) {
+        for(int i=0; i<n; i++) {
             unsigned char c = src[i];
             // -- ASCII --
             if(c < 128) {
@@ -662,9 +663,59 @@ namespace colib {
             }
         }
     }
+    template<class T>
+    void encodeUTF16(bytearray& dst, iustring<T>& src) {
+        for(int i=0; i<src.length(); i++) {
+            T c = src[i];
+            // -- 2 bytes --
+            if(c <= 0xFFFF) {
+                dst.push(c & 0xFF);
+                dst.push(c >> 8);
+            // -- 4 bytes --
+            } else {
+                c -= 0x10000;
+                dst.push(0xDC00 | (c & 0x3FF));
+                dst.push(0xD800 | ((c >> 10) & 0x3FF));
+            }
+        }
+    }
+    template<class T>
+    void decodeUTF16(iustring<T>& dst, const char* src, int n) {
+        dst.clear();
+        unsigned int x = 0;
+        unsigned int y = 0;
+        int b = 0;
+        for(int i=0; i<n; i++) {
+            unsigned char c = src[i];
+            if(b == 0) {
+                x = c;
+            } else if(b == 1) {
+                x |= ((unsigned int)c) << 8;;
+                if(x < 0xD800 || x > 0xDFFF) {
+                    dst.push_back(x);
+                    b = -1;
+                } else if(x < 0xD800 || x > 0xDBFF) {
+                    throw "UTF-16 decoding error";
+                }
+            } else if(b == 2){
+                y = c;
+            } else if(b == 3){
+                y |= ((unsigned int)c) << 8;
+                if(y < 0xDC00 || y > 0xDFFF) {
+                    throw "UTF-16 decoding error";
+                }
+                x = (((x & 0x3FF) << 10) | (y & 0x3FF)) + 0x10000;
+                dst.push_back(x);
+                b = -1;
+            }
+            b++;
+        }
+    }
 
     typedef iustring<char> iucstring;
     typedef iustring<wchar_t> iuwstring;
+    typedef iustring<int> iuistring;
+    typedef iustring<unsigned char> iubstring;
 }
 
 #endif /* iustring_h__ */
