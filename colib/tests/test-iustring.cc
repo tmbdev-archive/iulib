@@ -148,5 +148,42 @@ int main(int argc,char **argv) {
     fread(s4, file);
     fclose(file);
     TEST_ASSERT(s3 == s4);
+
+    // -- testing UTF-8 conversions --
+    iustring<int> s8;
+    s8.push_back('0'); // Digit Zero
+    s8.push_back(0xE4); // Latin Small Letter A With Diaeresis
+    s8.push_back(0xF6); // Latin Small Letter O With Diaeresis
+    s8.push_back(0xFC); // Latin Small Letter U With Diaeresis
+    s8.push_back(0x20AC); // Euro Sign
+    s8.push_back(0xDF); // Latin Small Letter Sharp S (german)
+    s8.push_back(0x2079); // Superscript Nine
+    s8.push_back(0x1E83); // Latin Small Letter W With Acute
+    s8.push_back(0x1EF3); // Latin Small Letter Y With Grave
+    s8.push_back('?'); // Question Mark
+    bytearray utf8;
+    encodeUTF8(utf8, s8);
+    utf8.push('\0');
+    file = fopen("__utf-8-test__", "w");
+    fprintf(file, "%s", utf8.data);
+    fclose(file);
+    char t[256];
+    file = fopen("__utf-8-test__", "r");
+    TEST_ASSERT(fscanf(file, "%s", t) == 1);
+    fclose(file);
+    iustring<int> s9;
+    decodeUTF8(s9, t);
+    TEST_ASSERT(s8.length() == s9.length());
+    for(int i=0; i<s8.length(); i++) {
+        TEST_ASSERT(s8[i] == s9[i]);
+    }
+
+    // -- test nustring conversion --
+    nustring ns = "Hello World";
+    s3.assign(ns);
+    ns = "123456";
+    TEST_ASSERT(ns == "123456");
+    s3.toNustring(ns);
+    TEST_ASSERT(ns == "Hello World");
 	return 0;
 }

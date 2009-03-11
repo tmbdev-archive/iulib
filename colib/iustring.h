@@ -35,6 +35,7 @@
 #include <regex.h>
 
 #include "narray.h"
+#include "nustring.h"
 
 namespace colib {
 
@@ -55,6 +56,9 @@ namespace colib {
             append(src);
         }
         iustring(const char* src) : len(0) {
+            append(src);
+        }
+        iustring(const nustring& src) : len(0) {
             append(src);
         }
         ~iustring() {
@@ -134,6 +138,12 @@ namespace colib {
             sprintf_append(*this, "%f", x);
             return *this;
         }
+        iustring<T>& append(const nustring& str) {
+            for(int i=0; i<str.dim(0); i++) {
+                push_back(str(i).ord());
+            }
+            return *this;
+        }
         template <class A>
         iustring<T>& operator+=(const A& s) {
             return append(s);
@@ -166,13 +176,16 @@ namespace colib {
         }
         iustring<T>& assign(int n, T c) {
             clear();
-            append(n, c);
+            return append(n, c);
         }
-        iustring<T>& operator=(const char* s) {
-            return assign(s);
+        template<class A>
+        iustring<T>& assign(const A& x) {
+            clear();
+            return append(x);
         }
-        iustring<T>& operator=(const iustring<T>& str) {
-            return assign(str);
+        template<class A>
+        iustring<T>& operator=(const A& x) {
+            return assign(x);
         }
         iustring<T>& replace(int pos, int n1, const char* s, int n2) {
             iustring<T> tmp;
@@ -371,6 +384,13 @@ namespace colib {
                 }
             }
             return npos;
+        }
+
+        void toNustring(nustring& dst) {
+            dst.clear();
+            for(int i=0; i<len; i++) {
+                dst.push(nuchar(buf(i)));
+            }
         }
 
         static const int npos = -1;
@@ -578,6 +598,69 @@ namespace colib {
     template<class T>
     inline int re_sub(iustring<T>& str, const char* pattern, const char* sub, int cflags=0, int eflags=0) {
         return re_gsub(str, pattern, sub, 1, cflags, eflags);
+    }
+    template<class T>
+    void encodeUTF8(bytearray& dst, iustring<T>& src) {
+        for(int i=0; i<src.length(); i++) {
+            if(src[i] < 128) {
+                dst.push(src[i]);
+            } else if(src[i] < 2048) {
+                dst.push(0xC0 | (src[i] >> 6));
+                dst.push(0x80 | (src[i] & 0x3F));
+            } else if(src[i] < 65536) {
+                dst.push(0xE0 | (src[i] >> 12));
+                dst.push(0x80 | ((src[i] >> 6) & 0x3F));
+                dst.push(0x80 | (src[i] & 0x3F));
+            } else if(src[i] < 2097152) {
+                dst.push(0xF0 | (src[i] >> 18));
+                dst.push(0x80 | ((src[i] >> 12) & 0x3F));
+                dst.push(0x80 | ((src[i] >> 6) & 0x3F));
+                dst.push(0x80 | (src[i] & 0x3F));
+            } else {
+                throw "UTF-8 encoding error";
+            }
+        }
+    }
+    template<class T>
+    void decodeUTF8(iustring<T>& dst, const char* src) {
+        dst.clear();
+        unsigned int x = 0;
+        int b = -1;
+        for(int i=0; src[i]!='\0'; i++) {
+            unsigned char c = src[i];
+            // -- ASCII --
+            if(c < 128) {
+                x = c;
+                b = 0;
+            // -- not first byte --
+            } else if(c < 0xC0) {
+                if(b<=0) {
+                    throw "UTF-8 decoding error";
+                }
+                x += (c & 0x3F) << (6*(b-1));
+                b--;
+            // -- first of two bytes --
+            } else if(c < 0xE0) {
+                x = (c & 0x1F) << 6;
+                b = 1;
+            // -- first of three bytes --
+            } else if(c < 0xF0) {
+                x = (c & 0xF) << 12;
+                b = 2;
+            // -- first of four bytes --
+            } else {
+                x = (c & 0x7) << 18;
+                b = 3;
+            }
+            // -- check if data type is big enough --
+            if(sizeof(T) < unsigned(b+1)) {
+                throw "UTF-8 decoding error";
+            }
+            // -- character complete --
+            if(b==0) {
+                dst.push_back(x);
+            }
+        }
     }
 
     typedef iustring<char> iucstring;
