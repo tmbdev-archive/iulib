@@ -49,6 +49,7 @@
 #include "rowarrays.h"
 #include "smartptr.h"
 #include "strbuf.h"
+#include "iustring.h"
 #include "vec2.h"
 #include "deprecation.h"
 #include "debugf.h"
