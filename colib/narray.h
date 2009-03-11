@@ -256,14 +256,14 @@ namespace colib {
 
         /// Truncates the array.
 
-        void truncate(index_t d0) {
+        narray<T> &truncate(index_t d0) {
             check(d0<=dims[0] && dims[1]==0,"can only truncate 1D arrays to smaller arrays");
             setdims_(d0);
         }
 
         /// Resizes the array, possibly destroying any data previously held by it.
 
-        void resize(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+        narray<T> &resize(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
             index_t ntotal = total_(d0,d1,d2,d3);
             if(ntotal>total) {
                 delete [] data;
@@ -271,22 +271,25 @@ namespace colib {
             } else {
                 setdims_(d0,d1,d2,d3);
             }
+            return *this;
         }
 
         /// Resizes the array to the given size; this is guaranteed to reallocate
         /// the storage fresh.
 
-        void renew(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+        narray<T> &renew(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
             dealloc();
             resize(d0,d1,d2,d3);
+            return *this;
         }
 
         /// Reshapes the array; the new shape must have the same number of elements as before.
 
-        void reshape(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+        narray<T> &reshape(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
             index_t ntotal = total_(d0,d1,d2,d3);
             check(ntotal==total,"narray: bad reshape");
             dims[0] = d0; dims[1] = d1; dims[2] = d2; dims[3] = d3; dims[4] = 0;
+            return *this;
         }
 
         /// Determine the rank of the array.
@@ -594,7 +597,7 @@ namespace colib {
         /// Make the first array have the same dimensions as the second array.
 
         template <class S>
-        void makelike(narray<S> &b) {
+        narray<T> &makelike(narray<S> &b) {
             narray<T> &a = *this;
             int r = b.rank();
             switch(r) {
@@ -616,6 +619,7 @@ namespace colib {
             default:
                 throw "bad rank";
             }
+            return *this;
         }
 
         /// Check whether two narrays are equal (mostly for testing).
@@ -639,6 +643,7 @@ namespace colib {
         }
 
         /// common combination
+        /// deprecated; just use makelike(a,b) = 0;
 
         template <class S,class U>
         void makelike(narray<S> &b,U value) {
