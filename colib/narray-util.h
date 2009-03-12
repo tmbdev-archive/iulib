@@ -334,7 +334,7 @@ namespace colib {
     /// Array subscripting with fixed boundary conditions.
 
     template <class T,class U>
-    inline T bat(narray<T> &a,int i,U value) {
+    inline T bat1(narray<T> &a,int i,U value) {
         if(unsigned(i)>=a.dim(0)) return value;
         return a.unsafe_at(i);
     }
