@@ -1,27 +1,27 @@
 // -*- C++ -*-
 
-// Copyright 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz 
+// Copyright 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz
 // or its licensors, as applicable.
 // Copyright 1995-2005 Thomas M. Breuel.
-// 
+//
 // You may not use this file except under the terms of the accompanying license.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License"); you
 // may not use this file except in compliance with the License. You may
 // obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// 
+//
 // Project: iulib -- image understanding library
 // File: coords.h
 // Purpose: points and rectangles with integer coordinates
 // Responsible: tmb
-// Reviewer: 
-// Primary Repository: 
+// Reviewer:
+// Primary Repository:
 // Web Sites: www.iupr.org, www.dfki.de
 
 /// \file coords.h
@@ -56,6 +56,20 @@ namespace colib {
         }
         bool empty() {
             return x0>=x1 || y0>=y1;
+        }
+        void pad_by(int dx,int dy) {
+            ASSERT(!empty());
+            x0 -= dx;
+            y0 -= dy;
+            x1 += dx;
+            y1 += dy;
+        }
+        void shift_by(int dx,int dy) {
+            ASSERT(!empty());
+            x0 += dx;
+            y0 += dy;
+            x1 += dx;
+            y1 += dy;
         }
         int width() {
             int w = x1-x0;
@@ -145,11 +159,11 @@ namespace colib {
         bool includes(int x,int y) {
             return (x >= x0 && x <= x1 && y >= y0 && y <= y1);
         }
-  
+
         bool includes(float x,float y) {
             return (x >= x0 && x <= x1 && y >= y0 && y <= y1);
         }
-  
+
         bool includes(const rectangle &other) {
             return this->includes(other.x0,other.y0) && this->includes(other.x1,other.y1);
         }
@@ -172,7 +186,7 @@ namespace colib {
             rectangle isect = this->intersection(other);
             if(area())
                 return isect.area()/(float)area();
-            else 
+            else
                 return -1;
         }
     };

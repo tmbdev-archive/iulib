@@ -157,14 +157,14 @@ namespace iulib {
     static const char *current_section;
 
     const char *dsection_set(const char *section) {
-	const char *last = current_section;
-	current_section = section;
+        const char *last = current_section;
+        current_section = section;
         if(!dgraphics) {
             active = true;
         } else if(current_section) {
-            active = strstr(dgraphics,current_section);
+            active = strstr(current_section,dgraphics);
         }
-	return last;
+        return last;
     }
 
     void dend() {
