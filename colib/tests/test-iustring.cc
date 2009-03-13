@@ -201,5 +201,19 @@ int main(int argc,char **argv) {
     TEST_ASSERT(ns == "123456");
     s3.toNustring(ns);
     TEST_ASSERT(ns == "Hello World");
+
+    // -- tests for components.cc --
+    iucstring prefix = "prefix";
+    prefix += "_";
+    iucstring entry = "prefix_key=value";
+    TEST_ASSERT(!entry.compare(0, prefix.length(), prefix));
+    int where = entry.find('=');
+    TEST_ASSERT(where >= 0);
+    entry.erase(where);
+    TEST_ASSERT(entry.substr(prefix.length()) == "key");
+
+    iucstring base = "filename.png";
+    base.erase(base.length()-4);
+    TEST_ASSERT(base == "filename");
 	return 0;
 }
