@@ -41,7 +41,8 @@ namespace iulib {
         Tiff(const char* filename, const char* mode);
         Tiff(FILE* file, const char* mode);
         ~Tiff();
-        int numImages();
+        ///@return number of pages inside the tiff file
+        int numPages();
         /// reads page in original color format
         void getPageRaw(bytearray &image, int page, bool gray=true);
         /// reads page in original color format

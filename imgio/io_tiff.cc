@@ -59,7 +59,7 @@ namespace iulib {
         TIFFClose(tif);
     }
 
-    int Tiff::numImages() {
+    int Tiff::numPages() {
         int n = 0;
         do{
             TIFFSetDirectory(tif, n);
