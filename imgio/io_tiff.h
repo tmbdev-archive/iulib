@@ -27,11 +27,12 @@
 #define h_tiff__
 
 #include "colib/colib.h"
-#include "iulib/iulib.h"
+#include "iulib.h"
 #include "tiff.h"
 #include "tiffio.h"
 
 namespace iulib {
+    using namespace colib;
 
     /**
      * @brief reading and writing TIFF images
