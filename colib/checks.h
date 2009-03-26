@@ -119,7 +119,10 @@ namespace colib {
 
 #define CHECK_ARG(X) do{while(!(X)) throw "CHECK " __FILE__ ":" STR___(__LINE__) " " #X;}while(0)
 //#define CHECK(X) do{while(!(X)) throw "CHECK " __FILE__ ":" STR___(__LINE__) " " #X;}while(0)
+#ifndef CHECK
+// FIXME remove usages of CHECK from the rest of the code
 #define CHECK(X) CHECK_ARG(X)
+#endif
 #define CHECK_CONDITION(X) do{while(!(X)) throw "CHECK " __FILE__ ":" STR___(__LINE__) " " #X;}while(0)
 
 /// Check the assertion and die if it fails.  Use this if the program
