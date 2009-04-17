@@ -133,20 +133,20 @@ namespace colib {
             total = 0;
             allocated = 0;
             if(other.length1d()>=NARRAY_THRESHOLD_INIT) {
-                NARRAY_NOTICE("narray copy constructor larger than threshold");
+                throw("narray copy constructor larger than threshold");
             }
             *this = other;
         }
         void operator=(const narray<T> &other) {
             if(other.length1d()>=NARRAY_THRESHOLD_COPY) {
-                NARRAY_NOTICE("narray assign larger than threshold");
+                throw("narray assign larger than threshold");
             }
             copy(other);
         }
         template <class S>
         void operator=(const narray<S> &other) {
             if(other.length1d()>=NARRAY_THRESHOLD_COPY) {
-                NARRAY_NOTICE("narray assign larger than threshold");
+                throw("narray assign larger than threshold");
             }
             copy(other);
         }
