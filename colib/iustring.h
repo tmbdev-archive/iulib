@@ -309,6 +309,7 @@ namespace colib {
             return substr(pos, len-pos);
         }
         const T* c_str() {
+            if(!buf.data) return "";
             return buf.data;
         }
         operator const T*() {
