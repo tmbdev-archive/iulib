@@ -1,24 +1,24 @@
-// Copyright 2006-2007 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz 
+// Copyright 2006-2007 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz
 // or its licensors, as applicable.
-// 
+//
 // You may not use this file except under the terms of the accompanying license.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License"); you
 // may not use this file except in compliance with the License. You may
 // obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// 
+//
 // Project: iulib -- image understanding library
 // File: imgio.cc
 // Purpose: reading image files determining their format automatically
 // Responsible: mezhirov
-// Reviewer: 
-// Primary Repository: 
+// Reviewer:
+// Primary Repository:
 // Web Sites: www.iupr.org, www.dfki.de
 
 #include "imgio.h"
@@ -55,6 +55,7 @@ namespace iulib {
         int n = strlen(filename);
         if(n>=5) {
             if(!strcasecmp(filename+(n-5),".jpeg")) return "jpg";
+            if(!strcasecmp(filename+(n-5),".tiff")) return "tif";
         }
         if(n>=4) {
             if(!strcasecmp(filename+(n-4),".jpg")) return "jpg";
@@ -63,6 +64,7 @@ namespace iulib {
             if(!strcasecmp(filename+(n-4),".pgm")) return "pnm";
             if(!strcasecmp(filename+(n-4),".ppm")) return "pnm";
             if(!strcasecmp(filename+(n-4),".pnm")) return "pnm";
+            if(!strcasecmp(filename+(n-4),".tif")) return "tif";
         }
         static char error[1024];
         snprintf(error,1020,"%s: file has an unknown extension",filename);
@@ -100,6 +102,7 @@ namespace iulib {
         if(!strcmp(format,"jpg")) read_jpeg_packed(image,f);
         else if(!strcmp(format,"png")) read_png_packed(image,f,false);
         else if(!strcmp(format,"pnm")) read_ppm_packed(f,image);
+        else if(!strcmp(format,"tif")) read_tiff_packed(image,f,false);
         else throw "unknown format";
     }
 
@@ -108,6 +111,7 @@ namespace iulib {
         if(!strcmp(format,"jpg")) read_jpeg_rgb(image,f);
         else if(!strcmp(format,"png")) read_png(image,f,false);
         else if(!strcmp(format,"pnm")) read_ppm_rgb(f,image);
+        else if(!strcmp(format,"tif")) read_tiff(image,f,false);
         else throw "unknown format";
     }
 
@@ -116,6 +120,7 @@ namespace iulib {
         if(!strcmp(format,"jpg")) read_jpeg_gray(image,f);
         else if(!strcmp(format,"png")) read_png(image,f,true);
         else if(!strcmp(format,"pnm")) read_pnm_gray(f,image);
+        else if(!strcmp(format,"tif")) read_tiff(image,f,true);
         else throw "unknown format";
     }
 
@@ -133,6 +138,7 @@ namespace iulib {
         if(!strcmp(format,"jpg")) read_jpeg_packed(image,stdio(path,"rb"));
         else if(!strcmp(format,"png")) read_png_packed(image,stdio(path,"rb"),false);
         else if(!strcmp(format,"pnm")) read_ppm_packed(stdio(path,"rb"),image);
+        else if(!strcmp(format,"tif")) read_tiff_packed(image, path);
         else throw "unknown format";
     }
 
@@ -141,6 +147,7 @@ namespace iulib {
         if(!strcmp(format,"jpg")) read_jpeg_rgb(image,stdio(path,"rb"));
         else if(!strcmp(format,"png")) read_png(image,stdio(path,"rb"),false);
         else if(!strcmp(format,"pnm")) read_ppm_rgb(stdio(path,"rb"),image);
+        else if(!strcmp(format,"tif")) read_tiff(image,path,false);
         else throw "unknown format";
     }
 
@@ -149,6 +156,7 @@ namespace iulib {
         if(!strcmp(format,"jpg")) read_jpeg_gray(image,stdio(path,"rb"));
         else if(!strcmp(format,"png")) read_png(image,stdio(path,"rb"),true);
         else if(!strcmp(format,"pnm")) read_pnm_gray(stdio(path,"rb"),image);
+        else if(!strcmp(format,"tif")) read_tiff(image,path,true);
         else throw "unknown format";
     }
 
@@ -161,7 +169,7 @@ namespace iulib {
     }
 
     // writing to file descriptors
-    
+
     void write_image_packed(FILE *f,intarray &image,const char *format) {
         CHECK_ARG2(f!=0,"null file argument");
         format = spec_fmt(format);
@@ -182,7 +190,7 @@ namespace iulib {
 
     void write_image_gray(FILE *f,bytearray &image,const char *format) {
         CHECK_ARG2(f!=0,"null file argument");
-        CHECK_ARG(image.rank()==2); 
+        CHECK_ARG(image.rank()==2);
         format = spec_fmt(format);
         if(!strcmp(format,"jpg")) throw "jpeg writing unimplemented"; //FIXME
         else if(!strcmp(format,"png")) write_png(f,image);

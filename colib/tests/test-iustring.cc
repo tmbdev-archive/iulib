@@ -148,5 +148,72 @@ int main(int argc,char **argv) {
     fread(s4, file);
     fclose(file);
     TEST_ASSERT(s3 == s4);
+
+    // -- testing UTF-8 conversions --
+    iustring<int> s8;
+    s8.push_back('0'); // Digit Zero
+    s8.push_back(0xE4); // Latin Small Letter A With Diaeresis
+    s8.push_back(0xF6); // Latin Small Letter O With Diaeresis
+    s8.push_back(0xFC); // Latin Small Letter U With Diaeresis
+    s8.push_back(0x20AC); // Euro Sign
+    s8.push_back(0xDF); // Latin Small Letter Sharp S (german)
+    s8.push_back(0x2079); // Superscript Nine
+    s8.push_back(0x1E83); // Latin Small Letter W With Acute
+    s8.push_back(0x1EF3); // Latin Small Letter Y With Grave
+    s8.push_back('?'); // Question Mark
+    s8.push_back(0xFFFD); // Question Mark
+    char t[256];
+    int n;
+    bytearray utf8;
+    encodeUTF8(utf8, s8);
+    file = fopen("__utf-8-test__", "w");
+    n = fwrite(utf8.data, 1, utf8.length(), file);
+    fclose(file);
+    file = fopen("__utf-8-test__", "r");
+    n = fread(t, 1, 255, file);
+    fclose(file);
+    iustring<int> s9;
+    decodeUTF8(s9, t, n);
+    TEST_ASSERT(s8.length() == s9.length());
+    for(int i=0; i<s8.length(); i++) {
+        TEST_ASSERT(s8[i] == s9[i]);
+    }
+    // -- testing UTF-16 conversions --
+    bytearray utf16;
+    encodeUTF16(utf16, s8);
+    file = fopen("__utf-16-test__", "w");
+    n = fwrite(utf16.data, 1, utf16.length(), file);
+    fclose(file);
+    file = fopen("__utf-16-test__", "r");
+    n = fread(t, 1, 255, file);
+    fclose(file);
+    s9.clear();
+    decodeUTF16(s9, t, n);
+    TEST_ASSERT(s8.length() == s9.length());
+    for(int i=0; i<s8.length(); i++) {
+        TEST_ASSERT(s8[i] == s9[i]);
+    }
+
+    // -- test nustring conversion --
+    nustring ns = "Hello World";
+    s3.assign(ns);
+    ns = "123456";
+    TEST_ASSERT(ns == "123456");
+    s3.toNustring(ns);
+    TEST_ASSERT(ns == "Hello World");
+
+    // -- tests for components.cc --
+    iucstring prefix = "prefix";
+    prefix += "_";
+    iucstring entry = "prefix_key=value";
+    TEST_ASSERT(!entry.compare(0, prefix.length(), prefix));
+    int where = entry.find('=');
+    TEST_ASSERT(where >= 0);
+    entry.erase(where);
+    TEST_ASSERT(entry.substr(prefix.length()) == "key");
+
+    iucstring base = "filename.png";
+    base.erase(base.length()-4);
+    TEST_ASSERT(base == "filename");
 	return 0;
 }

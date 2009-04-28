@@ -60,8 +60,8 @@ if not conf.CheckLibWithHeader('png', 'png.h', 'C', 'png_byte;', 1):
     missing += " libpng12-dev"
 if not conf.CheckLibWithHeader('jpeg', 'jconfig.h', 'C', 'jpeg_std_error();', 1):
     missing += " libjpeg62-dev"    
-# if not conf.CheckLibWithHeader('tiff', 'tiff.h', 'C', 'inflate();', 1):
-#    missing += " libtiff4-dev"
+if not conf.CheckLibWithHeader('tiff', 'tiff.h', 'C', 'inflate();', 1):
+   missing += " libtiff4-dev"
 
 if missing:
     print "\nPlease install the following required libraries (or equivalent):"
@@ -90,13 +90,13 @@ datadir = prefix+"/share/iulib"
 bindir = prefix+"/bin"
 
 ### collect sources etc.
-env.Prepend(CPPPATH=[".","colib","imglib","imgio","imgbits","utils"])
+env.Prepend(CPPPATH=[".","colib","imglib","imgio","imgbits","utils","vidio"])
 
 sources = glob.glob("imglib/img*.cc") 
 sources += glob.glob("imgbits/img*.cc")
 sources += """
     imgio/autoinvert.cc imgio/imgio.cc imgio/io_jpeg.cc
-    imgio/io_pbm.cc imgio/io_png.cc
+    imgio/io_pbm.cc imgio/io_png.cc imgio/io_tiff.cc
 """.split()
 
 if have_vidio:

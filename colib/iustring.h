@@ -35,6 +35,7 @@
 #include <regex.h>
 
 #include "narray.h"
+#include "nustring.h"
 
 namespace colib {
 
@@ -44,18 +45,23 @@ namespace colib {
      */
     template<class T> class iustring {
     public:
-        iustring() : len(0), cBuf(NULL) {
+        iustring() : len(0) {
         }
-        iustring(int n) : buf(n), len(0), cBuf(NULL) {
+        iustring(int n) : buf(n), len(0) {
             if(n > 0) {
                 buf.at(0) = '\0';
             }
         }
-        iustring(const char* src) : len(0), cBuf(NULL) {
+        iustring(const iustring<T>& src) : len(0) {
+            append(src);
+        }
+        iustring(const char* src) : len(0) {
+            append(src);
+        }
+        iustring(const nustring& src) : len(0) {
             append(src);
         }
         ~iustring() {
-            free(cBuf);  // (if necessary)
         }
         int length() const {
             return len;
@@ -80,13 +86,15 @@ namespace colib {
             return at(pos);
         }
         const T& at(int pos) const {
-            if(unsigned(pos)>=unsigned(len))
+            if(pos < 0 || unsigned(pos) >= unsigned(len)) {
                 throw "out of bounds";
+            }
             return buf(pos);
         }
         T& at(int pos) {
-            if(unsigned(pos)>=unsigned(len))
+            if(pos < 0 || unsigned(pos) >= unsigned(len)) {
                 throw "out of bounds";
+            }
             return buf(pos);
         }
         iustring<T>& append(const char* s, int pos, int n) {
@@ -130,6 +138,12 @@ namespace colib {
             sprintf_append(*this, "%f", x);
             return *this;
         }
+        iustring<T>& append(const nustring& str) {
+            for(int i=0; i<str.dim(0); i++) {
+                push_back(str(i).ord());
+            }
+            return *this;
+        }
         template <class A>
         iustring<T>& operator+=(const A& s) {
             return append(s);
@@ -162,13 +176,16 @@ namespace colib {
         }
         iustring<T>& assign(int n, T c) {
             clear();
-            append(n, c);
+            return append(n, c);
         }
-        iustring<T>& operator=(const char* s) {
-            return assign(s);
+        template<class A>
+        iustring<T>& assign(const A& x) {
+            clear();
+            return append(x);
         }
-        iustring<T>& operator=(const iustring<T>& str) {
-            return assign(str);
+        template<class A>
+        iustring<T>& operator=(const A& x) {
+            return assign(x);
         }
         iustring<T>& replace(int pos, int n1, const char* s, int n2) {
             iustring<T> tmp;
@@ -291,13 +308,11 @@ namespace colib {
         iustring<T> substr(int pos) const {
             return substr(pos, len-pos);
         }
-        const char* c_str() {
-            cBuf = (char*)realloc(cBuf, len+1);
-            copy(cBuf, len);
-            cBuf[len] = '\0';
-            return cBuf;
+        const T* c_str() {
+            if(!buf.data) return "";
+            return buf.data;
         }
-        operator const char*() {
+        operator const T*() {
             return c_str();
         }
         narray<T>& data() const {
@@ -372,6 +387,13 @@ namespace colib {
             return npos;
         }
 
+        void toNustring(nustring& dst) {
+            dst.clear();
+            for(int i=0; i<len; i++) {
+                dst.push(nuchar(buf(i)));
+            }
+        }
+
         static const int npos = -1;
 
         inline static int limit(int minV, int maxV, int value) {
@@ -381,7 +403,6 @@ namespace colib {
     private:
         narray<T> buf;    /// the actual characters
         int len;          /// length of the string
-        char* cBuf;       /// just for c_str()
     };
 
     template<class T>
@@ -430,29 +451,41 @@ namespace colib {
         return !operator==(s1, s2);
     }
     template<class T>
-    int sprintf(iustring<T>& str, const char *format, ...) {
-        char* tmp = (char*)malloc(4096);
+    inline int sprintf(iustring<T>& str, const char *format, ...) {
+        int maxLen = 64;
+        char* tmp = NULL;
+        int result = 0;
         va_list va;
-        va_start(va, format);
-        int result = vsnprintf(tmp, 4096, format, va);
-        va_end(va);
+        do {
+            maxLen *= 2;
+            tmp = (char*)realloc(tmp, maxLen+1);
+            va_start(va, format);
+            result = vsnprintf(tmp, maxLen, format, va);
+            va_end(va);
+        } while(result >= maxLen);
         str.assign(tmp);
         free(tmp);
         return result;
     }
     template<class T>
-    int sprintf_append(iustring<T>& str, const char *format, ...) {
-        char* tmp = (char*)malloc(4096);
+    inline int sprintf_append(iustring<T>& str, const char *format, ...) {
+        int maxLen = 64;
+        char* tmp = NULL;
+        int result = 0;
         va_list va;
-        va_start(va, format);
-        int result = vsnprintf(tmp, 4096, format, va);
-        va_end(va);
+        do {
+            maxLen *= 2;
+            tmp = (char*)realloc(tmp, maxLen+1);
+            va_start(va, format);
+            result = vsnprintf(tmp, maxLen, format, va);
+            va_end(va);
+        } while(result >= maxLen);
         str.append(tmp);
         free(tmp);
         return result;
     }
     template<class T>
-    int scanf(iustring<T>& str, const char *format, ...) {
+    inline int scanf(iustring<T>& str, const char *format, ...) {
         const char* buf = str.c_str();
         va_list va;
         va_start(va, format);
@@ -461,7 +494,7 @@ namespace colib {
         return result;
     }
     template<class T>
-    iustring<T>& fgets(iustring<T>& str, FILE* stream = stdin) {
+    inline iustring<T>& fgets(iustring<T>& str, FILE* stream = stdin) {
         int c;
         while(((c = fgetc(stream)) != EOF) && (c != '\n')) {
             str.push_back(c);
@@ -469,7 +502,7 @@ namespace colib {
         return str;
     }
     template<class T>
-    int fputs(const iustring<T>& str, FILE* stream = stdout) {
+    inline int fputs(const iustring<T>& str, FILE* stream = stdout) {
         for(int i=0; i<str.length(); i++) {
             if(fputc(str[i], stream) == EOF) {
                 return EOF;
@@ -481,7 +514,7 @@ namespace colib {
         return str.length() + 1;
     }
     template<class T>
-    int read(iustring<T>& str, int n, FILE* stream) {
+    inline int read(iustring<T>& str, int n, FILE* stream) {
         T c;
         int i = 0;
         while((i < n) && (fread(&c, sizeof(T), 1, stream) == 1)) {
@@ -494,11 +527,11 @@ namespace colib {
         return -i;
     }
     template<class T>
-    int fread(iustring<T>& str, FILE* stream) {
+    inline int fread(iustring<T>& str, FILE* stream) {
         return read(str, INT_MAX, stream);
     }
     template<class T>
-    int write(iustring<T>& str, int n, FILE* stream) {
+    inline int write(iustring<T>& str, int n, FILE* stream) {
         n = iustring<T>::limit(0, str.length(), n);
         int i = 0;
         while((i < n) && (fwrite(&str[i], sizeof(T), 1, stream) == 1)) {
@@ -507,10 +540,10 @@ namespace colib {
         return i;
     }
     template<class T>
-    int fwrite(iustring<T>& str, FILE* stream) {
+    inline int fwrite(iustring<T>& str, FILE* stream) {
         return write(str, str.length(), stream);
     }
-    void re_compile(regex_t* regex, const char* pattern, int cflags=0, int eflags=0) {
+    inline void re_compile(regex_t* regex, const char* pattern, int cflags=0, int eflags=0) {
         int error = regcomp(regex, pattern, cflags);
         if(error) {
             regfree(regex);
@@ -520,7 +553,7 @@ namespace colib {
         }
     }
     template<class T>
-    int re_search(const iustring<T>& str, const char* pattern, int cflags=0, int eflags=0) {
+    inline int re_search(const iustring<T>& str, const char* pattern, int cflags=0, int eflags=0) {
         regex_t regex;
         re_compile(&regex, pattern, cflags, eflags);
         char* buf = (char*)malloc(str.length()+1);
@@ -539,7 +572,7 @@ namespace colib {
         return index;
     }
     template<class T>
-    int re_gsub(iustring<T>& str, const char* pattern, const char* sub, int n = -1, int cflags=0, int eflags=0) {
+    inline int re_gsub(iustring<T>& str, const char* pattern, const char* sub, int n = -1, int cflags=0, int eflags=0) {
         regex_t regex;
         re_compile(&regex, pattern, cflags, eflags);
         const char* buf = str.c_str();
@@ -547,7 +580,7 @@ namespace colib {
         regmatch_t regmatch;
         int s = 0;
         int nMatches = 0;
-        int error;
+        int error = 0;
         while((n<0 || nMatches<n) && ((error = regexec(&regex, buf + s, 1, &regmatch, eflags)) == 0)) {
             result.append(str.substr(s, regmatch.rm_so));
             result.append(sub);
@@ -564,12 +597,126 @@ namespace colib {
         return nMatches;
     }
     template<class T>
-    int re_sub(iustring<T>& str, const char* pattern, const char* sub, int cflags=0, int eflags=0) {
+    inline int re_sub(iustring<T>& str, const char* pattern, const char* sub, int cflags=0, int eflags=0) {
         return re_gsub(str, pattern, sub, 1, cflags, eflags);
+    }
+    template<class T>
+    void encodeUTF8(bytearray& dst, iustring<T>& src) {
+        for(int i=0; i<src.length(); i++) {
+            T c = src[i];
+            if(c < 128) {
+                dst.push(c);
+            } else if(c < 2048) {
+                dst.push(0xC0 | (c >> 6));
+                dst.push(0x80 | (c & 0x3F));
+            } else if(c < 65536) {
+                dst.push(0xE0 | (c >> 12));
+                dst.push(0x80 | ((c >> 6) & 0x3F));
+                dst.push(0x80 | (c & 0x3F));
+            } else if(c < 2097152) {
+                dst.push(0xF0 | (c >> 18));
+                dst.push(0x80 | ((c >> 12) & 0x3F));
+                dst.push(0x80 | ((c >> 6) & 0x3F));
+                dst.push(0x80 | (c & 0x3F));
+            } else {
+                throw "UTF-8 encoding error";
+            }
+        }
+    }
+    template<class T>
+    void decodeUTF8(iustring<T>& dst, const char* src, int n) {
+        dst.clear();
+        unsigned int x = 0;
+        int b = -1;
+        for(int i=0; i<n; i++) {
+            unsigned char c = src[i];
+            // -- ASCII --
+            if(c < 128) {
+                x = c;
+                b = 0;
+            // -- not first byte --
+            } else if(c < 0xC0) {
+                if(b<=0) {
+                    throw "UTF-8 decoding error";
+                }
+                x += (c & 0x3F) << (6*(b-1));
+                b--;
+            // -- first of two bytes --
+            } else if(c < 0xE0) {
+                x = (c & 0x1F) << 6;
+                b = 1;
+            // -- first of three bytes --
+            } else if(c < 0xF0) {
+                x = (c & 0xF) << 12;
+                b = 2;
+            // -- first of four bytes --
+            } else {
+                x = (c & 0x7) << 18;
+                b = 3;
+            }
+            // -- check if data type is big enough --
+            if(sizeof(T) < unsigned(b+1)) {
+                throw "UTF-8 decoding error";
+            }
+            // -- character complete --
+            if(b==0) {
+                dst.push_back(x);
+            }
+        }
+    }
+    template<class T>
+    void encodeUTF16(bytearray& dst, iustring<T>& src) {
+        for(int i=0; i<src.length(); i++) {
+            T c = src[i];
+            // -- 2 bytes --
+            if(c <= 0xFFFF) {
+                dst.push(c & 0xFF);
+                dst.push(c >> 8);
+            // -- 4 bytes --
+            } else {
+                c -= 0x10000;
+                dst.push(0xDC00 | (c & 0x3FF));
+                dst.push(0xD800 | ((c >> 10) & 0x3FF));
+            }
+        }
+    }
+    template<class T>
+    void decodeUTF16(iustring<T>& dst, const char* src, int n) {
+        dst.clear();
+        unsigned int x = 0;
+        unsigned int y = 0;
+        int b = 0;
+        for(int i=0; i<n; i++) {
+            unsigned char c = src[i];
+            if(b == 0) {
+                x = c;
+            } else if(b == 1) {
+                x |= ((unsigned int)c) << 8;
+                if(x < 0xD800 || x > 0xDFFF) {
+                    dst.push_back(x);
+                    b = -1;
+                } else if(x < 0xD800 || x > 0xDBFF) {
+                    throw "UTF-16 decoding error";
+                }
+            } else if(b == 2){
+                y = c;
+            } else if(b == 3){
+                y |= ((unsigned int)c) << 8;
+                if(y < 0xDC00 || y > 0xDFFF) {
+                    throw "UTF-16 decoding error";
+                }
+                x = (((x & 0x3FF) << 10) | (y & 0x3FF)) + 0x10000;
+                dst.push_back(x);
+                b = -1;
+            }
+            b++;
+        }
     }
 
     typedef iustring<char> iucstring;
     typedef iustring<wchar_t> iuwstring;
+    typedef iustring<int> iuistring;
+    typedef iustring<unsigned char> iubstring;
 }
 
 #endif /* iustring_h__ */
