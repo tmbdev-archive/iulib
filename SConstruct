@@ -74,7 +74,11 @@ have_vidio = conf.CheckCXXHeader("ffmpeg/avcodec.h") and \
              conf.CheckCXXHeader("ffmpeg/avformat.h")
 have_v4l2 = conf.CheckHeader("linux/videodev2.h")
 have_sdl = conf.CheckCXXHeader("SDL/SDL_gfxPrimitives.h") and \
-           conf.CheckCXXHeader("SDL/SDL.h") and \
+           conf.CheckCXXHeader("SDL/SDL.h")
+
+have_vidio = 0 # FIXME
+have_v4l2 = 0 # FIXME
+have_sdl = 1
 conf.Finish()
 
 ### install folders
