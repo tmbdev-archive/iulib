@@ -344,10 +344,19 @@ namespace colib {
             return data[((i1+i0*dims[1])*dims[2]+i2)*dims[3]+i3];
         }
 
+        // Methods provided for easier binding to scripting languages and
+        // for references with operator->  We're just doing this for the
+        // most common case.
+
         T &at(index_t i0) { return operator()(i0); }
         T &at(index_t i0,index_t i1) { return operator()(i0,i1); }
         T &at(index_t i0,index_t i1,index_t i2) { return operator()(i0,i1,i2); }
         T &at(index_t i0,index_t i1,index_t i2,index_t i3) { return operator()(i0,i1,i2,i3); }
+
+        void put(index_t i0,T value) { operator()(i0) = value; }
+        void put(index_t i0,index_t i1,T value) { operator()(i0,i1) = value; }
+        void put(index_t i0,index_t i1,index_t i2,T value) { operator()(i0,i1,i2) = value; }
+        void put(index_t i0,index_t i1,index_t i2,index_t i3,T value) { operator()(i0,i1,i2,i3) = value; }
 
         /// Unsafe 1D subscripting.
 
