@@ -217,7 +217,6 @@ namespace imgrle {
 
     // various image processing functions
 
-    void rle_move(RLEImage &out,RLEImage &in);
     void rle_convert(RLEImage &out,bytearray &in);
     void rle_convert(bytearray &out,RLEImage &in);
     void rle_convert(RLEImage &out,BitImage &in);
