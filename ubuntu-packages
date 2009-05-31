@@ -1,0 +1,12 @@
+apt-get install \
+    build-essential imagemagick \
+    tesseract-ocr tesseract-ocr-dev \
+    libpng12-dev libjpeg62-dev libtiff4-dev libgif-dev \
+    libsdl-gfx1.2-dev libsdl-image1.2-dev libsdl1.2-dev \
+    libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev \
+    libavfilter-dev \
+    tesseract-ocr-dev libleptonica-dev \
+    libgsl0-dev libblas-dev \
+    python-dev swig1.3
+
+    # liblapack-dev libatlas-base-dev
