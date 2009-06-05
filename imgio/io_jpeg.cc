@@ -99,7 +99,7 @@ namespace iulib {
     }
 
     void read_jpeg_packed(intarray &a, FILE *infile) {
-        throw "testing";
+        //throw "testing";
         struct jpeg_decompress_struct cinfo;
         JSAMPARRAY buffer;                /* Output row buffer */
         int row_stride;                /* physical row width in output buffer */

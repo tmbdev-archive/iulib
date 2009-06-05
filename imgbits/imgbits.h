@@ -33,7 +33,7 @@
 
 namespace imgbits {
     using namespace colib;
-
+    
     typedef unsigned int word32;
     enum { DFLTC = 32767 };
 

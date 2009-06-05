@@ -334,7 +334,7 @@ namespace colib {
     /// Array subscripting with fixed boundary conditions.
 
     template <class T,class U>
-    inline T bat1(narray<T> &a,int i,U value) {
+    inline T bat(narray<T> &a,int i,U value) {
         if(unsigned(i)>=a.dim(0)) return value;
         return a.unsafe_at(i);
     }
@@ -429,7 +429,7 @@ namespace colib {
     inline void clampscale(narray<T> &out,narray<U> &in,T lo,T hi) {
         out.makelike(in);
         for(int i=0;i<out.length1d();i++)
-            out.at1d(i) = clamp(256*(in.at1d()-lo)/(hi-lo),0,256);
+            out.at1d(i) = clamp((T)(256*(in.at1d(i)-lo)/(hi-lo)),(T)0,(T)256);
     }
 
     template<class T,class U>
