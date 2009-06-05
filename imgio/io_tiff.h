@@ -27,7 +27,7 @@
 #define h_tiff__
 
 #include "colib/colib.h"
-#include "iulib.h"
+#include "iulib/iulib.h"
 #include "tiff.h"
 #include "tiffio.h"
 
@@ -45,21 +45,21 @@ namespace iulib {
         ///@return number of pages inside the tiff file
         int numPages();
         /// reads page in original color format
-        void getPageRaw(bytearray &image, int page, bool gray=true);
+        void getPageRaw(colib::bytearray &image, int page, bool gray=true);
         /// reads page in original color format
-        void getPageRaw(intarray &image, int page, bool gray=false);
+        void getPageRaw(colib::intarray &image, int page, bool gray=false);
         /// reads page in RGBA color format
-        void getPage(bytearray &image, int page, bool gray=true);
+        void getPage(colib::bytearray &image, int page, bool gray=true);
         /// reads page in RGBA color format
-        void getPage(intarray &image, int page, bool gray=false);
+        void getPage(colib::intarray &image, int page, bool gray=false);
         /// writes page in RGBA color format
-        void setPage(bytearray &image, int page);
+        void setPage(colib::bytearray &image, int page);
         /// writes page in RGBA color format
-        void setPage(intarray &image, int page);
+        void setPage(colib::intarray &image, int page);
     private:
         void getParams(uint32 *w, uint32 *h, short *orientation, short *channelSize, short *nChannelss, tstrip_t* nStrips);
         template<class T>
-        void setParams(narray<T> &image, int nChannels);
+        void setParams(colib::narray<T> &image, int nChannels);
         TIFF* tif;
         /**
          * @brief simple autofree buffer using libtiff's malloc and free

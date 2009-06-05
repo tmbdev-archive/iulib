@@ -27,7 +27,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "colib/colib.h"
 #include "io_tiff.h"
 
 using namespace colib;
@@ -75,9 +74,9 @@ namespace iulib {
         TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, channelSize);
         TIFFGetField(tif, TIFFTAG_ORIENTATION, orientation);
         *nStrips = TIFFNumberOfStrips(tif);
-        if(*channelSize != 8) {
-            throw "tiff: channel size other than 8 not supported";
-        }
+//        if(*channelSize != 8) {
+//            throw "tiff: channel size other than 8 not supported";
+//        }
     }
 
     void Tiff::getPageRaw(bytearray &image, int page, bool gray) {
@@ -86,6 +85,9 @@ namespace iulib {
         tstrip_t nStrips;
         TIFFSetDirectory(tif, page);
         getParams(&w, &h, &orientation, &channelSize, &nChannels, &nStrips);
+        if(channelSize != 8) {
+            throw "tiff: channel size other than 8 not supported in raw mode";
+        }
         Buffer raster(w * h * nChannels);
         int s = 0;
         for(int i=0; i<nStrips; i++) {
@@ -157,6 +159,9 @@ namespace iulib {
         if(nChannels > 4) {
             throw "tiff: more than 4 channels not supported for packed format";
         }
+        if(channelSize != 8) {
+            throw "tiff: channel size other than 8 not supported in raw mode";
+        }
         Buffer raster(w * h * nChannels);
         int s = 0;
         for(int i=0; i<nStrips; i++) {
@@ -164,11 +169,14 @@ namespace iulib {
         }
 
         image.renew(w, h);
+        int k = 0;
         for(int x=0; x<w; x++) {
             for(int y=0; y<h; y++) {
                 image(x, y) = 0;
                 for(int c=0; c<nChannels; c++) {
                     unsigned char v = raster.buf[(h-1-y)*w*nChannels+x*nChannels+c];
+                    v = (v >> (k%8)) & 0x1;
+                    k++;
                     if(gray) {
                         image(x, y) += v;
                     } else {
