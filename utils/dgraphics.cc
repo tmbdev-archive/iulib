@@ -332,7 +332,11 @@ namespace iulib {
             if(event.type==SDL_KEYDOWN &&
                 event.key.keysym.sym==SDLK_ESCAPE) break;
             if(event.type==SDL_MOUSEBUTTONDOWN) break;
-            if(event.type==SDL_QUIT) exit(0);
+            if(event.type==SDL_QUIT) SDL_Quit();
         }
     }
+    
+    void dclose() {
+       SDL_Quit();
+    }    
 }

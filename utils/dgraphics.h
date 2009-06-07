@@ -60,6 +60,7 @@ namespace iulib {
     void dline(int x0,int y0,int x1,int y1,int color,int w,int h,const char *spec="");
     void dflush();
     void dwait();
+    void dclose();
 }
 
 
