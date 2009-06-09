@@ -41,7 +41,7 @@ opts.Add('warn', 'Compiler flags for warnings', "-Wall -D__warn_unused_result__=
 opts.Add('prefix', 'The installation root for iulib', "/usr/local")
 
 ### globals
-env = Environment(options=opts, CXXFLAGS="${opt} ${warn}")
+env = Environment(options=opts, CXXFLAGS=["${opt}","${warn}"])
 Help(opts.GenerateHelpText(env))
 conf = Configure(env)
 if "-DUNSAFE" in env["opt"]:
@@ -110,6 +110,7 @@ else:
 
 libiulib = env.StaticLibrary('libiulib.a',sources)
 
+env.Append(CXXFLAGS=['-g','-fPIC'])
 env.Append(LIBPATH=['.'])
 progs = env.Clone()
 progs.Append(LIBS=libiulib)

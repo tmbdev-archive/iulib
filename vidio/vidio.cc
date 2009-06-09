@@ -41,8 +41,12 @@ extern "C" {
 #include "io_png.h"
 
 extern "C" {
-#include <ffmpeg/avcodec.h>
-#include <ffmpeg/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+}
+
+int img_convert(AVPicture*, int, const AVPicture*, int, int, int) {
+    throw "img_convert is not available anymore (FIXME)";
 }
 
 namespace iulib {
