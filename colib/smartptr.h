@@ -212,7 +212,7 @@ namespace colib {
     class autofree {
     private:
         T *pointer;
-	autofree(autofree<T> &);
+        autofree(autofree<T> &);
 
     public:
 
@@ -311,7 +311,7 @@ namespace colib {
     class autoref {
     private:
         T *pointer;
-	autoref(autoref<T> &);
+        autoref(autoref<T> &);
 
     public:
 
@@ -447,8 +447,8 @@ namespace colib {
 
         /// Initialization with a stream transfers ownership to the class.
 
-        explicit stdio(FILE *other) {
-            if(!other) throw "stdio: attempt to set stream to null";
+        explicit stdio(FILE *other,bool null_ok=false) {
+            if(!null_ok && !other) throw "stdio: attempt to set stream to null";
             stream = other;
         }
 

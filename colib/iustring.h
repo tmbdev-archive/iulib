@@ -513,6 +513,7 @@ namespace colib {
         }
         return str.length() + 1;
     }
+    // FIXME change order of arguments, rename to fread
     template<class T>
     inline int read(iustring<T>& str, int n, FILE* stream) {
         T c;
@@ -526,10 +527,12 @@ namespace colib {
         }
         return -i;
     }
+    // FIXME change order of arguments
     template<class T>
     inline int fread(iustring<T>& str, FILE* stream) {
         return read(str, INT_MAX, stream);
     }
+    // FIXME change order of arguments, rename to fwrite
     template<class T>
     inline int write(iustring<T>& str, int n, FILE* stream) {
         n = iustring<T>::limit(0, str.length(), n);
@@ -539,6 +542,7 @@ namespace colib {
         }
         return i;
     }
+    // FIXME change order of arguments
     template<class T>
     inline int fwrite(iustring<T>& str, FILE* stream) {
         return write(str, str.length(), stream);
