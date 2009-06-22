@@ -41,15 +41,15 @@ namespace iulib {
     }
 
     template <class T>
-    void dshow(narray<T> &data,const char *spec,double angle,int smooth,int rgb) {
-    }
+        void dshow(narray<T> &data,const char *spec,double angle,int smooth,int rgb) {
+        }
 
     template void dshow(narray<unsigned char> &data,const char *spec,double angle,int smooth,int rgb);
     template void dshow(narray<int> &data,const char *spec,double angle,int smooth,int rgb);
     template void dshow(narray<float> &data,const char *spec,double angle,int smooth,int rgb);
 
     template <class T>
-    void dshown(narray<T> &data,const char *spec,double angle, int smooth, int rgb) {}
+        void dshown(narray<T> &data,const char *spec,double angle, int smooth, int rgb) {}
     template void dshown(narray<unsigned char> &data,const char *spec,double angle,int smooth,int rgb);
     template void dshown(narray<int> &data,const char *spec,double angle,int smooth,int rgb);
     template void dshown(narray<float> &data,const char *spec,double angle,int smooth,int rgb);
@@ -68,4 +68,14 @@ namespace iulib {
 
     void dwait() {
     }
+
+
+    bool dactive() {
+        return false;
+    }
+
+    const char *dsection_set(const char *name) {
+        return name;
+    }
+
 }

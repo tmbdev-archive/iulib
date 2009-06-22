@@ -90,7 +90,8 @@ namespace colib {
 
         inline void check_range(index_t i,index_t n) const {
 #ifndef UNSAFE
-            if(unsigned(i)>=unsigned(n)) throw "narray: index out of range";
+            if(unsigned(i)>=unsigned(n)) 
+                throw "narray: index out of range";
 #endif
         }
 
@@ -99,7 +100,8 @@ namespace colib {
 
         inline void check(bool condition,const char *message) const {
 #ifndef UNSAFE
-            if(!condition) throw message;
+            if(!condition) 
+                throw message;
 #endif
         }
 
