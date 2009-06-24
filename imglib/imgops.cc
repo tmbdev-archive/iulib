@@ -157,7 +157,7 @@ namespace iulib {
         }
         if (x0>x1||y0>y1)
             return;
-        narray<T> temp(x1-x0,y1-y0);
+        narray<T> temp(x1-x0+1,y1-y0+1);
         for (int x=0; x<temp.dim(0); x++) {
             for (int y=0; y<temp.dim(1); y++) {
                 temp(x,y) = image(x+x0,y+y0);
