@@ -206,7 +206,7 @@ namespace iulib {
         narray<point> data;
         pointhack(intarray &a):a(a) {}
         ~pointhack() {
-            makelike(a,data);
+            a.resize(data.dim(0), data.dim(1), 2);
             for(int i=0;i<a.dim(0);i++) for(int j=0;j<a.dim(1);j++) {
                 a(i,j,0) = data(i,j).x;
                 a(i,j,1) = data(i,j).y;
