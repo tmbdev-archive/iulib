@@ -43,25 +43,23 @@ namespace colib {
      * @brief counted string class based on narray
      * implements most methods of std::string with same arguments
      */
-    template<class T> class iustring {
+    template<class T> class iustrg {
     public:
-        iustring() : len(0) {
+        iustrg() : len(0) {
         }
-        iustring(int n) : buf(n), len(0) {
+        iustrg(int n) : buf(n), len(0) {
             if(n > 0) {
                 buf.at(0) = '\0';
             }
         }
-        iustring(const iustring<T>& src) : len(0) {
+        template<class A>
+        iustrg(const iustrg<A>& src) : len(0) {
             append(src);
         }
-        iustring(const char* src) : len(0) {
+        iustrg(const char* src) : len(0) {
             append(src);
         }
-        iustring(const nustring& src) : len(0) {
-            append(src);
-        }
-        ~iustring() {
+        ~iustrg() {
         }
         int length() const {
             return len;
@@ -97,142 +95,142 @@ namespace colib {
             }
             return buf(pos);
         }
-        iustring<T>& append(const char* s, int pos, int n) {
+        iustrg<T>& append(const char* s, int pos, int n) {
             for(int i=pos; i<pos+n && s[i]!='\0'; i++) {
                 push_back(s[i]);
             }
             return *this;
         }
-        iustring<T>& append(const char* s, int n) {
+        iustrg<T>& append(const char* s, int n) {
             return append(s, 0, n);
         }
-        iustring<T>& append(const char* s) {
+        iustrg<T>& append(const char* s) {
             return append(s, 0, strlen(s));
         }
-        iustring<T>& append(const iustring<T>& str, int pos, int n) {
+        template <class A>
+        iustrg<T>& append(const iustrg<A>& str, int pos, int n) {
             for(int i=pos; i<pos+n && str[i]!='\0'; i++) {
                 push_back(str[i]);
             }
             return *this;
         }
-        iustring<T>& append(const iustring<T>& str, int n) {
+        template <class A>
+        iustrg<T>& append(const iustrg<A>& str, int n) {
             return append(str, 0, n);
         }
-        iustring<T>& append(const iustring<T>& str) {
+        template <class A>
+        iustrg<T>& append(const iustrg<A>& str) {
             return append(str, 0, str.length());
         }
-        iustring<T>& append(int n, T c) {
+        iustrg<T>& append(int n, T c) {
             for(int i=0; i<n; i++) {
                 push_back(c);
             }
         }
-        iustring<T>& append(int x) {
+        iustrg<T>& append(int x) {
             sprintf_append(*this, "%d", x);
             return *this;
         }
-        iustring<T>& append(long x) {
+        iustrg<T>& append(long x) {
             sprintf_append(*this, "%ld", x);
             return *this;
         }
-        iustring<T>& append(double x) {
+        iustrg<T>& append(double x) {
             sprintf_append(*this, "%f", x);
             return *this;
         }
-        iustring<T>& append(const nustring& str) {
-            for(int i=0; i<str.dim(0); i++) {
-                push_back(str(i).ord());
-            }
-            return *this;
-        }
         template <class A>
-        iustring<T>& operator+=(const A& s) {
+        iustrg<T>& operator+=(const A& s) {
             return append(s);
         }
         void push_back(T c) {
             buf.grow_to(len + 2); // +1 new char, +1 terminating \0
             buf.at(len) = c;
-            buf.at(len+1) = '\0';
+            buf.at(len+1) = T('\0');
             len++;
         }
-        iustring<T>& assign(const char *s, int pos, int n) {
+        iustrg<T>& assign(const char *s, int pos, int n) {
             clear();
             return append(s, pos, n);
         }
-        iustring<T>& assign(const char* s, int n) {
+        iustrg<T>& assign(const char* s, int n) {
             return assign(s, 0, n);
         }
-        iustring<T>& assign(const char* s) {
+        iustrg<T>& assign(const char* s) {
             return assign(s, 0, strlen(s));
         }
-        iustring<T>& assign(const iustring<T>& str, int pos, int n) {
+        iustrg<T>& assign(const iustrg<T>& str, int pos, int n) {
             clear();
             return append(str, pos, n);
         }
-        iustring<T>& assign(const iustring<T>& str, int n) {
+        iustrg<T>& assign(const iustrg<T>& str, int n) {
             return assign(str, 0, n);
         }
-        iustring<T>& assign(const iustring<T>& str) {
+        iustrg<T>& assign(const iustrg<T>& str) {
             return assign(str, 0, str.length());
         }
-        iustring<T>& assign(int n, T c) {
+        iustrg<T>& assign(int n, T c) {
             clear();
             return append(n, c);
         }
         template<class A>
-        iustring<T>& assign(const A& x) {
+        iustrg<T>& assign(const A& x) {
             clear();
             return append(x);
         }
         template<class A>
-        iustring<T>& operator=(const A& x) {
+        iustrg<T>& operator=(const A& x) {
             return assign(x);
         }
-        iustring<T>& replace(int pos, int n1, const char* s, int n2) {
-            iustring<T> tmp;
+        iustrg<T>& operator=(const char* s) {
+            return assign(s);
+        }
+        iustrg<T>& replace(int pos, int n1, const char* s, int n2) {
+            iustrg<T> tmp;
             tmp.append(*this, pos);
             tmp.append(s, n2);
             tmp.append(*this, pos+n1, length() - pos - n1);
             return assign(tmp);
         }
-        iustring<T>& replace(int pos, int n1, const char* s) {
+        iustrg<T>& replace(int pos, int n1, const char* s) {
             return replace(pos, n1, s, strlen(s));
         }
-        iustring<T>& replace(int pos, int n1, const iustring<T>& str, int n2) {
-            iustring<T> tmp;
+        iustrg<T>& replace(int pos, int n1, const iustrg<T>& str, int n2) {
+            iustrg<T> tmp;
             tmp.append(*this, pos);
             tmp.append(str, n2);
             tmp.append(*this, pos+n1, length() - pos - n1);
             return assign(tmp);
         }
-        iustring<T>& replace(int pos, int n1, const iustring<T>& str) {
+        iustrg<T>& replace(int pos, int n1, const iustrg<T>& str) {
             return replace(pos, n1, str.buf, str.length());
         }
-        iustring<T>& replace(int pos, int n1, int n2, T c) {
-            iustring<T> tmp;
+        iustrg<T>& replace(int pos, int n1, int n2, T c) {
+            iustrg<T> tmp;
             tmp.append(*this, pos);
             tmp.append(n2, c);
             tmp.append(*this, pos+n1, length() - pos - n1);
             return assign(tmp);
         }
-        iustring<T>& insert(int pos, const char *s, int n) {
+        iustrg<T>& insert(int pos, const char *s, int n) {
             return replace(pos, 0, s, n);
         }
-        iustring<T>& insert(int pos, const char *s) {
+        iustrg<T>& insert(int pos, const char *s) {
             return insert(pos, s,   strlen(s));
         }
-        iustring<T>& insert(int pos, const iustring<T>& str, int n) {
+        iustrg<T>& insert(int pos, const iustrg<T>& str, int n) {
             return replace(pos, 0, str, n);
         }
-        iustring<T>& insert(int pos, const iustring<T>& str) {
+        iustrg<T>& insert(int pos, const iustrg<T>& str) {
             return insert(pos, str, str.length());
         }
-        iustring<T>& insert(int pos, int n, T c) {
+        iustrg<T>& insert(int pos, int n, T c) {
             return replace(pos, 0, n, c);
         }
-        iustring<T>& erase(int pos, int n) {
+        iustrg<T>& erase(int pos, int n) {
             return replace(pos, n, (const char*)0, 0);
         }
-        iustring<T>& erase(int pos) {
+        iustrg<T>& erase(int pos) {
             return erase(pos, length()-pos);
         }
         int copy(char* dst, int n, int pos=0) const {
@@ -249,13 +247,13 @@ namespace colib {
             }
             dst[len] = '\0';
         }
-        void swap(iustring<T>& str) {
+        void swap(iustrg<T>& str) {
             narray<T> tmp;
             tmp.move(buf);
             buf.move(str.buf);
             str.buf.move(tmp);
         }
-        int compare(int pos1, int n1, const iustring<T>& str, int pos2, int n2) const {
+        int compare(int pos1, int n1, const iustrg<T>& str, int pos2, int n2) const {
             n1 = min(len-pos1, n1);
             n2 = min(str.length()-pos2, n2);
             for(int i=0; i<n1 && i<n2; i++) {
@@ -273,10 +271,10 @@ namespace colib {
                 return 0;
             }
         }
-        int compare(int pos1, int n1, const iustring<T>& str) const {
+        int compare(int pos1, int n1, const iustrg<T>& str) const {
             return compare(pos1, n1, str, 0, str.length());
         }
-        int compare(const iustring<T>& str) const {
+        int compare(const iustrg<T>& str) const {
             return compare(0, len, str, 0, str.length());
         }
         int compare(int pos1, int n1, const char* s, int pos2, int n2) const {
@@ -302,25 +300,27 @@ namespace colib {
         int compare(const char* s) const {
             return compare(0, len, s, 0, strlen(s));
         }
-        iustring<T> substr(int pos, int n) const {
-            return iustring<T>().append(*this, pos, n);
+        iustrg<T> substr(int pos, int n) const {
+            return iustrg<T>().append(*this, pos, n);
         }
-        iustring<T> substr(int pos) const {
+        iustrg<T> substr(int pos) const {
             return substr(pos, len-pos);
         }
         const T* c_str() {
-            if(!buf.data) return "";
             return buf.data;
         }
         operator const T*() {
             return c_str();
         }
+        operator bool() {
+            return !empty();
+        }
         narray<T>& data() const {
             return buf;
         }
-        int find(const iustring<T>& str, int pos=0) const {
+        int find(const iustrg<T>& str, int pos=0) const {
             pos = limit(0, len-1, pos);
-            for(int i=pos; i<=len-str.length(); i++) {
+	      for(int i=pos; i<=len-str.length(); i++) {
                 if(compare(i, str.length(), str) == 0) {
                     return i;
                 }
@@ -339,7 +339,7 @@ namespace colib {
         int find(const char* s, int pos=0) const {
             return find(s, pos, strlen(s));
         }
-        int find(char c, int pos=0) const {
+        int find(T c, int pos=0) const {
             pos = limit(0, len-1, pos);
             for(int i=pos; i<len; i++) {
                 if(at(i) == c) {
@@ -348,7 +348,7 @@ namespace colib {
             }
             return npos;
         }
-        int rfind(const iustring<T>& str, int pos=npos) const {
+        int rfind(const iustrg<T>& str, int pos=npos) const {
             if(pos < 0) {
                 pos = len-1;
             } else {
@@ -377,8 +377,12 @@ namespace colib {
         int rfind(const char* s, int pos=npos) const {
             return rfind(s, pos, strlen(s));
         }
-        int rfind(char c, int pos=0) const {
-            pos = limit(0, len-1, pos);
+        int rfind(T c, int pos=npos) const {
+            if(pos < 0) {
+                pos = len-1;
+            } else {
+                pos = limit(0, len-1, pos);
+            }
             for(int i=pos; i>=0; i--) {
                 if(at(i) == c) {
                     return i;
@@ -387,71 +391,91 @@ namespace colib {
             return npos;
         }
 
-        void toNustring(nustring& dst) {
-            dst.clear();
-            for(int i=0; i<len; i++) {
-                dst.push(nuchar(buf(i)));
-            }
-        }
-
         static const int npos = -1;
 
         inline static int limit(int minV, int maxV, int value) {
             return max(minV, min(maxV, value));
         }
 
-    private:
+        narray<T>& getBuf() {
+            return buf;
+        }
+
+        // -- nustring compatibility -
+        iustrg(iustrg<nuchar>& src) : len(0) {
+            append(src);
+        }
+        iustrg<T>& append(iustrg<nuchar>& str) {
+            for(int i=0; i<str.length() && str[i].ord()!='\0'; i++) {
+                push_back(str[i].ord());
+            }
+            return *this;
+        }
+        void toNustring(iustrg<nuchar>& dst) {
+            dst.clear();
+            for(int i=0; i<len; i++) {
+                dst.push_back(nuchar(buf(i)));
+            }
+        }
+
+    protected:
         narray<T> buf;    /// the actual characters
         int len;          /// length of the string
     };
 
+    typedef iustrg<char> strg;
+    typedef iustrg<u_int32_t> ustrg;
+
+    typedef strg iucstring;
+    typedef ustrg iuistring;
+
     template<class T>
-    inline static iustring<T> operator+(const iustring<T>& s1, const iustring<T>& s2) {
-        iustring<T> s;
+    inline static iustrg<T> operator+(const iustrg<T>& s1, const iustrg<T>& s2) {
+        iustrg<T> s;
         s.append(s1);
         s.append(s2);
         return s;
     }
     template<class T, class A>
-    inline static iustring<T> operator+(const iustring<T>& s1, const A& s2) {
-        iustring<T> s;
+    inline static iustrg<T> operator+(const iustrg<T>& s1, const A& s2) {
+        iustrg<T> s;
         s.append(s1);
         s.append(s2);
         return s;
     }
     template<class T, class A>
-    inline static iustring<T> operator+(const A& s1, const iustring<T>& s2) {
-        iustring<T> s;
+    inline static iustrg<T> operator+(const A& s1, const iustrg<T>& s2) {
+        iustrg<T> s;
         s.append(s1);
         s.append(s2);
         return s;
     }
     template<class T>
-    inline static bool operator==(const iustring<T>& s1, const iustring<T>& s2) {
+    inline static bool operator==(const iustrg<T>& s1, const iustrg<T>& s2) {
         return s1.compare(s2) == 0;
     }
     template<class T>
-    inline static bool operator==(const iustring<T>& s1, const char* s2) {
+    inline static bool operator==(const iustrg<T>& s1, const char* s2) {
         return s1.compare(s2) == 0;
     }
     template<class T>
-    inline static bool operator==(const char* s1, const iustring<T>& s2) {
+    inline static bool operator==(const char* s1, const iustrg<T>& s2) {
         return s2.compare(s1) == 0;
     }
     template<class T>
-    inline static bool operator!=(const iustring<T>& s1, const iustring<T>& s2) {
+    inline static bool operator!=(const iustrg<T>& s1, const iustrg<T>& s2) {
         return !operator==(s1, s2);
     }
     template<class T>
-    inline static bool operator!=(const iustring<T>& s1, const char* s2) {
+    inline static bool operator!=(const iustrg<T>& s1, const char* s2) {
         return !operator==(s1, s2);
     }
     template<class T>
-    inline static bool operator!=(const char* s1, const iustring<T>& s2) {
+    inline static bool operator!=(const char* s1, const iustrg<T>& s2) {
         return !operator==(s1, s2);
     }
     template<class T>
-    inline int sprintf(iustring<T>& str, const char *format, ...) {
+    inline int sprintf(iustrg<T>& str, const char *format, ...) {
         int maxLen = 64;
         char* tmp = NULL;
         int result = 0;
@@ -468,7 +492,7 @@ namespace colib {
         return result;
     }
     template<class T>
-    inline int sprintf_append(iustring<T>& str, const char *format, ...) {
+    inline int sprintf_append(iustrg<T>& str, const char *format, ...) {
         int maxLen = 64;
         char* tmp = NULL;
         int result = 0;
@@ -485,7 +509,7 @@ namespace colib {
         return result;
     }
     template<class T>
-    inline int scanf(iustring<T>& str, const char *format, ...) {
+    inline int scanf(iustrg<T>& str, const char *format, ...) {
         const char* buf = str.c_str();
         va_list va;
         va_start(va, format);
@@ -494,7 +518,7 @@ namespace colib {
         return result;
     }
     template<class T>
-    inline iustring<T>& fgets(iustring<T>& str, FILE* stream = stdin) {
+    inline iustrg<T>& fgets(iustrg<T>& str, FILE* stream = stdin) {
         int c;
         while(((c = fgetc(stream)) != EOF) && (c != '\n')) {
             str.push_back(c);
@@ -502,7 +526,7 @@ namespace colib {
         return str;
     }
     template<class T>
-    inline int fputs(const iustring<T>& str, FILE* stream = stdout) {
+    inline int fputs(const iustrg<T>& str, FILE* stream = stdout) {
         for(int i=0; i<str.length(); i++) {
             if(fputc(str[i], stream) == EOF) {
                 return EOF;
@@ -513,9 +537,8 @@ namespace colib {
         }
         return str.length() + 1;
     }
-    // FIXME change order of arguments, rename to fread
     template<class T>
-    inline int read(iustring<T>& str, int n, FILE* stream) {
+    inline int read(iustrg<T>& str, int n, FILE* stream) {
         T c;
         int i = 0;
         while((i < n) && (fread(&c, sizeof(T), 1, stream) == 1)) {
@@ -525,28 +548,26 @@ namespace colib {
         if(ferror(stream)) {
             i *= -1;
         }
-        return -i;
+        return i;
     }
-    // FIXME change order of arguments
     template<class T>
-    inline int fread(iustring<T>& str, FILE* stream) {
+    inline int fread(iustrg<T>& str, FILE* stream) {
         return read(str, INT_MAX, stream);
     }
-    // FIXME change order of arguments, rename to fwrite
     template<class T>
-    inline int write(iustring<T>& str, int n, FILE* stream) {
-        n = iustring<T>::limit(0, str.length(), n);
+    inline int write(iustrg<T>& str, int n, FILE* stream) {
+        n = iustrg<T>::limit(0, str.length(), n);
         int i = 0;
         while((i < n) && (fwrite(&str[i], sizeof(T), 1, stream) == 1)) {
             i++;
         }
         return i;
     }
-    // FIXME change order of arguments
     template<class T>
-    inline int fwrite(iustring<T>& str, FILE* stream) {
+    inline int fwrite(iustrg<T>& str, FILE* stream) {
         return write(str, str.length(), stream);
     }
+
     inline void re_compile(regex_t* regex, const char* pattern, int cflags=0, int eflags=0) {
         int error = regcomp(regex, pattern, cflags);
         if(error) {
@@ -556,8 +577,7 @@ namespace colib {
             throw errMsg;
         }
     }
-    template<class T>
-    inline int re_search(const iustring<T>& str, const char* pattern, int cflags=0, int eflags=0) {
+    inline int re_search(const strg& str, const char* pattern, int cflags=0, int eflags=0) {
         regex_t regex;
         re_compile(&regex, pattern, cflags, eflags);
         char* buf = (char*)malloc(str.length()+1);
@@ -575,12 +595,11 @@ namespace colib {
         }
         return index;
     }
-    template<class T>
-    inline int re_gsub(iustring<T>& str, const char* pattern, const char* sub, int n = -1, int cflags=0, int eflags=0) {
+    inline int re_gsub(strg& str, const char* pattern, const char* sub, int n = -1, int cflags=0, int eflags=0) {
         regex_t regex;
         re_compile(&regex, pattern, cflags, eflags);
         const char* buf = str.c_str();
-        iustring<T> result;
+        strg result;
         regmatch_t regmatch;
         int s = 0;
         int nMatches = 0;
@@ -600,127 +619,320 @@ namespace colib {
         str.assign(result);
         return nMatches;
     }
-    template<class T>
-    inline int re_sub(iustring<T>& str, const char* pattern, const char* sub, int cflags=0, int eflags=0) {
+    inline int re_sub(strg& str, const char* pattern, const char* sub, int cflags=0, int eflags=0) {
         return re_gsub(str, pattern, sub, 1, cflags, eflags);
     }
-    template<class T>
-    void encodeUTF8(bytearray& dst, iustring<T>& src) {
-        for(int i=0; i<src.length(); i++) {
-            T c = src[i];
+
+    class EncodedString : protected bytearray {
+    protected:
+        EncodedString() {}
+    public:
+        void clear() {
+            return bytearray::clear();
+        }
+        int length() {
+            return bytearray::length();
+        }
+        bool equal(EncodedString& other) {
+            return bytearray::equal(other);
+        }
+        virtual void pushUnicode(unsigned int c) = 0;
+        virtual unsigned int getUnicode(int& i) const = 0;
+        void fromUnicode(const ustrg& src) {
+            for(int i=0; i<src.length(); i++) {
+                pushUnicode(src[i]);
+            }
+        }
+        void toUnicode(ustrg& dst) const {
+            dst.clear();
+            int i = 0;
+            while(i<dim(0)-1) {
+                dst.push_back(getUnicode(i));
+            }
+        }
+        int fwrite(FILE *file) {
+            return ::fwrite(data, 1, dim(0), file);
+        }
+        int fread(FILE *file) {
+            unsigned char c;
+            int i = 0;
+            while(::fread(&c, 1, 1, file) == 1) {
+                push(c);
+                i++;
+            }
+            return i;
+        }
+        EncodedString& fgets(FILE* stream = stdin) {
+            int c;
+            while(((c = fgetc(stream)) != EOF) && (c != '\n')) {
+                push(c);
+            }
+            return *this;
+        }
+        int fputs(FILE* stream = stdout) {
+            for(int i=0; i<length(); i++) {
+                if(fputc(at(i), stream) == EOF) {
+                    return EOF;
+                }
+            }
+            if(fputc('\n', stream) == EOF) {
+                return EOF;
+            }
+            return length() + 1;
+        }
+        template<class T>
+        void copyTo(narray<T>& dst) {
+            dst.copy(*this);
+        }
+    };
+
+    class utf8strg : public EncodedString {
+    public:
+        void pushUnicode(unsigned int c) {
+            // -- one byte --
             if(c < 128) {
-                dst.push(c);
+                push(c);
+            // -- two bytes --
             } else if(c < 2048) {
-                dst.push(0xC0 | (c >> 6));
-                dst.push(0x80 | (c & 0x3F));
+                push(0xC0 | (c >> 6));
+                push(0x80 | (c & 0x3F));
+            // -- three bytes --
             } else if(c < 65536) {
-                dst.push(0xE0 | (c >> 12));
-                dst.push(0x80 | ((c >> 6) & 0x3F));
-                dst.push(0x80 | (c & 0x3F));
+                push(0xE0 | (c >> 12));
+                push(0x80 | ((c >> 6) & 0x3F));
+                push(0x80 | (c & 0x3F));
+            // -- four bytes --
             } else if(c < 2097152) {
-                dst.push(0xF0 | (c >> 18));
-                dst.push(0x80 | ((c >> 12) & 0x3F));
-                dst.push(0x80 | ((c >> 6) & 0x3F));
-                dst.push(0x80 | (c & 0x3F));
+                push(0xF0 | (c >> 18));
+                push(0x80 | ((c >> 12) & 0x3F));
+                push(0x80 | ((c >> 6) & 0x3F));
+                push(0x80 | (c & 0x3F));
             } else {
                 throw "UTF-8 encoding error";
             }
         }
-    }
-    template<class T>
-    void decodeUTF8(iustring<T>& dst, const char* src, int n) {
-        dst.clear();
-        unsigned int x = 0;
-        int b = -1;
-        for(int i=0; i<n; i++) {
-            unsigned char c = src[i];
-            // -- ASCII --
-            if(c < 128) {
-                x = c;
-                b = 0;
-            // -- not first byte --
-            } else if(c < 0xC0) {
-                if(b<=0) {
-                    throw "UTF-8 decoding error";
-                }
-                x += (c & 0x3F) << (6*(b-1));
-                b--;
-            // -- first of two bytes --
-            } else if(c < 0xE0) {
-                x = (c & 0x1F) << 6;
-                b = 1;
-            // -- first of three bytes --
-            } else if(c < 0xF0) {
-                x = (c & 0xF) << 12;
-                b = 2;
-            // -- first of four bytes --
-            } else {
-                x = (c & 0x7) << 18;
-                b = 3;
-            }
-            // -- check if data type is big enough --
-            if(sizeof(T) < unsigned(b+1)) {
-                throw "UTF-8 decoding error";
-            }
-            // -- character complete --
-            if(b==0) {
-                dst.push_back(x);
-            }
+        unsigned int getUnicode(int& i) const {
+            return decode(*this, i);
         }
+        template<class T>
+        static unsigned int decode(T str, int& i) {
+            unsigned int x = 0;
+            int b = -1;
+            while(b != 0) {
+                unsigned char c = str[i++];
+                // -- ASCII --
+                if(c < 128) {
+                    x = c;
+                    b = 0;
+                // -- not first byte --
+                } else if(c < 0xC0) {
+                    if(b<=0) {
+                        throw "UTF-8 decoding error";
+                    }
+                    x += (c & 0x3F) << (6*(b-1));
+                    b--;
+                // -- first of two bytes --
+                } else if(c < 0xE0) {
+                    x = (c & 0x1F) << 6;
+                    b = 1;
+                // -- first of three bytes --
+                } else if(c < 0xF0) {
+                    x = (c & 0xF) << 12;
+                    b = 2;
+                // -- first of four bytes --
+                } else {
+                    x = (c & 0x7) << 18;
+                    b = 3;
+                }
+            }
+            return x;
+        }
+    };
+
+    inline int fwrite(EncodedString& s, FILE *file) {
+        return s.fwrite(file);
     }
-    template<class T>
-    void encodeUTF16(bytearray& dst, iustring<T>& src) {
-        for(int i=0; i<src.length(); i++) {
-            T c = src[i];
+    inline int fread(EncodedString& s, FILE *file) {
+        return s.fread(file);
+    }
+    inline EncodedString& fgets(EncodedString& s, FILE *file) {
+        return s.fgets(file);
+    }
+    inline int fputs(EncodedString& s, FILE *file) {
+        return s.fputs(file);
+    }
+    inline int freadUTF8(ustrg& s, FILE* file) {
+        utf8strg utf8;
+        int r = fread(utf8, file);
+        utf8.toUnicode(s);
+        return r;
+    }
+    inline ustrg& fgetsUTF8(ustrg& s, FILE *file) {
+        utf8strg utf8;
+        fgets(utf8, file);
+        utf8.toUnicode(s);
+        return s;
+    }
+    inline int fwriteUTF8(ustrg& s, FILE* file) {
+        utf8strg utf8;
+        utf8.fromUnicode(s);
+        return fwrite(utf8, file);
+    }
+    inline int fputsUTF8(ustrg& s, FILE* file) {
+        utf8strg utf8;
+        utf8.fromUnicode(s);
+        return fputs(utf8, file);
+    }
+
+#if 0
+    class utf16strg : public EncodedString {
+    public:
+        void pushUnicode(unsigned int c) {
             // -- 2 bytes --
             if(c <= 0xFFFF) {
-                dst.push(c & 0xFF);
-                dst.push(c >> 8);
+                push(c & 0xFF);
+                push(c >> 8);
             // -- 4 bytes --
             } else {
                 c -= 0x10000;
-                dst.push(0xDC00 | (c & 0x3FF));
-                dst.push(0xD800 | ((c >> 10) & 0x3FF));
+                push(0xDC00 | (c & 0x3FF));
+                push(0xD800 | ((c >> 10) & 0x3FF));
             }
         }
+        unsigned int getUnicode(int& i) const {
+            return decode(*this, i);
+        }
+        template<class T>
+        static unsigned int decode(T str, int& i) {
+            unsigned int x = 0;
+            unsigned int y = 0;
+            int b = 0;
+            do {
+                unsigned char c = str[i++];
+                if(b == 0) {
+                    x = c;
+                } else if(b == 1) {
+                    x |= ((unsigned int)c) << 8;
+                    if(x < 0xD800 || x > 0xDFFF) {
+                        b = -1;
+                    } else if(x < 0xD800 || x > 0xDBFF) {
+                        throw "UTF-16 decoding error";
+                    }
+                } else if(b == 2) {
+                    y = c;
+                } else if(b == 3) {
+                    y |= ((unsigned int)c) << 8;
+                    if(y < 0xDC00 || y > 0xDFFF) {
+                        throw "UTF-16 decoding error";
+                    }
+                    x = (((x & 0x3FF) << 10) | (y & 0x3FF)) + 0x10000;
+                    b = -1;
+                }
+                b++;
+            } while(b != 0);
+            return x;
+        }
+    };
+#endif
+
+
+    class nustring : public iustrg<nuchar> {
+    public:
+        nustring(const char* src)  {
+        }
+        nustring()  {
+        }
+        nustring(const nustring& other)  {
+        }
+        void of(intarray &data) {
+            throw "void of(intarray &data)";
+            clear();
+            for(int i=0;i<data.length();i++) {
+                push_back(nuchar(data[i]));
+            }
+        }
+        void as(intarray &data) {
+            throw "void as(intarray &data)";
+            data.resize(length());
+            for(int i=0;i<length();i++) {
+                data[i] = at(i).ord();
+            }
+        }
+        int length1d() {
+            return length();
+        }
+        nuchar& at1d(int index) {
+            return (*this)[index];
+        }
+        void utf8Encode(narray<char> &s) {
+            utf8strg utf8;
+            for(int i=0; i<length(); i++) {
+                utf8.pushUnicode(at(i).ord());
+            }
+            utf8.copyTo(s);
+        }
+        void utf8Decode(narray<char> &str) {
+            for(int i=0; i<str.length();) {
+                push_back(nuchar(utf8strg::decode(str, i)));
+            }
+        }
+        void utf8Encode(char *result,int size) {
+            narray<char> temp;
+            utf8Encode(temp);
+            if(temp.length()>=size) throw "not enough room";
+            strncpy(result,&temp[0],temp.length());
+            result[temp.length()] = 0;
+        }
+        void utf8Decode(const char *s,int n) {
+            utf8strg utf8;
+            int i = 0;
+            while(length() < n) {
+                push_back(nuchar(utf8strg::decode(s, i)));
+            }
+        }
+        char *mallocUtf8Encode() {
+            narray<char> temp;
+            utf8Encode(temp);
+            int size = temp.length();
+            char *result = (char *)malloc(size+1);
+            if(size>0) strncpy(result,&temp[0],size);
+            result[size] = 0;
+            return result;
+        }
+        char *newUtf8Encode() {
+            narray<char> temp;
+            utf8Encode(temp);
+            int size = temp.length();
+            char *result = new char[size+1];
+            if(size>0) strncpy(result,&temp[0],size);
+            result[size] = 0;
+            return result;
+        }
+        void push(const nuchar& x) {
+            iustrg<nuchar>::push_back(x);
+        }
+        void copy(const iustrg<nuchar> &src) {
+            clear();
+            for(int i=0; i<src.length(); i++) {
+                push_back(src[i]);
+            }
+        }
+        const nuchar& operator()(int pos) const {
+            return at(pos);
+        }
+        nuchar& operator()(int pos) {
+            return at(pos);
+        }
+    };
+
+    inline static void copy(nustring &dst, nustring &src) {
+        dst.copy(src);
     }
     template<class T>
-    void decodeUTF16(iustring<T>& dst, const char* src, int n) {
-        dst.clear();
-        unsigned int x = 0;
-        unsigned int y = 0;
-        int b = 0;
-        for(int i=0; i<n; i++) {
-            unsigned char c = src[i];
-            if(b == 0) {
-                x = c;
-            } else if(b == 1) {
-                x |= ((unsigned int)c) << 8;
-                if(x < 0xD800 || x > 0xDFFF) {
-                    dst.push_back(x);
-                    b = -1;
-                } else if(x < 0xD800 || x > 0xDBFF) {
-                    throw "UTF-16 decoding error";
-                }
-            } else if(b == 2){
-                y = c;
-            } else if(b == 3){
-                y |= ((unsigned int)c) << 8;
-                if(y < 0xDC00 || y > 0xDFFF) {
-                    throw "UTF-16 decoding error";
-                }
-                x = (((x & 0x3FF) << 10) | (y & 0x3FF)) + 0x10000;
-                dst.push_back(x);
-                b = -1;
-            }
-            b++;
-        }
+    inline static void makelike(narray<T>& a, nustring& s) {
+        a.makelike(s.getBuf());
     }
 
-    typedef iustring<char> iucstring;
-    typedef iustring<wchar_t> iuwstring;
-    typedef iustring<int> iuistring;
-    typedef iustring<unsigned char> iubstring;
 }
 
 #endif /* iustring_h__ */

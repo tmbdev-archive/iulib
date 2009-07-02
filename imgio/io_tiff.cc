@@ -90,7 +90,7 @@ namespace iulib {
         }
         Buffer raster(w * h * nChannels);
         int s = 0;
-        for(int i=0; i<nStrips; i++) {
+        for(unsigned int i=0; i<nStrips; i++) {
             s += TIFFReadEncodedStrip(tif, i, raster.buf+s, -1);
         }
 
@@ -99,8 +99,8 @@ namespace iulib {
         } else {
             image.renew(w, h, nChannels);
         }
-        for(int x=0; x<w; x++) {
-            for(int y=0; y<h; y++) {
+        for(unsigned int x=0; x<w; x++) {
+            for(unsigned int y=0; y<h; y++) {
                 uint32 m = 0;
                 for(int c=0; c<nChannels; c++) {
                     unsigned char v = raster.buf[(image.dim(1)-1-y)*w*nChannels+x*nChannels+c];
@@ -132,8 +132,8 @@ namespace iulib {
         } else {
             image.renew(w, h, nChannels);
         }
-        for(int x=0; x<w; x++) {
-            for(int y=0; y<h; y++) {
+        for(unsigned int x=0; x<w; x++) {
+            for(unsigned int y=0; y<h; y++) {
                 uint32 m = 0;
                 for(int c=0; c<nChannels; c++) {
                     unsigned char v = raster.buf[y*w*nChannels+x*nChannels+c];
@@ -164,14 +164,14 @@ namespace iulib {
         }
         Buffer raster(w * h * nChannels);
         int s = 0;
-        for(int i=0; i<nStrips; i++) {
+        for(unsigned int i=0; i<nStrips; i++) {
             s += TIFFReadEncodedStrip(tif, i, raster.buf+s, -1);
         }
 
         image.renew(w, h);
         int k = 0;
-        for(int x=0; x<w; x++) {
-            for(int y=0; y<h; y++) {
+        for(unsigned int x=0; x<w; x++) {
+            for(unsigned int y=0; y<h; y++) {
                 image(x, y) = 0;
                 for(int c=0; c<nChannels; c++) {
                     unsigned char v = raster.buf[(h-1-y)*w*nChannels+x*nChannels+c];
@@ -201,8 +201,8 @@ namespace iulib {
         nChannels = 4; // -- read rgba => always four channels
 
         image.renew(w, h);
-        for(int x=0; x<w; x++) {
-            for(int y=0; y<h; y++) {
+        for(unsigned int x=0; x<w; x++) {
+            for(unsigned int y=0; y<h; y++) {
                 image(x, y) = 0;
                 for(int c=0; c<nChannels; c++) {
                     unsigned char v = raster.buf[y*w*nChannels+x*nChannels+c];

@@ -150,7 +150,7 @@ int main(int argc,char **argv) {
     TEST_ASSERT(s3 == s4);
 
     // -- testing UTF-8 conversions --
-    iustring<int> s8;
+    ustrg s8;
     s8.push_back('0'); // Digit Zero
     s8.push_back(0xE4); // Latin Small Letter A With Diaeresis
     s8.push_back(0xF6); // Latin Small Letter O With Diaeresis
@@ -162,45 +162,46 @@ int main(int argc,char **argv) {
     s8.push_back(0x1EF3); // Latin Small Letter Y With Grave
     s8.push_back('?'); // Question Mark
     s8.push_back(0xFFFD); // Question Mark
-    char t[256];
-    int n;
-    bytearray utf8;
-    encodeUTF8(utf8, s8);
+
+    utf8strg utf8;
+    utf8.fromUnicode(s8);
     file = fopen("__utf-8-test__", "w");
-    n = fwrite(utf8.data, 1, utf8.length(), file);
+    utf8.fwrite(file);
     fclose(file);
+    utf8.clear();
     file = fopen("__utf-8-test__", "r");
-    n = fread(t, 1, 255, file);
+    utf8.fread(file);
     fclose(file);
-    iustring<int> s9;
-    decodeUTF8(s9, t, n);
+    ustrg s9;
+    utf8.toUnicode(s9);
     TEST_ASSERT(s8.length() == s9.length());
     for(int i=0; i<s8.length(); i++) {
         TEST_ASSERT(s8[i] == s9[i]);
     }
     // -- testing UTF-16 conversions --
-    bytearray utf16;
-    encodeUTF16(utf16, s8);
+    utf16strg utf16;
+    utf16.fromUnicode(s8);
     file = fopen("__utf-16-test__", "w");
-    n = fwrite(utf16.data, 1, utf16.length(), file);
+    utf16.fwrite(file);
     fclose(file);
+    utf16.clear();
     file = fopen("__utf-16-test__", "r");
-    n = fread(t, 1, 255, file);
+    utf16.fread(file);
     fclose(file);
     s9.clear();
-    decodeUTF16(s9, t, n);
+    utf16.toUnicode(s9);
     TEST_ASSERT(s8.length() == s9.length());
     for(int i=0; i<s8.length(); i++) {
         TEST_ASSERT(s8[i] == s9[i]);
     }
 
-    // -- test nustring conversion --
-    nustring ns = "Hello World";
-    s3.assign(ns);
-    ns = "123456";
-    TEST_ASSERT(ns == "123456");
-    s3.toNustring(ns);
-    TEST_ASSERT(ns == "Hello World");
+//    // -- test nustring conversion --
+//    nustring ns = "Hello World";
+//    s3.assign(ns);
+//    ns = "123456";
+//    TEST_ASSERT(ns == "123456");
+//    s3.toNustring(ns);
+//    TEST_ASSERT(ns == "Hello World");
 
     // -- tests for components.cc --
     iucstring prefix = "prefix";
