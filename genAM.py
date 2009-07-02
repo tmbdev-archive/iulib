@@ -25,7 +25,7 @@ print """# Copyright 2008 Deutsches Forschungszentrum fuer Kuenstliche Intellige
 # Primary Repository: http://ocropus.googlecode.com/svn/trunk/
 # Web Sites: www.iupr.org, www.dfki.de
 
-AM_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib
+AM_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib -I$(srcdir)/imgbits -I$(srcdir)/vidio -I$(srcdir)/utils
 
 includedir = ${prefix}/include/iulib
 colibdir = ${prefix}/include/colib
