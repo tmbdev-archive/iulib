@@ -178,22 +178,34 @@ int main(int argc,char **argv) {
     for(int i=0; i<s8.length(); i++) {
         TEST_ASSERT(s8[i] == s9[i]);
     }
-    // -- testing UTF-16 conversions --
-    utf16strg utf16;
-    utf16.fromUnicode(s8);
-    file = fopen("__utf-16-test__", "w");
-    utf16.fwrite(file);
+
+    file = fopen("__utf-8-test__", "r");
+    char line[1024];
+    fgets(line, 1024, file);
     fclose(file);
-    utf16.clear();
-    file = fopen("__utf-16-test__", "r");
-    utf16.fread(file);
-    fclose(file);
-    s9.clear();
-    utf16.toUnicode(s9);
-    TEST_ASSERT(s8.length() == s9.length());
+    nustring nu;
+    nu.utf8Decode(line, s8.length());
+    TEST_ASSERT(nu.length() == s8.length());
     for(int i=0; i<s8.length(); i++) {
-        TEST_ASSERT(s8[i] == s9[i]);
+        TEST_ASSERT(s8[i] == nu[i].ord());
     }
+
+//    // -- testing UTF-16 conversions --
+//    utf16strg utf16;
+//    utf16.fromUnicode(s8);
+//    file = fopen("__utf-16-test__", "w");
+//    utf16.fwrite(file);
+//    fclose(file);
+//    utf16.clear();
+//    file = fopen("__utf-16-test__", "r");
+//    utf16.fread(file);
+//    fclose(file);
+//    s9.clear();
+//    utf16.toUnicode(s9);
+//    TEST_ASSERT(s8.length() == s9.length());
+//    for(int i=0; i<s8.length(); i++) {
+//        TEST_ASSERT(s8[i] == s9[i]);
+//    }
 
 //    // -- test nustring conversion --
 //    nustring ns = "Hello World";

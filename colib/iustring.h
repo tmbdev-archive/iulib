@@ -637,13 +637,13 @@ namespace colib {
             return bytearray::equal(other);
         }
         virtual void pushUnicode(unsigned int c) = 0;
-        virtual unsigned int getUnicode(int& i) const = 0;
+        virtual unsigned int getUnicode(int& i) = 0;
         void fromUnicode(const ustrg& src) {
             for(int i=0; i<src.length(); i++) {
                 pushUnicode(src[i]);
             }
         }
-        void toUnicode(ustrg& dst) const {
+        void toUnicode(ustrg& dst) {
             dst.clear();
             int i = 0;
             while(i<dim(0)-1) {
@@ -711,11 +711,11 @@ namespace colib {
                 throw "UTF-8 encoding error";
             }
         }
-        unsigned int getUnicode(int& i) const {
+        unsigned int getUnicode(int& i) {
             return decode(*this, i);
         }
         template<class T>
-        static unsigned int decode(T str, int& i) {
+        static unsigned int decode(T& str, int& i) {
             unsigned int x = 0;
             int b = -1;
             while(b != 0) {
