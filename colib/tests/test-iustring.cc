@@ -178,6 +178,7 @@ int main(int argc,char **argv) {
     for(int i=0; i<s8.length(); i++) {
         TEST_ASSERT(s8[i] == s9[i]);
     }
+#if 0
     // -- testing UTF-16 conversions --
     utf16strg utf16;
     utf16.fromUnicode(s8);
@@ -194,6 +195,7 @@ int main(int argc,char **argv) {
     for(int i=0; i<s8.length(); i++) {
         TEST_ASSERT(s8[i] == s9[i]);
     }
+#endif
 
 //    // -- test nustring conversion --
 //    nustring ns = "Hello World";
