@@ -839,10 +839,16 @@ namespace colib {
     class nustring : public iustrg<nuchar> {
     public:
         nustring(const char* src)  {
+            for(int i=0; i<strlen(src); i++) {
+                push_back(nuchar(src[i]));
+            }
         }
         nustring()  {
         }
         nustring(const nustring& other)  {
+            for(int i=0; i<other.length();) {
+                push_back(other[i]);
+            }
         }
         void of(intarray &data) {
             throw "void of(intarray &data)";

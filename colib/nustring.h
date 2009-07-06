@@ -53,7 +53,7 @@ namespace colib {
         explicit nuchar(int x) {
             value = x;
         }
-        int ord() {
+        int ord() const {
             return value;
         }
         bool operator==(const nuchar &c) {
