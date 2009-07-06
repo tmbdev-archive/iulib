@@ -62,6 +62,9 @@ namespace colib {
         bool operator!=(const nuchar &c) {
             return value!=c.value;
         }
+        bool operator!=(int c) const {
+            return value!=c;
+        }
 
     };
 
