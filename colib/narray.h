@@ -90,7 +90,7 @@ namespace colib {
 
         inline void check_range(index_t i,index_t n) const {
 #ifndef UNSAFE
-            if(unsigned(i)>=unsigned(n)) 
+            if(unsigned(i)>=unsigned(n))
                 throw "narray: index out of range";
 #endif
         }
@@ -100,7 +100,7 @@ namespace colib {
 
         inline void check(bool condition,const char *message) const {
 #ifndef UNSAFE
-            if(!condition) 
+            if(!condition)
                 throw message;
 #endif
         }
@@ -261,6 +261,7 @@ namespace colib {
         narray<T> &truncate(index_t d0) {
             check(d0<=dims[0] && dims[1]==0,"can only truncate 1D arrays to smaller arrays");
             setdims_(d0);
+            return *this;
         }
 
         /// Resizes the array, possibly destroying any data previously held by it.

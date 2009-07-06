@@ -38,6 +38,126 @@
 #include "nustring.h"
 
 namespace colib {
+    class EncodedString : protected bytearray {
+    protected:
+        EncodedString() {}
+    public:
+        void clear() {
+            return bytearray::clear();
+        }
+        int length() const {
+            return bytearray::dim(0);
+        }
+        bool equal(EncodedString& other) {
+            return bytearray::equal(other);
+        }
+        virtual void pushUnicode(const nuchar&) = 0;
+        virtual nuchar getUnicode(int&) = 0;
+        int fwrite(FILE *file) {
+            return ::fwrite(data, 1, dim(0), file);
+        }
+        int fread(FILE *file) {
+            unsigned char c;
+            int i = 0;
+            while(::fread(&c, 1, 1, file) == 1) {
+                push(c);
+                i++;
+            }
+            return i;
+        }
+        EncodedString& fgets(FILE* stream = stdin) {
+            int c;
+            while(((c = fgetc(stream)) != EOF) && (c != '\n')) {
+                push(c);
+            }
+            return *this;
+        }
+        int fputs(FILE* stream = stdout) {
+            for(int i=0; i<length(); i++) {
+                if(fputc(at(i), stream) == EOF) {
+                    return EOF;
+                }
+            }
+            if(fputc('\n', stream) == EOF) {
+                return EOF;
+            }
+            return length() + 1;
+        }
+        void copyTo(char* result, int size) {
+            if(length()>=size) throw "not enough room";
+            for(int i=0; i<length(); i++) {
+                result[i] = (*this)[i];
+            }
+            result[length()] = '\0';
+        }
+        const unsigned char* c_str() {
+            return data;
+        }
+    };
+
+    class utf8strg : public EncodedString {
+    public:
+        void pushUnicode(const nuchar& x) {
+            unsigned int c = x.ord();
+            // -- one byte --
+            if(c < 128) {
+                push(c);
+            // -- two bytes --
+            } else if(c < 2048) {
+                push(0xC0 | (c >> 6));
+                push(0x80 | (c & 0x3F));
+            // -- three bytes --
+            } else if(c < 65536) {
+                push(0xE0 | (c >> 12));
+                push(0x80 | ((c >> 6) & 0x3F));
+                push(0x80 | (c & 0x3F));
+            // -- four bytes --
+            } else if(c < 2097152) {
+                push(0xF0 | (c >> 18));
+                push(0x80 | ((c >> 12) & 0x3F));
+                push(0x80 | ((c >> 6) & 0x3F));
+                push(0x80 | (c & 0x3F));
+            } else {
+                throw "UTF-8 encoding error";
+            }
+        }
+        nuchar getUnicode(int& i) {
+            return decode(*this, i);
+        }
+        template<class T>
+        static nuchar decode(T& str, int& i) {
+            unsigned int x = 0;
+            int b = -1;
+            while(b != 0) {
+                unsigned char c = str[i++];
+                // -- ASCII --
+                if(c < 128) {
+                    x = c;
+                    b = 0;
+                // -- not first byte --
+                } else if(c < 0xC0) {
+                    if(b<=0) {
+                        throw "UTF-8 decoding error";
+                    }
+                    x += (c & 0x3F) << (6*(b-1));
+                    b--;
+                // -- first of two bytes --
+                } else if(c < 0xE0) {
+                    x = (c & 0x1F) << 6;
+                    b = 1;
+                // -- first of three bytes --
+                } else if(c < 0xF0) {
+                    x = (c & 0xF) << 12;
+                    b = 2;
+                // -- first of four bytes --
+                } else {
+                    x = (c & 0x7) << 18;
+                    b = 3;
+                }
+            }
+            return nuchar(x);
+        }
+    };
 
     /**
      * @brief counted string class based on narray
@@ -83,6 +203,12 @@ namespace colib {
         T& operator[](int pos) {
             return at(pos);
         }
+        const T& operator()(int pos) const {
+            return at(pos);
+        }
+        T& operator()(int pos) {
+            return at(pos);
+        }
         const T& at(int pos) const {
             if(pos < 0 || unsigned(pos) >= unsigned(len)) {
                 throw "out of bounds";
@@ -95,9 +221,9 @@ namespace colib {
             }
             return buf(pos);
         }
-        iustrg<T>& append(const char* s, int pos, int n) {
+        virtual iustrg<T>& append(const char* s, int pos, int n) {
             for(int i=pos; i<pos+n && s[i]!='\0'; i++) {
-                push_back(s[i]);
+                push_back((s[i]));
             }
             return *this;
         }
@@ -143,11 +269,15 @@ namespace colib {
         iustrg<T>& operator+=(const A& s) {
             return append(s);
         }
-        void push_back(T c) {
+        template <class A>
+        void push_back(const A c) {
             buf.grow_to(len + 2); // +1 new char, +1 terminating \0
-            buf.at(len) = c;
+            buf.at(len) = T(c);
             buf.at(len+1) = T('\0');
             len++;
+        }
+        void push(const T& c) {
+            push_back(c);
         }
         iustrg<T>& assign(const char *s, int pos, int n) {
             clear();
@@ -181,9 +311,6 @@ namespace colib {
         template<class A>
         iustrg<T>& operator=(const A& x) {
             return assign(x);
-        }
-        iustrg<T>& operator=(const char* s) {
-            return assign(s);
         }
         iustrg<T>& replace(int pos, int n1, const char* s, int n2) {
             iustrg<T> tmp;
@@ -401,20 +528,34 @@ namespace colib {
             return buf;
         }
 
-        // -- nustring compatibility -
-        iustrg(iustrg<nuchar>& src) : len(0) {
-            append(src);
-        }
-        iustrg<T>& append(iustrg<nuchar>& str) {
-            for(int i=0; i<str.length() && str[i].ord()!='\0'; i++) {
-                push_back(str[i].ord());
+        void utf8Encode(utf8strg& utf8) {
+            utf8.clear();
+            for(int i=0; i<length(); i++) {
+                utf8.pushUnicode((*this)[i]);
             }
-            return *this;
         }
-        void toNustring(iustrg<nuchar>& dst) {
-            dst.clear();
-            for(int i=0; i<len; i++) {
-                dst.push_back(nuchar(buf(i)));
+        /// encodes the string with utf8 and adds a terminating '\0'
+        void utf8EncodeTerm(utf8strg& utf8) {
+            utf8Encode(utf8);
+            utf8.pushUnicode(nuchar('\0'));
+        }
+        void utf8Decode(utf8strg& utf8) {
+            clear();
+            int i = 0;
+            while(i<utf8.length()-1) {
+                push_back(utf8.getUnicode(i));
+            }
+        }
+        void utf8Encode(char *result, int size) {
+            utf8strg utf8;
+            utf8Encode(utf8);
+            utf8.copyTo(result, size);
+        }
+        void utf8Decode(const char *s,int n) {
+            utf8strg utf8;
+            int i = 0;
+            while(length() < n) {
+                push(nuchar(utf8strg::decode(s, i)));
             }
         }
 
@@ -425,6 +566,7 @@ namespace colib {
 
     typedef iustrg<char> strg;
     typedef iustrg<u_int32_t> ustrg;
+    typedef iustrg<nuchar> nustring;
 
     typedef strg iucstring;
     typedef ustrg iuistring;
@@ -623,132 +765,6 @@ namespace colib {
         return re_gsub(str, pattern, sub, 1, cflags, eflags);
     }
 
-    class EncodedString : protected bytearray {
-    protected:
-        EncodedString() {}
-    public:
-        void clear() {
-            return bytearray::clear();
-        }
-        int length() {
-            return bytearray::length();
-        }
-        bool equal(EncodedString& other) {
-            return bytearray::equal(other);
-        }
-        virtual void pushUnicode(unsigned int c) = 0;
-        virtual unsigned int getUnicode(int& i) = 0;
-        void fromUnicode(const ustrg& src) {
-            for(int i=0; i<src.length(); i++) {
-                pushUnicode(src[i]);
-            }
-        }
-        void toUnicode(ustrg& dst) {
-            dst.clear();
-            int i = 0;
-            while(i<dim(0)-1) {
-                dst.push_back(getUnicode(i));
-            }
-        }
-        int fwrite(FILE *file) {
-            return ::fwrite(data, 1, dim(0), file);
-        }
-        int fread(FILE *file) {
-            unsigned char c;
-            int i = 0;
-            while(::fread(&c, 1, 1, file) == 1) {
-                push(c);
-                i++;
-            }
-            return i;
-        }
-        EncodedString& fgets(FILE* stream = stdin) {
-            int c;
-            while(((c = fgetc(stream)) != EOF) && (c != '\n')) {
-                push(c);
-            }
-            return *this;
-        }
-        int fputs(FILE* stream = stdout) {
-            for(int i=0; i<length(); i++) {
-                if(fputc(at(i), stream) == EOF) {
-                    return EOF;
-                }
-            }
-            if(fputc('\n', stream) == EOF) {
-                return EOF;
-            }
-            return length() + 1;
-        }
-        template<class T>
-        void copyTo(narray<T>& dst) {
-            dst.copy(*this);
-        }
-    };
-
-    class utf8strg : public EncodedString {
-    public:
-        void pushUnicode(unsigned int c) {
-            // -- one byte --
-            if(c < 128) {
-                push(c);
-            // -- two bytes --
-            } else if(c < 2048) {
-                push(0xC0 | (c >> 6));
-                push(0x80 | (c & 0x3F));
-            // -- three bytes --
-            } else if(c < 65536) {
-                push(0xE0 | (c >> 12));
-                push(0x80 | ((c >> 6) & 0x3F));
-                push(0x80 | (c & 0x3F));
-            // -- four bytes --
-            } else if(c < 2097152) {
-                push(0xF0 | (c >> 18));
-                push(0x80 | ((c >> 12) & 0x3F));
-                push(0x80 | ((c >> 6) & 0x3F));
-                push(0x80 | (c & 0x3F));
-            } else {
-                throw "UTF-8 encoding error";
-            }
-        }
-        unsigned int getUnicode(int& i) {
-            return decode(*this, i);
-        }
-        template<class T>
-        static unsigned int decode(T& str, int& i) {
-            unsigned int x = 0;
-            int b = -1;
-            while(b != 0) {
-                unsigned char c = str[i++];
-                // -- ASCII --
-                if(c < 128) {
-                    x = c;
-                    b = 0;
-                // -- not first byte --
-                } else if(c < 0xC0) {
-                    if(b<=0) {
-                        throw "UTF-8 decoding error";
-                    }
-                    x += (c & 0x3F) << (6*(b-1));
-                    b--;
-                // -- first of two bytes --
-                } else if(c < 0xE0) {
-                    x = (c & 0x1F) << 6;
-                    b = 1;
-                // -- first of three bytes --
-                } else if(c < 0xF0) {
-                    x = (c & 0xF) << 12;
-                    b = 2;
-                // -- first of four bytes --
-                } else {
-                    x = (c & 0x7) << 18;
-                    b = 3;
-                }
-            }
-            return x;
-        }
-    };
-
     inline int fwrite(EncodedString& s, FILE *file) {
         return s.fwrite(file);
     }
@@ -761,26 +777,26 @@ namespace colib {
     inline int fputs(EncodedString& s, FILE *file) {
         return s.fputs(file);
     }
-    inline int freadUTF8(ustrg& s, FILE* file) {
+    inline int freadUTF8(iustrg<nuchar>& s, FILE* file) {
         utf8strg utf8;
         int r = fread(utf8, file);
-        utf8.toUnicode(s);
+        s.utf8Decode(utf8);
         return r;
     }
-    inline ustrg& fgetsUTF8(ustrg& s, FILE *file) {
+    inline iustrg<nuchar>& fgetsUTF8(iustrg<nuchar>& s, FILE *file) {
         utf8strg utf8;
         fgets(utf8, file);
-        utf8.toUnicode(s);
+        s.utf8Decode(utf8);
         return s;
     }
-    inline int fwriteUTF8(ustrg& s, FILE* file) {
+    inline int fwriteUTF8(iustrg<nuchar>& s, FILE* file) {
         utf8strg utf8;
-        utf8.fromUnicode(s);
+        s.utf8Encode(utf8);
         return fwrite(utf8, file);
     }
-    inline int fputsUTF8(ustrg& s, FILE* file) {
+    inline int fputsUTF8(iustrg<nuchar>& s, FILE* file) {
         utf8strg utf8;
-        utf8.fromUnicode(s);
+        s.utf8Encode(utf8);
         return fputs(utf8, file);
     }
 
@@ -834,98 +850,6 @@ namespace colib {
         }
     };
 #endif
-
-
-    class nustring : public iustrg<nuchar> {
-    public:
-        void of(intarray &data) {
-            throw "void of(intarray &data)";
-            clear();
-            for(int i=0;i<data.length();i++) {
-                push_back(nuchar(data[i]));
-            }
-        }
-        void as(intarray &data) {
-            throw "void as(intarray &data)";
-            data.resize(length());
-            for(int i=0;i<length();i++) {
-                data[i] = at(i).ord();
-            }
-        }
-        int length1d() {
-            return length();
-        }
-        nuchar& at1d(int index) {
-            return (*this)[index];
-        }
-        void utf8Encode(narray<char> &s) {
-            utf8strg utf8;
-            for(int i=0; i<length(); i++) {
-                utf8.pushUnicode(at(i).ord());
-            }
-            utf8.copyTo(s);
-        }
-        void utf8Decode(narray<char> &str) {
-            for(int i=0; i<str.length();) {
-                push_back(nuchar(utf8strg::decode(str, i)));
-            }
-        }
-        void utf8Encode(char *result,int size) {
-            narray<char> temp;
-            utf8Encode(temp);
-            if(temp.length()>=size) throw "not enough room";
-            strncpy(result,&temp[0],temp.length());
-            result[temp.length()] = 0;
-        }
-        void utf8Decode(const char *s,int n) {
-            utf8strg utf8;
-            int i = 0;
-            while(length() < n) {
-                push_back(nuchar(utf8strg::decode(s, i)));
-            }
-        }
-        char *mallocUtf8Encode() {
-            narray<char> temp;
-            utf8Encode(temp);
-            int size = temp.length();
-            char *result = (char *)malloc(size+1);
-            if(size>0) strncpy(result,&temp[0],size);
-            result[size] = 0;
-            return result;
-        }
-        char *newUtf8Encode() {
-            narray<char> temp;
-            utf8Encode(temp);
-            int size = temp.length();
-            char *result = new char[size+1];
-            if(size>0) strncpy(result,&temp[0],size);
-            result[size] = 0;
-            return result;
-        }
-        void push(const nuchar& x) {
-            iustrg<nuchar>::push_back(x);
-        }
-        void copy(const iustrg<nuchar> &src) {
-            clear();
-            for(int i=0; i<src.length(); i++) {
-                push_back(src[i]);
-            }
-        }
-        const nuchar& operator()(int pos) const {
-            return at(pos);
-        }
-        nuchar& operator()(int pos) {
-            return at(pos);
-        }
-    };
-
-    inline static void copy(nustring &dst, nustring &src) {
-        dst.copy(src);
-    }
-    template<class T>
-    inline static void makelike(narray<T>& a, nustring& s) {
-        a.makelike(s.getBuf());
-    }
 
 }
 
