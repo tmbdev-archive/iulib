@@ -33,9 +33,9 @@ using namespace colib;
 
 int main(int argc,char **argv) {
     // -- test assignments --
-    iucstring s1("Hello");
-    iucstring s2("World");
-    iucstring s3((int)6);
+    strg s1("Hello");
+    strg s2("World");
+    strg s3((int)6);
 
     TEST_ASSERT(s1.length() == 5);
     TEST_ASSERT(s2.length() == 5);
@@ -94,7 +94,7 @@ int main(int argc,char **argv) {
     s3 += s2;
     TEST_ASSERT(s3 == "Hello World");
 
-    iucstring s4;
+    strg s4;
     s4.append("abc");
     s4 = "123" + s4;
     s4 += 123;
@@ -107,11 +107,11 @@ int main(int argc,char **argv) {
 
     // -- test finds --
     TEST_ASSERT(s3.find(s1) == 0);
-    TEST_ASSERT(s3.find(s1, 1) == iucstring::npos);
-    TEST_ASSERT(s3.find(s1 + "-") == iucstring::npos);
+    TEST_ASSERT(s3.find(s1, 1) == strg::npos);
+    TEST_ASSERT(s3.find(s1 + "-") == strg::npos);
     TEST_ASSERT(s3.find(s2) == 6);
     TEST_ASSERT(s3.find("ll", 0, 2) == 2);
-    TEST_ASSERT(s3.find("ll", 3) == iucstring::npos);
+    TEST_ASSERT(s3.find("ll", 3) == strg::npos);
     TEST_ASSERT(s3.rfind("l") == 9);
     TEST_ASSERT(s3.rfind("l", 8) == 3);
     TEST_ASSERT(s3.rfind("ll") == 2);
@@ -150,7 +150,7 @@ int main(int argc,char **argv) {
     TEST_ASSERT(s3 == s4);
 
     // -- testing UTF-8 conversions --
-    nustring s8;
+    ustrg s8;
     s8.push_back(nuchar('0')); // Digit Zero
     s8.push_back(0xE4); // Latin Small Letter A With Diaeresis
     s8.push_back(0xF6); // Latin Small Letter O With Diaeresis
@@ -163,32 +163,21 @@ int main(int argc,char **argv) {
     s8.push_back(nuchar('?')); // Question Mark
     s8.push_back(0xFFFD); // Question Mark
 
-//    utf8strg utf8;
-//    utf8.fromUnicode(s8);
-//    file = fopen("__utf-8-test__", "w");
-//    utf8.fwrite(file);
-//    fclose(file);
-//    utf8.clear();
-//    file = fopen("__utf-8-test__", "r");
-//    utf8.fread(file);
-//    fclose(file);
-//    nustring s9;
-//    utf8.toUnicode(s9);
-//    TEST_ASSERT(s8.length() == s9.length());
-//    for(int i=0; i<s8.length(); i++) {
-//        TEST_ASSERT(s8[i] == s9[i]);
-//    }
-//
-//    file = fopen("__utf-8-test__", "r");
-//    char line[1024];
-//    fgets(line, 1024, file);
-//    fclose(file);
-//    nustring nu;
-//    nu.utf8Decode(line, s8.length());
-//    TEST_ASSERT(nu.length() == s8.length());
-//    for(int i=0; i<s8.length(); i++) {
-//        TEST_ASSERT(s8[i].ord() == nu[i].ord());
-//    }
+    utf8strg utf8;
+    s8.utf8Encode(utf8);
+    file = fopen("__utf-8-test__", "w");
+    utf8.fwrite(file);
+    fclose(file);
+    utf8.clear();
+    file = fopen("__utf-8-test__", "r");
+    utf8.fread(file);
+    fclose(file);
+    ustrg s9;
+    s9.utf8Decode(utf8);
+    TEST_ASSERT(s8.length() == s9.length());
+    for(int i=0; i<s8.length(); i++) {
+        TEST_ASSERT(s8[i] == s9[i]);
+    }
 
 //    // -- testing UTF-16 conversions --
 //    utf16strg utf16;
@@ -207,25 +196,17 @@ int main(int argc,char **argv) {
 //        TEST_ASSERT(s8[i] == s9[i]);
 //    }
 
-//    // -- test nustring conversion --
-//    nustring ns = "Hello World";
-//    s3.assign(ns);
-//    ns = "123456";
-//    TEST_ASSERT(ns == "123456");
-//    s3.toNustring(ns);
-//    TEST_ASSERT(ns == "Hello World");
-
     // -- tests for components.cc --
-    iucstring prefix = "prefix";
+    strg prefix = "prefix";
     prefix += "_";
-    iucstring entry = "prefix_key=value";
+    strg entry = "prefix_key=value";
     TEST_ASSERT(!entry.compare(0, prefix.length(), prefix));
     int where = entry.find('=');
     TEST_ASSERT(where >= 0);
     entry.erase(where);
     TEST_ASSERT(entry.substr(prefix.length()) == "key");
 
-    iucstring base = "filename.png";
+    strg base = "filename.png";
     base.erase(base.length()-4);
     TEST_ASSERT(base == "filename");
 	return 0;

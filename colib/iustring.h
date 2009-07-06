@@ -565,11 +565,10 @@ namespace colib {
     };
 
     typedef iustrg<char> strg;
-    typedef iustrg<u_int32_t> ustrg;
-    typedef iustrg<nuchar> nustring;
+    typedef iustrg<nuchar> ustrg;
 
+    typedef ustrg nustring;
     typedef strg iucstring;
-    typedef ustrg iuistring;
 
     template<class T>
     inline static iustrg<T> operator+(const iustrg<T>& s1, const iustrg<T>& s2) {
