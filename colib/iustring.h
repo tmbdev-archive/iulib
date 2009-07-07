@@ -169,7 +169,7 @@ namespace colib {
         }
         iustrg(int n) : buf(n), len(0) {
             if(n > 0) {
-                buf.at(0) = '\0';
+                buf.at(0) = T('\0');
             }
         }
         template<class A>
@@ -427,6 +427,18 @@ namespace colib {
         int compare(const char* s) const {
             return compare(0, len, s, 0, strlen(s));
         }
+        bool operator==(const iustrg<T>& s) {
+            return compare(s) == 0;
+        }
+        bool operator==(const char* s) {
+            return compare(s) == 0;
+        }
+        bool operator!=(const iustrg<T>& s) {
+            return compare(s) != 0;
+        }
+        bool operator!=(const char* s) {
+            return compare(s) != 0;
+        }
         iustrg<T> substr(int pos, int n) const {
             return iustrg<T>().append(*this, pos, n);
         }
@@ -557,6 +569,11 @@ namespace colib {
             while(length() < n) {
                 push(nuchar(utf8strg::decode(s, i)));
             }
+        }
+        int utf8Length() {
+            utf8strg utf8;
+            utf8Encode(utf8);
+            return utf8.length();
         }
 
     protected:
