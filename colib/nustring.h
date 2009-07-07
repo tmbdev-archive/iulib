@@ -56,14 +56,26 @@ namespace colib {
         int ord() const {
             return value;
         }
-        bool operator==(const nuchar &c) {
+        bool operator==(const nuchar &c) const {
             return value==c.value;
         }
-        bool operator!=(const nuchar &c) {
+        bool operator!=(const nuchar &c) const {
             return value!=c.value;
+        }
+        bool operator>(const nuchar &c) const {
+            return value>c.value;
+        }
+        bool operator<(const nuchar &c) const {
+            return value<c.value;
         }
         bool operator!=(int c) const {
             return value!=c;
+        }
+        bool operator>(int c) const {
+            return value>c;
+        }
+        bool operator<(int c) const {
+            return value<c;
         }
 
     };
