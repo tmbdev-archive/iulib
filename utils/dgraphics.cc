@@ -25,8 +25,8 @@
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_gfxPrimitives.h>
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_imageFilter.h>
+//#include <SDL/SDL_image.h>
+//#include <SDL/SDL_imageFilter.h>
 #include <SDL/SDL_rotozoom.h>
 
 #include <stdlib.h>
