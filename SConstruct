@@ -70,8 +70,8 @@ if missing:
     Exit(1)
 
 ### check for optional parts
-have_vidio = conf.CheckCXXHeader("ffmpeg/avcodec.h") and \
-             conf.CheckCXXHeader("ffmpeg/avformat.h")
+have_vidio = conf.CheckCXXHeader("libavcodec/avcodec.h") and \
+             conf.CheckCXXHeader("libavformat/avformat.h")
 have_v4l2 = conf.CheckHeader("linux/videodev2.h")
 have_sdl = conf.CheckCXXHeader("SDL/SDL_gfxPrimitives.h") and \
            conf.CheckCXXHeader("SDL/SDL.h")

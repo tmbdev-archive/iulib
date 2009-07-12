@@ -4,7 +4,7 @@ DIE() {
 }
 
 # -- Prelude --
-AC_INIT(iulib, 0.3, )
+AC_INIT(iulib, 0.4, )
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([colib/colib.h])
 
