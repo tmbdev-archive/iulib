@@ -127,6 +127,13 @@ namespace colib {
             throw "unimplemented"; 
         }
 
+        virtual void startTraining() {
+               throw "unimplemented";
+        }
+        virtual void finishTraining() {
+               throw "unimplemented";
+        }
+
         // Incremental training and its default implementation.
         // Override these methods if you have better incremental
         // training available for your particular class.
