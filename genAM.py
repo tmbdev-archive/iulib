@@ -74,7 +74,7 @@ for t in tests:
     tName = os.path.basename(t)[:-3].replace('-','_')
     print tName + "_SOURCES = $(srcdir)/" + t
     print tName + "_LDADD = libiulib.a"
-    print tName + "_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib"
+    print tName + "_CPPFLAGS = -I$(srcdir)/colib -I$(srcdir)/imgio -I$(srcdir)/imglib -I$(srcdir)/imgbits -I$(srcdir)/vidio -I$(srcdir)/utils"
 
 
 
@@ -103,14 +103,16 @@ endif
 # make installation of colib a separate target
 
 install-colib:
-	install -d $(colibdir)
-	install $(colib_HEADERS) $(colibdir)
+	install -d -m 0755 $(DESTDIR)$(colibdir)
+	install -m 0644 $(colib_HEADERS) $(DESTDIR)$(colibdir)
+
 
 install: all install-colib
-	install -d $(includedir)
-	install -d $(libdir)
-	install $(include_HEADERS) $(includedir)
-	install $(lib_LIBRARIES) $(libdir)
+	install -d -m 0755 $(DESTDIR)$(includedir)
+	install -d -m 0755 $(DESTDIR)$(libdir)
+	install -m 0644 $(include_HEADERS) $(DESTDIR)$(includedir)
+	install -m 0644 $(lib_LIBRARIES) $(DESTDIR)$(libdir)
+
 """
 
 print

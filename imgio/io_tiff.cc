@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "io_tiff.h"
+#include <iostream>
 
 using namespace colib;
 
@@ -67,43 +68,68 @@ namespace iulib {
         return n;
     }
 
-    void Tiff::getParams(uint32 *w, uint32 *h, short *orientation, short *channelSize, short *nChannels, tstrip_t* nStrips) {
-        TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, w);
-        TIFFGetField(tif, TIFFTAG_IMAGELENGTH, h);
-        TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, nChannels);
-        TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, channelSize);
-        TIFFGetField(tif, TIFFTAG_ORIENTATION, orientation);
-        *nStrips = TIFFNumberOfStrips(tif);
-//        if(*channelSize != 8) {
-//            throw "tiff: channel size other than 8 not supported";
-//        }
+    struct TiffParams {
+        uint32 w;
+        uint32 h;
+        short orientation;
+        short channelSize;
+        short nChannels;
+        tstrip_t nStrips;
+        float xres;
+        float yres;
+    };
+
+    void Tiff::getParams(struct TiffParams &param) {
+        TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &(param.w));
+        TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &(param.h));
+        TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &(param.nChannels));
+        TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &(param.channelSize));
+        TIFFGetField(tif, TIFFTAG_ORIENTATION, &(param.orientation));
+        TIFFGetField(tif, TIFFTAG_XRESOLUTION, &(param.xres));
+        TIFFGetField(tif, TIFFTAG_YRESOLUTION, &(param.yres));
+        param.nStrips = TIFFNumberOfStrips(tif);
+    }
+    
+    void Tiff::rescale_image(bytearray &scaledImage, const bytearray &unscaledImage, const struct TiffParams &imageParams) {
+        if (imageParams.xres != imageParams.yres) {
+            int scaledHeight = 0;
+            int scaledWidth = 0;
+            if (imageParams.xres > imageParams.yres) {
+                scaledHeight = imageParams.h * imageParams.xres / imageParams.yres;
+                scaledWidth = imageParams.w;
+            } else {
+                scaledHeight = imageParams.h;
+                scaledWidth = imageParams.w * imageParams.yres / imageParams.xres;
+            }
+            rescale(scaledImage, unscaledImage, scaledWidth, scaledHeight);
+        } else {
+            scaledImage = unscaledImage;
+        }
     }
 
     void Tiff::getPageRaw(bytearray &image, int page, bool gray) {
-        uint32 w, h;
-        short orientation, channelSize, nChannels;
-        tstrip_t nStrips;
+        struct TiffParams imageParams; 
         TIFFSetDirectory(tif, page);
-        getParams(&w, &h, &orientation, &channelSize, &nChannels, &nStrips);
-        if(channelSize != 8) {
+        getParams(imageParams);
+        if(imageParams.channelSize != 8) {
             throw "tiff: channel size other than 8 not supported in raw mode";
         }
-        Buffer raster(w * h * nChannels);
+        Buffer raster(imageParams.w * imageParams.h * imageParams.nChannels);
         int s = 0;
-        for(unsigned int i=0; i<nStrips; i++) {
+        for(unsigned int i=0; i < imageParams.nStrips; ++i) {
             s += TIFFReadEncodedStrip(tif, i, raster.buf+s, -1);
         }
 
         if(gray) {
-            image.renew(w, h);
+            image.renew(imageParams.w, imageParams.h);
         } else {
-            image.renew(w, h, nChannels);
+            image.renew(imageParams.w, imageParams.h, imageParams.nChannels);
         }
-        for(unsigned int x=0; x<w; x++) {
-            for(unsigned int y=0; y<h; y++) {
+        for(unsigned int x=0; x < imageParams.w; ++x) {
+            for(unsigned int y=0; y < imageParams.h; ++y) {
                 uint32 m = 0;
-                for(int c=0; c<nChannels; c++) {
-                    unsigned char v = raster.buf[(image.dim(1)-1-y)*w*nChannels+x*nChannels+c];
+                for(int c=0; c < imageParams.nChannels; ++c) {
+                    unsigned char v = raster.buf[(image.dim(1)-1-y)*imageParams.w * imageParams.nChannels+x*imageParams.nChannels+c];
                     if(gray) {
                         m += v;
                     } else {
@@ -111,70 +137,68 @@ namespace iulib {
                     }
                 }
                 if(gray) {
-                    image(x, y) = m / nChannels;
+                    image(x, y) = m / imageParams.nChannels;
                 }
             }
         }
     }
 
-    void Tiff::getPage(bytearray &image, int page, bool gray) {
-        uint32 w, h;
-        short orientation, channelSize, nChannels;
-        tstrip_t nStrips;
+    void Tiff::getPage(bytearray &resultImage, int page, bool gray) {
+        struct TiffParams imageParams; 
         TIFFSetDirectory(tif, page);
-        getParams(&w, &h, &orientation, &channelSize, &nChannels, &nStrips);
-        Buffer raster(w * h * sizeof(uint32));
-        TIFFReadRGBAImage(tif, w, h, (uint32*)raster.buf);
-        nChannels = 4; // -- read rgba => always four channels
+        getParams(imageParams);
+        Buffer raster(imageParams.w * imageParams.h * sizeof(uint32));
+        TIFFReadRGBAImage(tif, imageParams.w, imageParams.h, (uint32*)raster.buf);
+        imageParams.nChannels = 4; // -- read rgba => always four channels
 
+        bytearray workingImage;
         if(gray) {
-            image.renew(w, h);
+            workingImage.renew(imageParams.w, imageParams.h);
         } else {
-            image.renew(w, h, nChannels);
+            workingImage.renew(imageParams.w, imageParams.h, imageParams.nChannels);
         }
-        for(unsigned int x=0; x<w; x++) {
-            for(unsigned int y=0; y<h; y++) {
+        for(unsigned int x=0; x < imageParams.w; ++x) {
+            for(unsigned int y=0; y < imageParams.h; ++y) {
                 uint32 m = 0;
-                for(int c=0; c<nChannels; c++) {
-                    unsigned char v = raster.buf[y*w*nChannels+x*nChannels+c];
+                for(int c=0; c < imageParams.nChannels; ++c) {
+                    unsigned char v = raster.buf[y * imageParams.w * imageParams.nChannels + x * imageParams.nChannels + c];
                     if(gray) {
                         m += v;
                     } else {
-                        image(x, y, c) = v;
+                        workingImage(x, y, c) = v;
                     }
                 }
                 if(gray) {
-                    image(x, y) = m / nChannels;
+                    workingImage(x, y) = m / imageParams.nChannels;
                 }
             }
         }
+        rescale_image(resultImage, workingImage, imageParams);
     }
 
     void Tiff::getPageRaw(intarray &image, int page, bool gray) {
-        uint32 w, h;
-        short orientation, channelSize, nChannels;
-        tstrip_t nStrips;
+        struct TiffParams imageParams; 
         TIFFSetDirectory(tif, page);
-        getParams(&w, &h, &orientation, &channelSize, &nChannels, &nStrips);
-        if(nChannels > 4) {
+        getParams(imageParams);
+        if(imageParams.nChannels > 4) {
             throw "tiff: more than 4 channels not supported for packed format";
         }
-        if(channelSize != 8) {
+        if(imageParams.channelSize != 8) {
             throw "tiff: channel size other than 8 not supported in raw mode";
         }
-        Buffer raster(w * h * nChannels);
+        Buffer raster(imageParams.w * imageParams.h * imageParams.nChannels);
         int s = 0;
-        for(unsigned int i=0; i<nStrips; i++) {
+        for(unsigned int i=0; i< imageParams.nStrips; i++) {
             s += TIFFReadEncodedStrip(tif, i, raster.buf+s, -1);
         }
 
-        image.renew(w, h);
+        image.renew(imageParams.w, imageParams.h);
         int k = 0;
-        for(unsigned int x=0; x<w; x++) {
-            for(unsigned int y=0; y<h; y++) {
+        for(unsigned int x=0; x < imageParams.w; ++x) {
+            for(unsigned int y=0; y < imageParams.h; ++y) {
                 image(x, y) = 0;
-                for(int c=0; c<nChannels; c++) {
-                    unsigned char v = raster.buf[(h-1-y)*w*nChannels+x*nChannels+c];
+                for(int c=0; c < imageParams.nChannels; c++) {
+                    unsigned char v = raster.buf[(imageParams.h-1-y)*imageParams.w*imageParams.nChannels+x*imageParams.nChannels+c];
                     v = (v >> (k%8)) & 0x1;
                     k++;
                     if(gray) {
@@ -184,28 +208,26 @@ namespace iulib {
                     }
                 }
                 if(gray) {
-                    image(x, y) /= nChannels;
+                    image(x, y) /= imageParams.nChannels;
                 }
             }
         }
     }
 
     void Tiff::getPage(intarray &image, int page, bool gray) {
-        uint32 w, h;
-        short orientation, channelSize, nChannels;
-        tstrip_t nStrips;
+        struct TiffParams imageParams; 
         TIFFSetDirectory(tif, page);
-        getParams(&w, &h, &orientation, &channelSize, &nChannels, &nStrips);
-        Buffer raster(w * h * sizeof(uint32));
-        TIFFReadRGBAImage(tif, w, h, (uint32*)raster.buf);
-        nChannels = 4; // -- read rgba => always four channels
+        getParams(imageParams);
+        Buffer raster(imageParams.w * imageParams.h * sizeof(uint32));
+        TIFFReadRGBAImage(tif, imageParams.w, imageParams.h, (uint32*)raster.buf);
+        imageParams.nChannels = 4; // -- read rgba => always four channels
 
-        image.renew(w, h);
-        for(unsigned int x=0; x<w; x++) {
-            for(unsigned int y=0; y<h; y++) {
+        image.renew(imageParams.w, imageParams.h);
+        for(unsigned int x=0; x < imageParams.w; ++x) {
+            for(unsigned int y=0; y < imageParams.h; ++y) {
                 image(x, y) = 0;
-                for(int c=0; c<nChannels; c++) {
-                    unsigned char v = raster.buf[y*w*nChannels+x*nChannels+c];
+                for(int c=0; c < imageParams.nChannels; ++c) {
+                    unsigned char v = raster.buf[y*imageParams.w*imageParams.nChannels+x*imageParams.nChannels+c];
                     if(gray) {
                         image(x, y) += v;
                     } else {
@@ -213,7 +235,7 @@ namespace iulib {
                     }
                 }
                 if(gray) {
-                    image(x, y) /= nChannels;
+                    image(x, y) /= imageParams.nChannels;
                 }
             }
         }

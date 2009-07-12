@@ -57,7 +57,9 @@ namespace iulib {
         /// writes page in RGBA color format
         void setPage(colib::intarray &image, int page);
     private:
-        void getParams(uint32 *w, uint32 *h, short *orientation, short *channelSize, short *nChannelss, tstrip_t* nStrips);
+        void getParams(struct TiffParams &param);
+        void rescale_image(colib::bytearray &scaledImage, const colib::bytearray &unscaledImage, const struct TiffParams &imageParams);
+
         template<class T>
         void setParams(colib::narray<T> &image, int nChannels);
         TIFF* tif;
