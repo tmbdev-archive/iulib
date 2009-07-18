@@ -459,7 +459,7 @@ namespace colib {
         }
         int find(const iustrg<T>& str, int pos=0) const {
             pos = limit(0, len-1, pos);
-	      for(int i=pos; i<=len-str.length(); i++) {
+              for(int i=pos; i<=len-str.length(); i++) {
                 if(compare(i, str.length(), str) == 0) {
                     return i;
                 }
@@ -554,7 +554,7 @@ namespace colib {
         void utf8Decode(utf8strg& utf8) {
             clear();
             int i = 0;
-            while(i<utf8.length()-1) {
+            while(i<utf8.length()) {
                 push_back(utf8.getUnicode(i));
             }
         }
