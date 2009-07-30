@@ -78,9 +78,9 @@ namespace colib {
     template <class T>
     class narray {
 #ifdef NARRAY_LONGINDEX
-	typedef long index_t;
+        typedef long index_t;
 #else
-	typedef int index_t;
+        typedef int index_t;
 #endif
     private:
         template <class S>
@@ -129,11 +129,80 @@ namespace colib {
         void operator=(const narray<T> &);
 #else
     public:
-        narray(const narray<T> &other) {
+
+        // initialize an object from scratch
+
+        virtual void init_() {
             data = 0;
             for(int i=0;i<5;i++) dims[i] = 0;
             total = 0;
             allocated = 0;
+        }
+
+        // change the dimensions of the object; this never allocates storage;
+        // the resulting size can be smaller than the actual size
+
+        virtual void setdims_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+            total = total_(d0,d1,d2,d3);
+            dims[0] = d0; dims[1] = d1; dims[2] = d2; dims[3] = d3; dims[4] = 0;
+            check(total<=allocated,"bad setdims_ (internal error)");
+        }
+
+        // allocate space for an array with the given dimensions
+
+        virtual void alloc_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+            total = total_(d0,d1,d2,d3);
+            data = new T[total];
+            allocated = total;
+            setdims_(d0,d1,d2,d3);
+        }
+
+        // deallocate all the space associated with the object
+
+        virtual void dealloc() {
+            if(data) {
+                delete [] data;
+                data = 0;
+            }
+            dims[0] = 0;
+            total = 0;
+            allocated = 0;
+        }
+
+        // resize the array in place, possibly destroying the data
+
+        virtual narray<T> &resize(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+            index_t ntotal = total_(d0,d1,d2,d3);
+            if(ntotal>total) {
+                delete [] data;
+                alloc_(d0,d1,d2,d3);
+            } else {
+                setdims_(d0,d1,d2,d3);
+            }
+            return *this;
+        }
+
+        // reserve space so that there is space for the given number
+        // of elements
+
+        virtual void reserve(index_t n) {
+            index_t nallocated = total+n;
+            if(nallocated<=allocated) return;
+            nallocated = roundup_(nallocated);
+            T *ndata = new T[nallocated];
+            for(index_t i=0;i<total;i++) {
+                // ndata[i] = data[i];
+                na_transfer(ndata[i],data[i]);
+            }
+            delete [] data;
+            data = ndata;
+            allocated = nallocated;
+        }
+
+
+
+        narray(const narray<T> &other) {
+            init_();
             if(other.length1d()>=NARRAY_THRESHOLD_INIT) {
                 throw("narray copy constructor larger than threshold");
             }
@@ -188,23 +257,6 @@ namespace colib {
             return d0*(d1?d1:1)*(d2?d2:1)*(d3?d3:1);
         }
 
-        // change the elements of the array
-
-        void setdims_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
-            total = total_(d0,d1,d2,d3);
-            dims[0] = d0; dims[1] = d1; dims[2] = d2; dims[3] = d3; dims[4] = 0;
-            check(total<=allocated,"bad setdims_ (internal error)");
-        }
-
-        // allocate the elements of the array
-
-        void alloc_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
-            total = total_(d0,d1,d2,d3);
-            data = new T[total];
-            allocated = total;
-            dims[0] = d0; dims[1] = d1; dims[2] = d2; dims[3] = d3; dims[4] = 0;
-        }
-
         /// Creates a rank-0, empty array.
 
         narray() {
@@ -240,20 +292,8 @@ namespace colib {
 
         /// Deallocates all storage associated with this array.
 
-        ~narray() {
+        virtual ~narray() {
             dealloc();
-        }
-
-        /// Deallocates all storage associated with this array.
-
-        void dealloc() {
-            if(data) {
-                delete [] data;
-                data = 0;
-            }
-            dims[0] = 0;
-            total = 0;
-            allocated = 0;
         }
 
         /// Truncates the array.
@@ -261,19 +301,6 @@ namespace colib {
         narray<T> &truncate(index_t d0) {
             check(d0<=dims[0] && dims[1]==0,"can only truncate 1D arrays to smaller arrays");
             setdims_(d0);
-            return *this;
-        }
-
-        /// Resizes the array, possibly destroying any data previously held by it.
-
-        narray<T> &resize(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
-            index_t ntotal = total_(d0,d1,d2,d3);
-            if(ntotal>total) {
-                delete [] data;
-                alloc_(d0,d1,d2,d3);
-            } else {
-                setdims_(d0,d1,d2,d3);
-            }
             return *this;
         }
 
@@ -291,7 +318,7 @@ namespace colib {
         narray<T> &reshape(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
             index_t ntotal = total_(d0,d1,d2,d3);
             check(ntotal==total,"narray: bad reshape");
-            dims[0] = d0; dims[1] = d1; dims[2] = d2; dims[3] = d3; dims[4] = 0;
+            setdims_(d0,d1,d2,d3);
             return *this;
         }
 
@@ -443,25 +470,6 @@ namespace colib {
             return data[i];
         }
 
-
-        /// Make sure that the array has allocated room for at least
-        /// n more elements.  However, these additional elements may
-        /// not be accessible until the dimensions are changed
-        /// (e.g., through push).
-
-        void reserve(index_t n) {
-            index_t nallocated = total+n;
-            if(nallocated<=allocated) return;
-            nallocated = roundup_(nallocated);
-            T *ndata = new T[nallocated];
-            for(index_t i=0;i<total;i++) {
-                // ndata[i] = data[i];
-                na_transfer(ndata[i],data[i]);
-            }
-            delete [] data;
-            data = ndata;
-            allocated = nallocated;
-        }
 
         /// Make sure that the array is a 1D array capable of holding at
         /// least n elements.  This preserves existing data.
