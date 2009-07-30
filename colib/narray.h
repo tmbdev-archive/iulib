@@ -131,6 +131,13 @@ namespace colib {
 #else
     public:
 
+        // The following methods define storage allocation for
+        // narray objects.
+        // TODO: These are virtual methods, but that doesn't work
+        // well.  Instead, replace these with a dynamically changeable
+        // storage management object that has methods like
+        // sm->init_(narray<T> &self) ...
+
         // initialize an object from scratch
 
         virtual void init_() {
@@ -200,7 +207,29 @@ namespace colib {
             allocated = nallocated;
         }
 
+        /// Take the data held by the src array and put it into the dest array.
+        /// The src array is made empty in the proceess.  This is an O(1) operation.
 
+        virtual void move(narray<T> &src) {
+            narray<T> &dest = *this;
+            dest.dealloc();
+            dest.data = src.data;
+            for(int i=0;i<5;i++) dest.dims[i] = src.dims[i];
+            dest.total = src.total;
+            dest.allocated = src.allocated;
+            src.data = 0;
+            src.dealloc();
+        }
+
+        /// Swap the contents of the two arrays.
+
+        virtual void swap(narray<T> &src) {
+            narray<T> &dest = *this;
+            swap_(dest.data,src.data);
+            for(int i=0;i<5;i++) swap_(dest.dims[i],src.dims[i]);
+            swap_(dest.total,src.total);
+            swap_(dest.allocated,src.allocated);
+        }
 
         narray(const narray<T> &other) {
             init_();
@@ -558,30 +587,6 @@ namespace colib {
             at(3) = v3;
         }
 
-        /// Take the data held by the src array and put it into the dest array.
-        /// The src array is made empty in the proceess.  This is an O(1) operation.
-
-        void move(narray<T> &src) {
-            narray<T> &dest = *this;
-            dest.dealloc();
-            dest.data = src.data;
-            for(int i=0;i<5;i++) dest.dims[i] = src.dims[i];
-            dest.total = src.total;
-            dest.allocated = src.allocated;
-            src.data = 0;
-            src.dealloc();
-        }
-
-        /// Swap the contents of the two arrays.
-
-        void swap(narray<T> &src) {
-            narray<T> &dest = *this;
-            swap_(dest.data,src.data);
-            for(int i=0;i<5;i++) swap_(dest.dims[i],src.dims[i]);
-            swap_(dest.total,src.total);
-            swap_(dest.allocated,src.allocated);
-        }
-
         /// Copy the elements of the source array into the destination array,
         /// resizing if necessary.
 
@@ -671,6 +676,13 @@ namespace colib {
     };
 
 
+#ifdef COLIB_MARRAY
+    /* This is a sort-of working implementation of malloc/free allocation
+       for narray.  However, it's not all that useful, since we can't actually
+       typedef floatarray to be marray<float>.  Also, the implementations
+       of move/swap don't work correctly for mixed array types.  This requires
+       some more thought. */
+
     template <typename T>
     class marray : public narray<T> {
         typedef narray<T> B;
@@ -700,6 +712,7 @@ namespace colib {
             B::allocated = nallocated;
         }
     };
+#endif
 
     typedef unsigned char byte;
     typedef narray<unsigned char> bytearray;
