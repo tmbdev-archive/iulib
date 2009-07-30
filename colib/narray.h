@@ -75,15 +75,14 @@ namespace colib {
     /// Rank-1 arrays can also be treated as stacks or lists (using the append method).
 
 
-#ifdef NARRAY_LONGINDEX
-    typedef long index_t;
-#else
-    typedef int index_t;
-#endif
-
     template <class T>
     class narray {
-    protected:
+#ifdef NARRAY_LONGINDEX
+	typedef long index_t;
+#else
+	typedef int index_t;
+#endif
+    private:
         template <class S>
         static inline void swap_(S &a,S &b) { S t = a; a = b; b = t; }
 
@@ -125,114 +124,16 @@ namespace colib {
         }
 
 #ifdef NARRAY_STRICT
-    protected:
+    private:
         narray(const narray<T> &);
         void operator=(const narray<T> &);
 #else
     public:
-
-        // The following methods define storage allocation for
-        // narray objects.
-        // TODO: These are virtual methods, but that doesn't work
-        // well.  Instead, replace these with a dynamically changeable
-        // storage management object that has methods like
-        // sm->init_(narray<T> &self) ...
-
-        // initialize an object from scratch
-
-        virtual void init_() {
+        narray(const narray<T> &other) {
             data = 0;
             for(int i=0;i<5;i++) dims[i] = 0;
             total = 0;
             allocated = 0;
-        }
-
-        // change the dimensions of the object; this never allocates storage;
-        // the resulting size can be smaller than the actual size
-
-        virtual void setdims_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
-            total = total_(d0,d1,d2,d3);
-            dims[0] = d0; dims[1] = d1; dims[2] = d2; dims[3] = d3; dims[4] = 0;
-            check(total<=allocated,"bad setdims_ (internal error)");
-        }
-
-        // allocate space for an array with the given dimensions
-
-        virtual void alloc_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
-            total = total_(d0,d1,d2,d3);
-            data = new T[total];
-            allocated = total;
-            setdims_(d0,d1,d2,d3);
-        }
-
-        // deallocate all the space associated with the object
-
-        virtual void dealloc() {
-            if(data) {
-                delete [] data;
-                data = 0;
-            }
-            dims[0] = 0;
-            total = 0;
-            allocated = 0;
-        }
-
-        // resize the array in place, possibly destroying the data
-
-        virtual narray<T> &resize(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
-            index_t ntotal = total_(d0,d1,d2,d3);
-            if(ntotal>total) {
-                delete [] data;
-                alloc_(d0,d1,d2,d3);
-            } else {
-                setdims_(d0,d1,d2,d3);
-            }
-            return *this;
-        }
-
-        // reserve space so that there is space for the given number
-        // of elements
-
-        virtual void reserve(index_t n) {
-            index_t nallocated = total+n;
-            if(nallocated<=allocated) return;
-            nallocated = roundup_(nallocated);
-            T *ndata = new T[nallocated];
-            for(index_t i=0;i<total;i++) {
-                // ndata[i] = data[i];
-                na_transfer(ndata[i],data[i]);
-            }
-            delete [] data;
-            data = ndata;
-            allocated = nallocated;
-        }
-
-        /// Take the data held by the src array and put it into the dest array.
-        /// The src array is made empty in the proceess.  This is an O(1) operation.
-
-        virtual void move(narray<T> &src) {
-            narray<T> &dest = *this;
-            dest.dealloc();
-            dest.data = src.data;
-            for(int i=0;i<5;i++) dest.dims[i] = src.dims[i];
-            dest.total = src.total;
-            dest.allocated = src.allocated;
-            src.data = 0;
-            src.dealloc();
-        }
-
-        /// Swap the contents of the two arrays.
-
-        virtual void swap(narray<T> &src) {
-            narray<T> &dest = *this;
-            swap_(dest.data,src.data);
-            for(int i=0;i<5;i++) swap_(dest.dims[i],src.dims[i]);
-            swap_(dest.total,src.total);
-            swap_(dest.allocated,src.allocated);
-        }
-
-        narray(const narray<T> &other) {
-            init_();
             if(other.length1d()>=NARRAY_THRESHOLD_INIT) {
                 throw("narray copy constructor larger than threshold");
             }
@@ -287,10 +188,30 @@ namespace colib {
             return d0*(d1?d1:1)*(d2?d2:1)*(d3?d3:1);
         }
 
+        // change the elements of the array
+
+        void setdims_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+            total = total_(d0,d1,d2,d3);
+            dims[0] = d0; dims[1] = d1; dims[2] = d2; dims[3] = d3; dims[4] = 0;
+            check(total<=allocated,"bad setdims_ (internal error)");
+        }
+
+        // allocate the elements of the array
+
+        void alloc_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+            total = total_(d0,d1,d2,d3);
+            data = new T[total];
+            allocated = total;
+            dims[0] = d0; dims[1] = d1; dims[2] = d2; dims[3] = d3; dims[4] = 0;
+        }
+
         /// Creates a rank-0, empty array.
 
         narray() {
-            init_();
+            data = 0;
+            for(int i=0;i<5;i++) dims[i] = 0;
+            total = 0;
+            allocated = 0;
         }
 
         /// Creates a rank 1 array with dimensions d0.
@@ -319,8 +240,20 @@ namespace colib {
 
         /// Deallocates all storage associated with this array.
 
-        virtual ~narray() {
+        ~narray() {
             dealloc();
+        }
+
+        /// Deallocates all storage associated with this array.
+
+        void dealloc() {
+            if(data) {
+                delete [] data;
+                data = 0;
+            }
+            dims[0] = 0;
+            total = 0;
+            allocated = 0;
         }
 
         /// Truncates the array.
@@ -328,6 +261,19 @@ namespace colib {
         narray<T> &truncate(index_t d0) {
             check(d0<=dims[0] && dims[1]==0,"can only truncate 1D arrays to smaller arrays");
             setdims_(d0);
+            return *this;
+        }
+
+        /// Resizes the array, possibly destroying any data previously held by it.
+
+        narray<T> &resize(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+            index_t ntotal = total_(d0,d1,d2,d3);
+            if(ntotal>total) {
+                delete [] data;
+                alloc_(d0,d1,d2,d3);
+            } else {
+                setdims_(d0,d1,d2,d3);
+            }
             return *this;
         }
 
@@ -345,7 +291,7 @@ namespace colib {
         narray<T> &reshape(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
             index_t ntotal = total_(d0,d1,d2,d3);
             check(ntotal==total,"narray: bad reshape");
-            setdims_(d0,d1,d2,d3);
+            dims[0] = d0; dims[1] = d1; dims[2] = d2; dims[3] = d3; dims[4] = 0;
             return *this;
         }
 
@@ -498,6 +444,25 @@ namespace colib {
         }
 
 
+        /// Make sure that the array has allocated room for at least
+        /// n more elements.  However, these additional elements may
+        /// not be accessible until the dimensions are changed
+        /// (e.g., through push).
+
+        void reserve(index_t n) {
+            index_t nallocated = total+n;
+            if(nallocated<=allocated) return;
+            nallocated = roundup_(nallocated);
+            T *ndata = new T[nallocated];
+            for(index_t i=0;i<total;i++) {
+                // ndata[i] = data[i];
+                na_transfer(ndata[i],data[i]);
+            }
+            delete [] data;
+            data = ndata;
+            allocated = nallocated;
+        }
+
         /// Make sure that the array is a 1D array capable of holding at
         /// least n elements.  This preserves existing data.
 
@@ -587,6 +552,30 @@ namespace colib {
             at(3) = v3;
         }
 
+        /// Take the data held by the src array and put it into the dest array.
+        /// The src array is made empty in the proceess.  This is an O(1) operation.
+
+        void move(narray<T> &src) {
+            narray<T> &dest = *this;
+            dest.dealloc();
+            dest.data = src.data;
+            for(int i=0;i<5;i++) dest.dims[i] = src.dims[i];
+            dest.total = src.total;
+            dest.allocated = src.allocated;
+            src.data = 0;
+            src.dealloc();
+        }
+
+        /// Swap the contents of the two arrays.
+
+        void swap(narray<T> &src) {
+            narray<T> &dest = *this;
+            swap_(dest.data,src.data);
+            for(int i=0;i<5;i++) swap_(dest.dims[i],src.dims[i]);
+            swap_(dest.total,src.total);
+            swap_(dest.allocated,src.allocated);
+        }
+
         /// Copy the elements of the source array into the destination array,
         /// resizing if necessary.
 
@@ -674,45 +663,6 @@ namespace colib {
             fill(value);
         }
     };
-
-
-#ifdef COLIB_MARRAY
-    /* This is a sort-of working implementation of malloc/free allocation
-       for narray.  However, it's not all that useful, since we can't actually
-       typedef floatarray to be marray<float>.  Also, the implementations
-       of move/swap don't work correctly for mixed array types.  This requires
-       some more thought. */
-
-    template <typename T>
-    class marray : public narray<T> {
-        typedef narray<T> B;
-    public:
-        marray(index_t d0=0,index_t d1=0,index_t d2=0,index_t d3=0):
-            narray<T>(d0,d1,d2,d3) {}
-        virtual void alloc_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
-            B::total = B::total_(d0,d1,d2,d3);
-            B::data = (T*)malloc(B::total * sizeof (T));
-            B::allocated = B::total;
-            B::setdims_(d0,d1,d2,d3);
-        }
-
-        virtual void dealloc() {
-            if(B::data) free(B::data);
-            B::data = 0;
-            B::dims[0] = 0;
-            B::total = 0;
-            B::allocated = 0;
-        }
-
-        virtual void reserve(index_t n) {
-            index_t nallocated = B::total+n;
-            if(nallocated<=B::allocated) return;
-            nallocated = B::roundup_(nallocated);
-            B::data = (T*)realloc(B::data,nallocated * sizeof (T));
-            B::allocated = nallocated;
-        }
-    };
-#endif
 
     typedef unsigned char byte;
     typedef narray<unsigned char> bytearray;
