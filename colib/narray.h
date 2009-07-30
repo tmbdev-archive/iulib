@@ -75,14 +75,15 @@ namespace colib {
     /// Rank-1 arrays can also be treated as stacks or lists (using the append method).
 
 
+#ifdef NARRAY_LONGINDEX
+    typedef long index_t;
+#else
+    typedef int index_t;
+#endif
+
     template <class T>
     class narray {
-#ifdef NARRAY_LONGINDEX
-        typedef long index_t;
-#else
-        typedef int index_t;
-#endif
-    private:
+    protected:
         template <class S>
         static inline void swap_(S &a,S &b) { S t = a; a = b; b = t; }
 
@@ -124,7 +125,7 @@ namespace colib {
         }
 
 #ifdef NARRAY_STRICT
-    private:
+    protected:
         narray(const narray<T> &);
         void operator=(const narray<T> &);
 #else
@@ -260,10 +261,7 @@ namespace colib {
         /// Creates a rank-0, empty array.
 
         narray() {
-            data = 0;
-            for(int i=0;i<5;i++) dims[i] = 0;
-            total = 0;
-            allocated = 0;
+            init_();
         }
 
         /// Creates a rank 1 array with dimensions d0.
@@ -669,6 +667,37 @@ namespace colib {
         void makelike(narray<S> &b,U value) {
             makelike(b);
             fill(value);
+        }
+    };
+
+
+    template <typename T>
+    class marray : public narray<T> {
+        typedef narray<T> B;
+    public:
+        marray(index_t d0=0,index_t d1=0,index_t d2=0,index_t d3=0):
+            narray<T>(d0,d1,d2,d3) {}
+        virtual void alloc_(index_t d0,index_t d1=0,index_t d2=0,index_t d3=0) {
+            B::total = B::total_(d0,d1,d2,d3);
+            B::data = (T*)malloc(B::total * sizeof (T));
+            B::allocated = B::total;
+            B::setdims_(d0,d1,d2,d3);
+        }
+
+        virtual void dealloc() {
+            if(B::data) free(B::data);
+            B::data = 0;
+            B::dims[0] = 0;
+            B::total = 0;
+            B::allocated = 0;
+        }
+
+        virtual void reserve(index_t n) {
+            index_t nallocated = B::total+n;
+            if(nallocated<=B::allocated) return;
+            nallocated = B::roundup_(nallocated);
+            B::data = (T*)realloc(B::data,nallocated * sizeof (T));
+            B::allocated = nallocated;
         }
     };
 
