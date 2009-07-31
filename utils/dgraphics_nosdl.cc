@@ -63,6 +63,12 @@ namespace iulib {
     void dshow1d(floatarray &data,const char *spec) {
     }
 
+    void dshow_signed(floatarray &data,const char *spec,double angle,int smooth,int rgb) {
+    }
+
+    void dshow_grid_signed(floatarray &data,int tw,const char *spec,double angle,int smooth,int rgb) {
+    }
+
     void dclear(int rgb) {
     }
 
@@ -74,6 +80,9 @@ namespace iulib {
 
     bool dactive() {
         return false;
+    }
+
+    void dflush() {
     }
 
     const char *dsection_set(const char *name) {
