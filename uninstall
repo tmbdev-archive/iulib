@@ -1,5 +1,6 @@
 #!/bin/sh -x
 prefix=/usr/local
+rm -rf ${prefix}/include/colib
 rm -rf ${prefix}/include/iulib
 rm -rf ${prefix}/lib/libiulib*
 rm -rf ${prefix}/bin/iuedges

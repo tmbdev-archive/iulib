@@ -69,6 +69,8 @@ namespace iulib {
     void dwait() {
     }
 
+    void dclose() {
+    }    
 
     bool dactive() {
         return false;

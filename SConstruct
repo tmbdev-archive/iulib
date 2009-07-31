@@ -40,45 +40,51 @@ opts.Add('opt', 'Compiler flags for optimization/debugging', "-g -O3 -fPIC")
 opts.Add('warn', 'Compiler flags for warnings', "-Wall -D__warn_unused_result__=__far__")
 opts.Add('prefix', 'The installation root for iulib', "/usr/local")
 
-### globals
+opts.Add(BoolVariable('sdl', "provide SDL-based graphics routines", "no"))
+opts.Add(BoolVariable('vidio', "provide video I/O functionality", "no"))
+opts.Add(BoolVariable('v4l2', "provide v4l2 functionality", "no"))
+
+opts.Add(BoolVariable('test', "Run some tests after the build", "no"))
+# opts.Add(BoolVariable('style', 'Check style', "no"))
+
 env = Environment(options=opts, CXXFLAGS=["${opt}","${warn}"])
 Help(opts.GenerateHelpText(env))
+
 conf = Configure(env)
 if "-DUNSAFE" in env["opt"]:
     print "WARNING: compile with -DUNSAFE or high optimization only for production use"
+
 if re.search(r'-O[234]',env["opt"]):
     print "compiling with high optimization"
-if not re.search(r'-O[234]',env["opt"]):
+else:
     print "compiling for development (slower but safer)"
 
-### FIXME these libraries should be optional, and compilation should
-### be conditional based on their presence
-
-### check for required (dev-) libraries (automatically added to env LIBS)
-missing = ""
-if not conf.CheckLibWithHeader('png', 'png.h', 'C', 'png_byte;', 1):
-    missing += " libpng12-dev"
-if not conf.CheckLibWithHeader('jpeg', 'jconfig.h', 'C', 'jpeg_std_error();', 1):
-    missing += " libjpeg62-dev"    
-if not conf.CheckLibWithHeader('tiff', 'tiff.h', 'C', 'inflate();', 1):
-   missing += " libtiff4-dev"
-
-if missing:
-    print "\nPlease install the following required libraries (or equivalent):"
-    print missing
-    print
-    Exit(1)
+assert conf.CheckLibWithHeader('png', 'png.h', 'C', 'png_byte;', 1),"please install: libpng12-dev"
+assert conf.CheckLibWithHeader('jpeg', 'jconfig.h', 'C', 'jpeg_std_error();', 1),"please install: libjpeg62-dev"    
+assert conf.CheckLibWithHeader('tiff', 'tiff.h', 'C', 'inflate();', 1), "please install: libtiff4-dev"
 
 ### check for optional parts
-have_vidio = conf.CheckCXXHeader("libavcodec/avcodec.h") and \
-             conf.CheckCXXHeader("libavformat/avformat.h")
-have_v4l2 = conf.CheckHeader("linux/videodev2.h")
-have_sdl = conf.CheckCXXHeader("SDL/SDL_gfxPrimitives.h") and \
-           conf.CheckCXXHeader("SDL/SDL.h")
 
-have_vidio = 0 # FIXME
-have_v4l2 = 0 # FIXME
-have_sdl = 1
+if env["sdl"]:
+    have_sdl = conf.CheckCXXHeader("SDL/SDL_gfxPrimitives.h") and \
+               conf.CheckCXXHeader("SDL/SDL.h")
+    assert have_sdl,"SDL requested, but can't find it"
+else:
+    have_sdl = 0
+
+if env["vidio"]:
+    have_vidio = conf.CheckCXXHeader("libavcodec/avcodec.h") and \
+                 conf.CheckCXXHeader("libavformat/avformat.h")
+    assert have_vidio,"vidio requested, but can't find it"
+else:
+    have_vidio = 0
+
+if env["v4l2"]:
+    have_v4l2 = conf.CheckHeader("linux/videodev2.h")
+    assert have_v4l2,"v4l2 requested, but can't find it"
+else:
+    have_v4l2 = 0
+
 conf.Finish()
 
 ### install folders
@@ -135,7 +141,7 @@ test_builder = Builder(action='$SOURCE&&touch $TARGET',
                   src_suffix = '')
 progs.Append(BUILDERS={'Test':test_builder})
 
-if True: #"test" in COMMAND_LINE_TARGETS:
+if env["test"]:
     for file in glob.glob("*/test-*.cc") + glob.glob("*/*/test-*.cc"):
         if not file.startswith('vidio'):
             progs.Program(file[:-3],file)
