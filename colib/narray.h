@@ -45,7 +45,7 @@
 // or assignments.
 
 #ifndef NARRAY_THRESHOLD_INIT
-#define NARRAY_THRESHOLD_INIT 100
+#define NARRAY_THRESHOLD_INIT 10000
 #endif
 
 #ifndef NARRAY_THRESHOLD_COPY

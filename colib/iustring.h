@@ -287,6 +287,7 @@ namespace colib {
             return assign(s, 0, n);
         }
         iustrg<T>& assign(const char* s) {
+            if(s==0) s = "";
             return assign(s, 0, strlen(s));
         }
         iustrg<T>& assign(const iustrg<T>& str, int pos, int n) {

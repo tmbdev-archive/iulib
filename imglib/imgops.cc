@@ -327,6 +327,8 @@ namespace iulib {
 
     template<class T,class S>
     void extract_subimage(narray<T> &out,narray<S> &image,int x0,int y0,int x1,int y1) {
+        CHECK(x0<=x1);
+        CHECK(y0<=y1);
         x0 = max(x0,0);
         y0 = max(y0,0);
         x1 = min(x1,image.dim(0));
