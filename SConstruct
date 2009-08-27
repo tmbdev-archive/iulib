@@ -114,7 +114,7 @@ if have_sdl:
 else:
     sources += ["utils/dgraphics_nosdl.cc"]
 
-libiulib = env.StaticLibrary('libiulib.a',sources)
+libiulib = env.SharedLibrary('libiulib',sources)
 
 env.Append(CXXFLAGS=['-g','-fPIC'])
 env.Append(LIBPATH=['.'])
