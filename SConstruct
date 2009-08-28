@@ -109,8 +109,10 @@ if have_vidio:
     sources += glob.glob("vidio/vidio.cc")
 if have_v4l2:
     sources += glob.glob("vidio/v4l2cap.cc")
+    env.Append(LIBS=["v4l2"])
 if have_sdl:
     sources += ["utils/dgraphics.cc","utils/SDL_lines.cc"]
+    env.Append(LIBS=["SDL","SDL_gfx","SDL_image"])
 else:
     sources += ["utils/dgraphics_nosdl.cc"]
 
