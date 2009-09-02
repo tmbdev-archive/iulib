@@ -59,9 +59,11 @@ namespace {
     }
 
     bool debug(const char *which) {
+        const char *env_always = getenv("debug_always");
+        if(!env_always) env_always = "info,warn,error,fixme";
         const char *env = getenv("debug");
-        if(!env) env = "info";
-        return strflag(env,which);
+        if(!env) env = "";
+        return (strflag(env_always,which) || strflag(env,which));
     }
 
     void debugf(const char *which,const char *fmt,...) {
