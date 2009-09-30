@@ -35,7 +35,7 @@ EnsureSConsVersion(0,97)
 import glob,os,sys,string,re
 
 ### Options exposed via SCons
-opts = Options('custom.py')
+opts = Variables('custom.py')
 opts.Add('opt', 'Compiler flags for optimization/debugging', "-g -O3 -fPIC")
 opts.Add('warn', 'Compiler flags for warnings', "-Wall -D__warn_unused_result__=__far__")
 opts.Add('prefix', 'The installation root for iulib', "/usr/local")
