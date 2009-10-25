@@ -78,9 +78,9 @@ namespace colib {
     template <class T>
     class narray {
 #ifdef NARRAY_LONGINDEX
-	typedef long index_t;
+        typedef long index_t;
 #else
-	typedef int index_t;
+        typedef int index_t;
 #endif
     private:
         template <class S>
@@ -435,6 +435,10 @@ namespace colib {
         T &at1d(index_t i) const {
             check_range(i,total);
             return data[i];
+        }
+
+        void put1d(index_t i,T value) {
+            operator[](i) = value;
         }
 
         /// Unsafe 1D subscripting (works for arrays of any rank).
