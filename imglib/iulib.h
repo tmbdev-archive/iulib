@@ -52,4 +52,5 @@
 #include "imgtrace.h"
 #include "dgraphics.h"
 #include "vidio.h"
+#include "components.h"
 #endif

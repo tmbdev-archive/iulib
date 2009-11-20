@@ -96,13 +96,14 @@ datadir = prefix+"/share/iulib"
 bindir = prefix+"/bin"
 
 ### collect sources etc.
-env.Prepend(CPPPATH=[".","colib","imglib","imgio","imgbits","utils","vidio"])
+env.Prepend(CPPPATH=[".","colib","imglib","imgio","imgbits","utils","components","vidio"])
 
 sources = glob.glob("imglib/img*.cc") 
 sources += glob.glob("imgbits/img*.cc")
 sources += """
     imgio/autoinvert.cc imgio/imgio.cc imgio/io_jpeg.cc
     imgio/io_pbm.cc imgio/io_png.cc imgio/io_tiff.cc
+    components/components.cc
 """.split()
 
 if have_vidio:
