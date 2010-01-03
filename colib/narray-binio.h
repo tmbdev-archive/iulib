@@ -107,6 +107,39 @@ namespace narray_io {
         CHECK(fwrite(&value,sizeof value,1,stream)==1);
     }
 
+    // array of scalar reading
+
+    template <class T>
+    inline void narray_read(FILE *stream,narray<T> &data) {
+        if(0) data[0]+0;
+        unsigned magic;
+        CHECK(sizeof(magic)==4);
+        CHECK(fread(&magic,sizeof magic,1,stream)==1);
+        CHECK(magic==magic_number<T>());
+        int dims[4];
+        CHECK(fread(dims,sizeof dims[0],4,stream)==4);
+        data.resize(dims[0],dims[1],dims[2],dims[3]);
+        if(data.length1d()>0) {
+            CHECK((int)fread(&data.at1d(0),sizeof data.at1d(0),
+                             data.length1d(),stream)==data.length1d());
+        }
+    }
+
+    // array of scalar writing
+
+    template <class T>
+    inline void narray_write(FILE *stream,narray<T> &data) {
+        if(0) data[0]+0;
+        unsigned magic = magic_number<T>();
+        CHECK(sizeof(magic)==4);
+        CHECK(fwrite(&magic,sizeof magic,1,stream)==1);
+        CHECK(fwrite(data.dims,sizeof data.dims[0],4,stream)==4);
+        if(data.length1d()>0) {
+            CHECK((int)fwrite(&data.at1d(0),sizeof data.at1d(0),
+                              data.length1d(),stream)==data.length1d());
+        }
+    }
+
     // ragged array reading
 
     template <class T>
@@ -132,37 +165,6 @@ namespace narray_io {
         CHECK(fwrite(data.dims,sizeof data.dims[0],4,stream)==4);
         for(int i=0;i<data.length();i++)
             narray_write(stream,data[i]);
-    }
-
-    // array of scalar reading
-
-    template <class T>
-    inline void narray_read(FILE *stream,narray<T> &data) {
-        unsigned magic;
-        CHECK(sizeof(magic)==4);
-        CHECK(fread(&magic,sizeof magic,1,stream)==1);
-        CHECK(magic==magic_number<T>());
-        int dims[4];
-        CHECK(fread(dims,sizeof dims[0],4,stream)==4);
-        data.resize(dims[0],dims[1],dims[2],dims[3]);
-        if(data.length1d()>0) {
-            CHECK((int)fread(&data.at1d(0),sizeof data.at1d(0),
-                             data.length1d(),stream)==data.length1d());
-        }
-    }
-
-    // array of scalar writing
-
-    template <class T>
-    inline void narray_write(FILE *stream,narray<T> &data) {
-        unsigned magic = magic_number<T>();
-        CHECK(sizeof(magic)==4);
-        CHECK(fwrite(&magic,sizeof magic,1,stream)==1);
-        CHECK(fwrite(data.dims,sizeof data.dims[0],4,stream)==4);
-        if(data.length1d()>0) {
-            CHECK((int)fwrite(&data.at1d(0),sizeof data.at1d(0),
-                              data.length1d(),stream)==data.length1d());
-        }
     }
 
     inline unsigned read32(FILE *stream) {
