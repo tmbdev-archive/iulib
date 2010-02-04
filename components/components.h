@@ -460,15 +460,11 @@ namespace iulib {
 
         virtual ~IComponent() {}
 
-        // The following methods are obsolete for setting and getting parameters.
-        // However, they cannot be converted automatically (since they might
-        // trigger actions).
-
         virtual const char *command(const char **argv) {
-            return 0;
+            throw "NoSuchCommand";
         }
 
-        virtual const char *command(const char *cmd,
+        const char *command(const char *cmd,
                 const char *arg1=0,
                 const char *arg2=0,
                 const char *arg3=0) {
@@ -477,6 +473,10 @@ namespace iulib {
         }
 
 #if 1
+        // The following methods are obsolete for setting and getting parameters.
+        // However, they cannot be converted automatically (since they might
+        // trigger actions).
+
         /// Set a string property or throw an exception if not implemented.
         virtual void set(const char *key,const char *value) WARN_DEPRECATED {
             pset(key,value);
