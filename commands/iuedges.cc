@@ -1,6 +1,4 @@
-// Copyright 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz
-// or its licensors, as applicable.
-// Copyright 1995-2005 by Thomas M. Breuel
+// Copyright 1995-2010 by Thomas M. Breuel
 //
 // You may not use this file except under the terms of the accompanying license.
 //
@@ -20,7 +18,7 @@
 // Responsible: 
 // Reviewer:
 // Primary Repository:
-// Web Sites: www.iupr.org, www.dfki.de
+// Web Sites: www.iupr.org
 
 extern "C" {
 #include <math.h>
