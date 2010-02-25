@@ -48,6 +48,7 @@ namespace iulib {
         virtual void clear() = 0;
         virtual void save(FILE *stream) = 0;
         virtual void load(FILE *stream) = 0;
+        virtual void info(strg &s) = 0;
     };
 }
 
@@ -69,6 +70,9 @@ namespace {
             using namespace narray_io;
             scalar_read(stream,data);
         }
+        void info(strg &s) {
+            sprintf(s,"scalar");
+        }
     };
 
     template <class T>
@@ -85,6 +89,9 @@ namespace {
         void load(FILE *stream) {
             using namespace narray_io;
             narray_read(stream,data);
+        }
+        void info(strg &s) {
+            sprintf(s,"narray %d %d %d %d",data.dim(0),data.dim(1),data.dim(2),data.dim(3));
         }
     };
 
@@ -129,6 +136,9 @@ namespace {
             CHECK(s=="</componentlist>");
             debugf("iodetail","</componentlist>\n");
         }
+        void info(strg &s) {
+            sprintf(s,"componentlist");
+        }
     };
 
     template <class T>
@@ -144,6 +154,12 @@ namespace {
         }
         void load(FILE *stream) {
             load_component(stream,data);
+        }
+        void info(strg &s) {
+            if(data) 
+                sprintf(s,"%s %s",data->name(),data->description());
+            else 
+                sprintf(s,"NULL");
         }
     };
 }
@@ -204,6 +220,12 @@ namespace iulib {
             fprintf(stream,"%*s",depth,"");
             fprintf(stream,"%s\n",description());
             fprintf(stream,"%s\n",(const char *)object_history);
+            for(int i=0;i<wnames.length();i++) {
+                strg s;
+                wrappers[i]->info(s);
+                fprintf(stream,"%*s",depth,"");
+                fprintf(stream,"%s: %s\n",wnames[i].c_str(),s.c_str());
+            }
             pprint(stream,depth);
         }
 

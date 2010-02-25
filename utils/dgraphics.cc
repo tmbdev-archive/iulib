@@ -154,6 +154,17 @@ namespace iulib {
         return screen && active;
     }
 
+    void dgraphics_set(const char *s) {
+        // leak, but doesn't matter
+        dgraphics = strdup(s);
+    }
+
+    bool dactivate(bool flag) {
+        bool old = active;
+        active = flag;
+        return old;
+    }
+
     static const char *current_section;
 
     const char *dsection_set(const char *section) {

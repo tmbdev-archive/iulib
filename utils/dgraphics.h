@@ -61,6 +61,9 @@ namespace iulib {
     void dflush();
     void dwait();
     void dclose();
+    void dgraphics_set(const char *s);
+    bool dactivate(bool flag);
+    const char *dsection_set(const char *section);
 }
 
 
