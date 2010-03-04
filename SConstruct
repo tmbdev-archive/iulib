@@ -40,7 +40,7 @@ opts.Add('opt', 'Compiler flags for optimization/debugging', "-g -O3 -fPIC")
 opts.Add('warn', 'Compiler flags for warnings', "-Wall -D__warn_unused_result__=__far__")
 opts.Add('prefix', 'The installation root for iulib', "/usr/local")
 
-opts.Add(BoolVariable('sdl', "provide SDL-based graphics routines", "no"))
+opts.Add(BoolVariable('sdl', "provide SDL-based graphics routines", "yes"))
 opts.Add(BoolVariable('vidio', "provide video I/O functionality", "no"))
 opts.Add(BoolVariable('v4l2', "provide v4l2 functionality", "no"))
 
