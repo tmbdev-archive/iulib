@@ -117,6 +117,7 @@ namespace colib {
         autodel(autodel<T> &other);
 
     public:
+        typedef T TYPE;
 
         /// Default constructor sets pointer to null.
 

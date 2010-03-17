@@ -44,11 +44,19 @@ using namespace iulib;
 #endif
 
 namespace iulib {
+    struct IComponent;
+    IComponent *component_construct(const char *name);
     struct IOWrapper {
         virtual void clear() = 0;
         virtual void save(FILE *stream) = 0;
         virtual void load(FILE *stream) = 0;
         virtual void info(strg &s) = 0;
+        virtual void set(const char *) { throw "unimplemented"; }
+        virtual void set(double) { throw "unimplemented"; }
+        virtual void set(IComponent *) { throw "unimplemented"; }
+        virtual const char *get() { throw "unimplemented"; }
+        virtual double *getf() { throw "unimplemented"; }
+        virtual IComponent *getComponent() { throw "unimplemented"; }
     };
 }
 
@@ -161,6 +169,12 @@ namespace {
             else 
                 sprintf(s,"NULL");
         }
+        void set(IComponent *p) {
+            data = dynamic_cast<typename T::TYPE*>(p);
+        }
+        IComponent *getComponent() {
+            return (IComponent*)data.ptr();
+        }
     };
 }
 
@@ -190,6 +204,10 @@ namespace iulib {
                         verbose_pattern = getenv("verbose_params");
                 }
             }
+        }
+
+        /// reinitialize the component (e.g., after changing some parameters).
+        virtual void reinit() {
         }
 
         /// interface name
@@ -255,6 +273,48 @@ namespace iulib {
         void persist(short &data,const char *name) {
             wnames.push(name);
             wrappers.push() = new ScalarIOWrapper<short>(data);
+        }
+
+        /// Methods for manipulating/changing persistent components.
+
+        int persist_length() {
+            return wnames.length();
+        }
+        const char *persist_name(int i) {
+            return wnames[i].c_str();
+        }
+        IComponent *persist_get(const char *name) {
+            for(int i=0;i<wnames.length();i++) {
+                if(wnames[i]==name) {
+                    return wrappers[i]->getComponent();
+                }
+            }
+            return 0;
+        }
+        void persist_set(const char *name,IComponent *value) {
+            for(int i=0;i<wnames.length();i++) {
+                if(wnames[i]==name) {
+                    wrappers[i]->set(value);
+                    return;
+                }
+            }
+        }
+        void persist_init(const char *name,const char *what) {
+            for(int i=0;i<wnames.length();i++) {
+                if(wnames[i]==name) {
+                    wrappers[i]->set(component_construct(what));
+                    return;
+                }
+            }
+        }
+        void persist_pset(const char *cname,const char *name,const char *value) {
+            persist_get(cname)->pset(name,value);
+        }
+        const char *persist_pget(const char *cname,const char *name) {
+            return persist_get(cname)->pget(name);
+        }
+        double persist_pgetf(const char *cname,const char *name) {
+            return persist_get(cname)->pgetf(name);
         }
 
         // this picks up narray<autodel<IComponent>>
@@ -480,10 +540,26 @@ namespace iulib {
                 import(keys[i]);
         }
 
+        // Reflection (listing all the parameters etc.)
+
+        int plength() {
+            // FIXME some time
+            narray<const char *> keys;
+            params.keys(keys);
+            return keys.length();
+        }
+
+        const char *pname(int i) {
+            // FIXME some time
+            narray<const char *> keys;
+            params.keys(keys);
+            return keys[i];
+        }
+
         virtual ~IComponent() {}
 
         virtual const char *command(const char **argv) {
-            throw "NoSuchCommand";
+            return 0;
         }
 
         const char *command(const char *cmd,
