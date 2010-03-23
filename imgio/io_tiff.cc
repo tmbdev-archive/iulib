@@ -91,7 +91,6 @@ namespace iulib {
     }
     
     void Tiff::rescale_image(bytearray &scaledImage, const bytearray &unscaledImage, const struct TiffParams &imageParams) {
-        CHECK_ARG(scaledImage.dim(0)>0 && scaledImage.dim(1)>0);
         if (imageParams.xres != imageParams.yres) {
             int scaledHeight = 0;
             int scaledWidth = 0;
