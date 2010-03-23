@@ -35,6 +35,45 @@ namespace iulib {
             int maxsize=1<<30, float sigma=0.0);
     void hist(colib::floatarray &hist, colib::bytearray &image);
 
+    template <class T>
+    inline void split_rgb(colib::narray<T> &r,colib::narray<T> &g,colib::narray<T> &b,colib::narray<T> &rgb) {
+        CHECK_ARG(rgb.rank()==3);
+        int w = rgb.dim(0), h = rgb.dim(1);
+        r.resize(w,h);
+        g.resize(w,h);
+        b.resize(w,h);
+        for(int i=0;i<w;i++) for(int j=0;j<h;j++) {
+            r(i,j) = rgb(i,j,0);
+            g(i,j) = rgb(i,j,1);
+            b(i,j) = rgb(i,j,2);
+        }
+    }
+
+    template <class T>
+    inline void combine_rgb(colib::narray<T> &rgb,colib::narray<T> &r,colib::narray<T> &g,colib::narray<T> &b) {
+        CHECK_ARG(r.rank()==2 && g.rank()==2 && b.rank()==2);
+        CHECK_ARG(samedims(r,g) && samedims(g,b));
+        int w = r.dim(0), h = r.dim(1);
+        rgb.resize(w,h,3);
+        for(int i=0;i<w;i++) for(int j=0;j<h;j++) {
+            rgb(i,j,0) = r(i,j);
+            rgb(i,j,1) = g(i,j);
+            rgb(i,j,2) = b(i,j);
+        }
+    }
+
+    template<class T>
+    inline void fill_rect(colib::narray<T> &out,int x0,int y0,int x1,int y1,T value) {
+        for(int i=x0;i<x1;i++) 
+            for(int j=y0;j<y1;j++)
+                out(i,j) = value;
+    }
+
+    template<class T>
+    inline void fill_rect(colib::narray<T> &out,colib::rectangle r,T value) {
+        fill_rect(out,r.x0,r.y0,r.x1,r.y1,value);
+    }
+
     template<class T>
     inline void math2raster(colib::narray<T> &out, colib::narray<T> &in) {
         int w = in.dim(0), h = in.dim(1);
@@ -46,6 +85,13 @@ namespace iulib {
     }
 
     template<class T>
+    inline void math2raster(colib::narray<T> &out) {
+        colib::narray<T> temp;
+        math2raster(temp,out);
+        out.move(temp);
+    }
+
+    template<class T>
     inline void raster2math(colib::narray<T> &out, colib::narray<T> &in) {
         int w = in.dim(0), h = in.dim(1);
         out.resize(h, w);
@@ -53,6 +99,13 @@ namespace iulib {
             for (int y=0; y<h; y++)
                 out(h-y-1, x)=in(x, y);
         }
+    }
+
+    template<class T>
+    inline void raster2math(colib::narray<T> &out) {
+        colib::narray<T> temp;
+        raster2math(temp,out);
+        out.move(temp);
     }
 
     template<class T>
