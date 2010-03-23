@@ -62,6 +62,29 @@ namespace iulib {
         }
     }
 
+    inline void unpack_rgb(colib::bytearray &r,colib::bytearray &g,colib::bytearray &b,colib::intarray &rgb) {
+        CHECK_ARG(rgb.rank()==2);
+        int w = rgb.dim(0), h = rgb.dim(1);
+        r.resize(w,h);
+        g.resize(w,h);
+        b.resize(w,h);
+        for(int i=0;i<w;i++) for(int j=0;j<h;j++) {
+            r(i,j) = (rgb(i,j)>>16);
+            g(i,j) = (rgb(i,j)>>8);
+            b(i,j) = rgb(i,j);
+        }
+    }
+
+    inline void pack_rgb(colib::intarray &rgb,colib::bytearray &r,colib::bytearray &g,colib::bytearray &b) {
+        CHECK_ARG(r.rank()==2 && g.rank()==2 && b.rank()==2);
+        CHECK_ARG(samedims(r,g) && samedims(g,b));
+        int w = r.dim(0), h = r.dim(1);
+        rgb.resize(w,h);
+        for(int i=0;i<w;i++) for(int j=0;j<h;j++) {
+            rgb(i,j) = ((r(i,j)<<16) | (g(i,j)<<8) | b(i,j));
+        }
+    }
+
     template<class T>
     inline void fill_rect(colib::narray<T> &out,int x0,int y0,int x1,int y1,T value) {
         for(int i=x0;i<x1;i++) 
