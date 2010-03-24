@@ -63,9 +63,9 @@ namespace iulib {
             }
         }
     }
-template     void rotate_direct_sample(bytearray &, bytearray &, float, float, float);
-template     void rotate_direct_sample(intarray &, intarray &, float, float, float);
-template     void rotate_direct_sample(floatarray &, floatarray &, float, float, float);
+    template void rotate_direct_sample(bytearray &, bytearray &, float, float, float);
+    template void rotate_direct_sample(intarray &, intarray &, float, float, float);
+    template void rotate_direct_sample(floatarray &, floatarray &, float, float, float);
 
     // FIXME: Does not do the right thing when given a color image as an
     // intarray. It just takes the values as integers and interpolates them
@@ -89,11 +89,9 @@ template     void rotate_direct_sample(floatarray &, floatarray &, float, float,
             }
         }
     }
-template     void rotate_direct_interpolate(bytearray &, bytearray &, float, float,
-            float);
-template     void rotate_direct_interpolate(intarray &, intarray &, float, float, float);
-template     void rotate_direct_interpolate(floatarray &, floatarray &, float, float,
-            float);
+    template void rotate_direct_interpolate(bytearray &, bytearray &, float, float, float);
+    template void rotate_direct_interpolate(intarray &, intarray &, float, float, float);
+    template void rotate_direct_interpolate(floatarray &, floatarray &, float, float, float);
 
     template<class T>
     void scale_sample(narray<T> &out, narray<T> &in,
@@ -102,9 +100,9 @@ template     void rotate_direct_interpolate(floatarray &, floatarray &, float, f
         int ny = max(1, int(sy*in.dim(1)));
         scale_sample(out, in, nx, ny);
     }
-template     void scale_sample(bytearray &, bytearray &, float, float);
-template     void scale_sample(intarray &, intarray &, float, float);
-template     void scale_sample(floatarray &, floatarray &, float, float);
+    template void scale_sample(bytearray &, bytearray &, float, float);
+    template void scale_sample(intarray &, intarray &, float, float);
+    template void scale_sample(floatarray &, floatarray &, float, float);
 
     template<class T>
     void scale_sample(narray<T> &out, narray<T> &in, int nx,
@@ -119,9 +117,9 @@ template     void scale_sample(floatarray &, floatarray &, float, float);
             }
         }
     }
-template     void scale_sample(bytearray &, bytearray &, int, int);
-template     void scale_sample(intarray &, intarray &, int, int);
-template     void scale_sample(floatarray &, floatarray &, int, int);
+    template void scale_sample(bytearray &, bytearray &, int, int);
+    template void scale_sample(intarray &, intarray &, int, int);
+    template void scale_sample(floatarray &, floatarray &, int, int);
 
     template<class T>
     void scale_interpolate(narray<T> &out, narray<T> &in,
@@ -130,9 +128,9 @@ template     void scale_sample(floatarray &, floatarray &, int, int);
         int ny = max(1, int(sy*in.dim(1)));
         scale_interpolate(out, in, nx, ny);
     }
-template     void scale_interpolate(bytearray &, bytearray &, float, float);
-template     void scale_interpolate(intarray &, intarray &, float, float);
-template     void scale_interpolate(floatarray &, floatarray &, float, float);
+    template void scale_interpolate(bytearray &, bytearray &, float, float);
+    template void scale_interpolate(intarray &, intarray &, float, float);
+    template void scale_interpolate(floatarray &, floatarray &, float, float);
 
     template<class T>
     void scale_interpolate(narray<T> &out, narray<T> &in,
@@ -147,7 +145,7 @@ template     void scale_interpolate(floatarray &, floatarray &, float, float);
             }
         }
     }
-template     void scale_interpolate(bytearray &, bytearray &, int, int);
-template     void scale_interpolate(intarray &, intarray &, int, int);
-template     void scale_interpolate(floatarray &, floatarray &, int, int);
+    template void scale_interpolate(bytearray &, bytearray &, int, int);
+    template void scale_interpolate(intarray &, intarray &, int, int);
+    template void scale_interpolate(floatarray &, floatarray &, int, int);
 }
