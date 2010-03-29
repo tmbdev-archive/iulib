@@ -512,7 +512,7 @@ namespace colib {
         struct TC : T {
             int refcount_;
         };
-        TC *p;
+        mutable TC *p;
     public:
         counted() {
             p = 0;
@@ -598,7 +598,8 @@ namespace colib {
             check();
             if(p) {
                 if(--p->refcount_==0) delete p;
-                ((counted<T>*)this)->p = 0;
+                // ((counted<T>*)this)->p = 0;
+                p = 0;
             }
         }
         void check() const {
