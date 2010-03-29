@@ -530,22 +530,26 @@ namespace colib {
             p = 0;
         }
         void operator=(counted<T> &other) {
+            if(this==&other) return;
             other.incref();
             decref();
             p = other.p;
         }
         void operator=(const counted<T> &other) {
+            if(this==&other) return;
             other.incref();
             decref();
             p = other.p;
         }
         void operator*=(counted<T> &other) {
+            if(this==&other) return;
             other.incref();
             decref();
             p = other.p;
             other.drop();
         }
         void operator*=(const counted<T> &other) {
+            if(this==&other) return;
             other.incref();
             decref();
             p = other.p;
