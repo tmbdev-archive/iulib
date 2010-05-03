@@ -280,8 +280,13 @@ namespace colib {
             push_back(c);
         }
         iustrg<T>& assign(const char *s, int pos, int n) {
+            T *p = buf.data;
+            buf.data = 0;
             clear();
-            return append(s, pos, n);
+            append(s, pos, n);
+            if (p)
+                delete[] p;
+            return *this;
         }
         iustrg<T>& assign(const char* s, int n) {
             return assign(s, 0, n);
@@ -291,8 +296,13 @@ namespace colib {
             return assign(s, 0, strlen(s));
         }
         iustrg<T>& assign(const iustrg<T>& str, int pos, int n) {
+            T *p = buf.data;
+            buf.data = 0;
             clear();
-            return append(str, pos, n);
+            append(str, pos, n);
+            if (p)
+                delete[] p;
+            return *this;
         }
         iustrg<T>& assign(const iustrg<T>& str, int n) {
             return assign(str, 0, n);

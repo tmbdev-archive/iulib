@@ -47,7 +47,9 @@ struct heap {
         T object;
         bool operator>(Item &other) { return priority>other.priority; }
     };
-  static void bitswap(Item &a,Item &b) {
+    static void bitswap(Item &a,Item &b) {
+        if(&a == &b)
+            return;
         char buf[sizeof (Item)];
         memcpy(buf,&a,sizeof (Item));
         memcpy(&a,&b,sizeof (Item));

@@ -466,12 +466,13 @@ namespace iulib {
         virtual void pset(const char *name,const char *value) {
             if(name[0]!='%' && !params.find(name))
                 throwf("pset: %s: no such parameter",name);
-            params(name) = value;
             CHECK(!strchr(name,'\n'));
             CHECK(!strchr(name,'='));
             CHECK(!strchr(value,'\n'));
             if(strstr(name,verbose_pattern))
                 fprintf(stderr,"set %s_%s=%s\n",this->name(),name,value);
+            params(name) = value; // this must be done last because it might
+                                  // invalidate value
         }
         virtual void pset(const char *name,double value) {
             strg svalue;
