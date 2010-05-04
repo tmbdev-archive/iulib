@@ -512,7 +512,7 @@ namespace colib {
         struct TC : T {
             int refcount_;
         };
-        TC *p;
+        mutable TC *p;
     public:
         counted() {
             p = 0;
@@ -530,22 +530,26 @@ namespace colib {
             p = 0;
         }
         void operator=(counted<T> &other) {
+            if(this==&other) return;
             other.incref();
             decref();
             p = other.p;
         }
         void operator=(const counted<T> &other) {
+            if(this==&other) return;
             other.incref();
             decref();
             p = other.p;
         }
         void operator*=(counted<T> &other) {
+            if(this==&other) return;
             other.incref();
             decref();
             p = other.p;
             other.drop();
         }
         void operator*=(const counted<T> &other) {
+            if(this==&other) return;
             other.incref();
             decref();
             p = other.p;
@@ -594,7 +598,8 @@ namespace colib {
             check();
             if(p) {
                 if(--p->refcount_==0) delete p;
-                ((counted<T>*)this)->p = 0;
+                // ((counted<T>*)this)->p = 0;
+                p = 0;
             }
         }
         void check() const {
