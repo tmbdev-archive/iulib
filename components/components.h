@@ -164,9 +164,9 @@ namespace {
             load_component(stream,data);
         }
         void info(strg &s) {
-            if(data) 
+            if(data)
                 sprintf(s,"%s %s",data->name(),data->description());
-            else 
+            else
                 sprintf(s,"NULL");
         }
         void set(IComponent *p) {
@@ -675,18 +675,18 @@ namespace iulib {
     };
 
     void component_register_(const char *name,IComponentConstructor *f,
-            bool replace=false);
+            bool replace=true);
 
     template <class T>
-    inline void component_register(const char *name,bool replace=false) {
+    inline void component_register(const char *name,bool replace=true) {
         component_register_(name,new ComponentConstructorNew<T>(),replace);
     }
     template <class T,class S>
-    inline void component_register2(const char *name,bool replace=false) {
+    inline void component_register2(const char *name,bool replace=true) {
         component_register_(name,new ComponentConstructorNew2<T,S>(),replace);
     }
     template <class T>
-    inline void component_register(const char *name,T *(*f)(),bool replace=false) {
+    inline void component_register(const char *name,T *(*f)(),bool replace=true) {
         component_register_(name,new ComponentConstructorFun<T>(f),replace);
     }
     void list_components(narray<const char *> &names);
