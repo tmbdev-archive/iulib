@@ -1588,3 +1588,9 @@ void dgraphics_set(const char *s);
     }
 %}
 
+void make_line_segmentation_black(intarray &);
+void make_line_segmentation_white(intarray &);
+void make_page_segmentation_black(intarray &);
+void make_page_segmentation_white(intarray &);
+void check_line_segmentation(intarray &);
+void check_page_segmentation(intarray &);
