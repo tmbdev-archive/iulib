@@ -166,6 +166,7 @@ def numpy(a,type='f'):
     for i in range(4):
         if a.dim(i)==0: break
         shape.append(a.dim(i))
+    if len(shape)==0: return zeros(0,type)
     result = zeros(shape,type)
     numpy_of_narray(result,a)
     return result
