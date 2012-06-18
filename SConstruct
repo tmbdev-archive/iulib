@@ -61,7 +61,8 @@ else:
 
 assert conf.CheckLibWithHeader('png', 'png.h', 'C', 'png_byte;', 1),"please install: libpng12-dev"
 assert conf.CheckLibWithHeader('jpeg', 'jconfig.h', 'C', 'jpeg_std_error();', 1),"please install: libjpeg62-dev"    
-assert conf.CheckLibWithHeader('tiff', 'tiff.h', 'C', 'TIFFHeader;', 1), "please install: libtiff4-dev"
+assert conf.CheckLibWithHeader('z', 'zlib.h', 'C', 'inflate;', 1), "please install: zlib"
+assert conf.CheckLibWithHeader('tiff', 'tiff.h', 'C', 'TIFFOpen();', 1), "please install: libtiff4-dev"
 
 ### check for optional parts
 
