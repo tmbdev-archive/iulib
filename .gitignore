@@ -1,0 +1,14 @@
+*.log
+*.swp
+*.pyc
+*.os
+*.o
+*.a
+*.so
+*~
+.sconf*
+.sconsign*
+book/
+temp/
+.pynative
+models/

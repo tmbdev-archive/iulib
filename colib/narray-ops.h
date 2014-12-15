@@ -48,6 +48,22 @@ namespace narray_ops {
     /// min/max
 
     template <class T,class S>
+    T amin(colib::narray<T> &out) {
+        T result = out.at1d(0);
+        for(int i=1;i<out.length1d();i++)
+            result = min_(result,out.at1d(i));
+        return result;
+    }
+
+    template <class T,class S>
+    T amax(colib::narray<T> &out) {
+        T result = out.at1d(0);
+        for(int i=1;i<out.length1d();i++)
+            result = max_(result,out.at1d(i));
+        return result;
+    }
+
+    template <class T,class S>
     void max(colib::narray<T> &out,S in) {
         for(int i=0;i<out.length1d();i++)
             out.at1d(i) = max_(out.at1d(i),in);

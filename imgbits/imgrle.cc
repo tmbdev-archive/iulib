@@ -962,12 +962,12 @@ namespace imgrle {
                         uf.make_union(above_labels(j),line_labels(k));
                 }
 #else
-                bool found = 0;
+                //bool found = 0;
                 for(int j=start;j<above.length();j++) {
                     if(above(j).before(line(k))) {
                         start = j;
                     } else if(above(j).overlaps(line(k))) {
-                        found = 1;
+                        //found = 1;
                         uf.make_union(above_labels(j),line_labels(k));
                     } else if(above(j).after(line(k))) {
                         break;

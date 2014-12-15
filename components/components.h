@@ -47,6 +47,7 @@ namespace iulib {
     struct IComponent;
     IComponent *component_construct(const char *name);
     struct IOWrapper {
+        virtual ~IOWrapper() {}
         virtual void clear() = 0;
         virtual void save(FILE *stream) = 0;
         virtual void load(FILE *stream) = 0;
@@ -649,6 +650,7 @@ namespace iulib {
     /// Component registry.
 
     struct IComponentConstructor {
+        virtual ~IComponentConstructor() {}
         virtual IComponent *operator()() = 0;
     };
 
