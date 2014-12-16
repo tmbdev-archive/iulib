@@ -1,7 +1,7 @@
 A library of image understanding-related algorithms.  Provides basic image processing, mathematical morphology, and machine learning algorithms.
 
 iulib
------
+=====
 
 Iulib implements easy-to-use image and video I/O functions, as well as a large number of common image processing functions.
 
@@ -33,7 +33,7 @@ Functionality includes:
 If you use the morphological operations, please cite [http://pubs.iupr.org/#2007-IUPR-29Nov_1045 Binary Morpholog and Related Operations on Run-Length Representations].
 
 colib
------
+=====
 
 Colib is a simple, templatized library of basic data structures and algorithms.  It is the collections library we think C++ should have had.  Colib is designed to be safe and simple, and to use concepts that work across many programming languages.  In particular, colib encourages the use of integer indexes and discourages the use of iterators and pointers.
 
