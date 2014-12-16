@@ -30,7 +30,9 @@ Functionality includes:
    * fast binary morphology on packed binary images
    * fast binary morphology on run length encoded images
 
-If you use the morphological operations, please cite [http://pubs.iupr.org/#2007-IUPR-29Nov_1045 Binary Morpholog and Related Operations on Run-Length Representations].
+If you use the run-length morphological operations in published work, please cite 
+
+Breuel, Thomas M. "Binary Morphology and Related Operations on Run-Length Representations." In VISAPP (1), pp. 159-166. 2008.
 
 colib
 =====
