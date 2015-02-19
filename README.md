@@ -3,6 +3,8 @@ A library of image understanding-related algorithms.  Provides basic image proce
 iulib
 =====
 
+[![Join the chat at https://gitter.im/tmbdev/iulib](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tmbdev/iulib?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Iulib implements easy-to-use image and video I/O functions, as well as a large number of common image processing functions.
 
 Design goals are high portability, easy-to-understand algorithms, no reliance on STL, and using a minimal set of data structures.  Almost all interfaces are written in terms of just numbers and the simple narray array class (see below).
