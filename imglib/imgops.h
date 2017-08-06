@@ -67,7 +67,7 @@ namespace iulib {
     }
 
     template<class T, class V>
-    void addscaled(colib::narray<T> &, colib::narray<T> &, V, int, int);
+    void addscaled(colib::narray<T> &, colib::narray<T> &, V scale=1,int dx=0,int dy=0);
     template<class T>
     void tighten(colib::narray<T> &image);
     template<class T>
